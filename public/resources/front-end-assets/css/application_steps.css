@@ -1,0 +1,103 @@
+
+input[type="text"], input[type="email"], input[type="password"], input[type="submit"],input[type="date"], textarea, select {
+    background-color: var(--white);
+    border: 2px solid;
+    border-color: var(--border-color-9);
+    height: 40px !important;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    padding-left: 20px;
+    font-size: 16px;
+    color: var(--ltn__paragraph-color);
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 0;
+    padding-right: 40px;
+}
+
+
+.contact-form-box
+{
+    padding: 20px 0px 0px;
+    position: relative;
+    z-index: 1;
+}
+
+
+.form-inner-part
+{
+    min-height: 150px; 
+}
+
+
+.title-2
+{
+    margin-bottom: 0px;
+}
+
+
+
+
+/* Progress Bar */
+
+.w3-red, .w3-hover-red:hover
+{
+    color:#fff !important;
+    background-color: green !important;
+}
+
+.w3-light-grey, .w3-hover-light-grey:hover, .w3-light-gray, .w3-hover-light-gray:hover
+{
+    color: #000 !important;
+    background-color: #cecece !important;
+}
+
+.w3-center {
+    text-align: center !important;
+}
+
+
+.step-number
+{
+    background-color: green;
+    color: white;
+    padding: 10px 10px;
+    border-radius: 10px; 
+}
+
+.required-field
+{
+    color: red;
+}
+
+.field_error
+{
+    color: red;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.input-error
+{
+    border: 1px solid red;
+}
+
+#sig-canvas
+{
+    border: 2px dotted #CCCCCC;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+
+.btn
+{
+    padding: 10px 20px;
+} 
+
+.response_title {
+    margin-bottom: -10px !important;
+    color: red;
+    font-weight: bold;
+    font-size: 27px;
+}

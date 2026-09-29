@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    RewriteCond %{REQUEST_URI} (^|/)\.(?!well-known(?:/|$)) [NC]
+    RewriteRule .* - [F,L]
+    RewriteCond %{REQUEST_URI} ^/(?:artisan|composer\.(?:json|lock)|phpunit\.xml|server\.php)(?:/|$) [NC]
+    RewriteRule .* - [F,L]
+    RewriteCond %{REQUEST_URI} ^/resources/files/(?:dynamic|e-signs)/.*\.(?:php[0-9]*|phtml|phar)$ [NC]
+    RewriteRule .* - [F,L]
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>

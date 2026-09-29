@@ -39,7 +39,7 @@ class PropertyController extends Controller
         $db_data['Property'] = $construct_query->get();
  
         $page_meta_data = array(
-                                'page_title'=>'Explore Our Properties '.env('APP_NAME'),
+                                'page_title'=>'Explore Our Properties '.config('app.name'),
                                 ); 
 
         return view('properties.property_listings' ,compact('db_data'))->with($page_meta_data);
@@ -68,7 +68,7 @@ class PropertyController extends Controller
 
 
             $page_meta_data = array(
-                                    'page_title'=>$db_data['Property']->p_title.' | Explore Our Properties '.env('APP_NAME'),
+                                    'page_title'=>$db_data['Property']->p_title.' | Explore Our Properties '.config('app.name'),
                                     ); 
 
             return view('properties.view_details' ,compact('db_data'))->with($page_meta_data);
@@ -117,7 +117,7 @@ class PropertyController extends Controller
 
         $email_details = array(
                                'email_type' => "contact_us_form", 
-                               'email_subject' => env("APP_NAME")."| New Message Recieved", 
+                               'email_subject' => config('app.name')."| New Message Recieved",
                                'body' => $email_content, 
                                'view_to_use' => "email_templates.general_email_template",
                               );               
@@ -163,7 +163,7 @@ class PropertyController extends Controller
     {
 
         $page_meta_data = array(
-                                'page_title'=>"Submit Your Application Now | ".env('APP_NAME'),
+                                'page_title'=>"Submit Your Application Now | ".config('app.name'),
                                ); 
 
 
@@ -179,7 +179,7 @@ class PropertyController extends Controller
                                          ->get();    
 
         $page_meta_data = array(
-                                'page_title'=>"Apply Online | ".env('APP_NAME'),
+                                'page_title'=>"Apply Online | ".config('app.name'),
                                ); 
 
         return view('properties.online_application_form' , compact('db_data'))->with($page_meta_data);
@@ -744,7 +744,7 @@ class PropertyController extends Controller
           
                 $email_details = array(
                                        'email_type' => "online_application", 
-                                       'email_subject' => "New Application Recieved for ".$db_data['Property']->property_title." on ".env("APP_NAME"), 
+                                       'email_subject' => "New Application Recieved for ".$db_data['Property']->property_title." on ".config('app.name'),
                                        'body' => $email_content,    
                                        'view_to_use' => "email_templates.general_email_template",
                                       );               
@@ -785,7 +785,7 @@ class PropertyController extends Controller
                                          ->get();    
 
         $page_meta_data = array(
-                                'page_title'=>"Apply Online | ".env('APP_NAME'),
+                                'page_title'=>"Apply Online | ".config('app.name'),
                                ); 
 
         return view('properties.apply_with_form_as_attachment' , compact('db_data'))->with($page_meta_data);
@@ -888,7 +888,7 @@ class PropertyController extends Controller
                                          ->get();    
 
         $page_meta_data = array(
-                                'page_title'=>"Apply Online | ".env('APP_NAME'),
+                                'page_title'=>"Apply Online | ".config('app.name'),
                                ); 
 
         return view('properties.upload_application' , compact('db_data'))->with($page_meta_data);
@@ -1189,7 +1189,7 @@ class PropertyController extends Controller
         $db_data['Property'] = Property::where('p_active_status','active')->get();  
 
         $page_meta_data = array(
-                                'page_title'=>'Application '.env('APP_NAME'),
+                                'page_title'=>'Application '.config('app.name'),
                                 ); 
         return view('properties.application_form_wizard',compact('db_data'))->with($page_meta_data);
     }
@@ -1200,7 +1200,7 @@ class PropertyController extends Controller
     {   
         $db_data['Property'] = Property::where('p_active_status','active')->get();  
         $page_meta_data = array(
-                                'page_title'=>'Application '.env('APP_NAME'),
+                                'page_title'=>'Application '.config('app.name'),
                                 ); 
         return view('properties.applications.application_form_wizard_with_steps',compact('db_data'))->with($page_meta_data);
     }
@@ -1215,7 +1215,7 @@ class PropertyController extends Controller
     {   
         $db_data['Property'] = Property::where('p_active_status','active')->get();  
         $page_meta_data = array(
-                                'page_title'=>'Application '.env('APP_NAME'),
+                                'page_title'=>'Application '.config('app.name'),
                                 ); 
         return view('properties.applications.new_online_application_start_page',compact('db_data'))->with($page_meta_data);
     }
@@ -1268,7 +1268,7 @@ class PropertyController extends Controller
 
         $db_data['Property'] = Property::where('p_active_status','active')->get();  
         $page_meta_data = array(
-                                'page_title'=>'Application '.env('APP_NAME'),
+                                'page_title'=>'Application '.config('app.name'),
                                 ); 
         return view('properties.applications.step_2',compact('db_data'))->with($page_meta_data);
     }
@@ -1362,7 +1362,7 @@ class PropertyController extends Controller
 
         $db_data['Property'] = Property::where('p_active_status','active')->get();  
         $page_meta_data = array(
-                                'page_title'=>'Application '.env('APP_NAME'),
+                                'page_title'=>'Application '.config('app.name'),
                                 ); 
         return view('properties.applications.step_3',compact('db_data'))->with($page_meta_data);
     }
@@ -1471,7 +1471,7 @@ class PropertyController extends Controller
 
         $db_data['Property'] = Property::where('p_active_status','active')->get();  
         $page_meta_data = array(
-                                'page_title'=>'Application '.env('APP_NAME'),
+                                'page_title'=>'Application '.config('app.name'),
                                 ); 
         return view('properties.applications.step_4',compact('db_data'))->with($page_meta_data);
     }
@@ -1581,7 +1581,7 @@ class PropertyController extends Controller
 
         $db_data['Property'] = Property::where('p_active_status','active')->get();  
         $page_meta_data = array(
-                                'page_title'=>'Application '.env('APP_NAME'),
+                                'page_title'=>'Application '.config('app.name'),
                                 ); 
         return view('properties.applications.step_5',compact('db_data'))->with($page_meta_data);
     }
@@ -1712,7 +1712,7 @@ class PropertyController extends Controller
 
         $db_data['Property'] = Property::where('p_active_status','active')->get();  
         $page_meta_data = array(
-                                'page_title'=>'Application '.env('APP_NAME'),
+                                'page_title'=>'Application '.config('app.name'),
                                 ); 
         return view('properties.applications.step_6',compact('db_data'))->with($page_meta_data);
     }
@@ -1806,7 +1806,7 @@ class PropertyController extends Controller
 
         $db_data['Property'] = Property::where('p_active_status','active')->get();  
         $page_meta_data = array(
-                                'page_title'=>'Application '.env('APP_NAME'),
+                                'page_title'=>'Application '.config('app.name'),
                                 ); 
         return view('properties.applications.step_7',compact('db_data'))->with($page_meta_data);
     }
@@ -1921,7 +1921,7 @@ class PropertyController extends Controller
 
         $db_data['Property'] = Property::where('p_active_status','active')->get();  
         $page_meta_data = array(
-                                'page_title'=>'Application '.env('APP_NAME'),
+                                'page_title'=>'Application '.config('app.name'),
                                 ); 
         return view('properties.applications.step_8',compact('db_data'))->with($page_meta_data);
     }
@@ -2022,7 +2022,7 @@ class PropertyController extends Controller
 
         $db_data['Property'] = Property::where('p_active_status','active')->get();  
         $page_meta_data = array(
-                                'page_title'=>'Application '.env('APP_NAME'),
+                                'page_title'=>'Application '.config('app.name'),
                                 ); 
         return view('properties.applications.step_9',compact('db_data'))->with($page_meta_data);
     }
@@ -2177,4 +2177,3 @@ class PropertyController extends Controller
 
 
 }
-

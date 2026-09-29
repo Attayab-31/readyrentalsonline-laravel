@@ -367,11 +367,10 @@
   </button>
 
   @if($invoice->i_status == "unpaid")
-      @if($invoice->i_payment_status == 'pending' || $invoice->i_payment_status == 'processing' || $invoice->i_payment_status == 'requires_verification')
+      @if($invoice->i_payment_status == 'pending' || $invoice->i_payment_status == 'processing' || $invoice->i_payment_status == 'requires_verification' || $invoice->i_payment_status == 'requires_confirmation' || $invoice->i_payment_status == 'requires_action' || $invoice->i_payment_status == 'succeeded')
           <div class="alert alert-warning mt-3">
-              <strong>Payment Pending</strong><br>
-              ACH payment is already processing for this invoice. 
-              Please wait for microdeposit verification (1-2 business days).
+              <strong>{{ $invoice->i_payment_status == 'succeeded' ? 'Payment received' : 'Payment pending' }}</strong><br>
+              {{ $invoice->i_payment_status == 'succeeded' ? 'Stripe is confirming the payment. This invoice will update shortly.' : 'A payment is already in progress for this invoice. Please wait for Stripe to update its status.' }}
           </div>
       @else
           <a id="stripe_payment_btn" href="#0" class="tm_invoice_btn tm_color3" style="background-color: #28a745; border-color: #28a745;width: 100%; padding: 15px;text-align:center;margin-top:5px">
@@ -831,13 +830,9 @@
 
 
         // Stripe configuration
-        const STRIPE_TEST_PUBLIC_KEY = @json(config('services.stripe.key'));
-        const STRIPE_LIVE_PUBLIC_KEY = @json(config('services.stripe.key'));
+        const STRIPE_PUBLIC_KEY = @json(config('services.stripe.key'));
         const LIVE_MODE = @json(config('services.stripe.mode', 'test') === 'live');
-        // Initialize Stripe with the appropriate key
-        const stripe = Stripe(LIVE_MODE ? STRIPE_LIVE_PUBLIC_KEY : STRIPE_TEST_PUBLIC_KEY);
-        // Log current mode to console for debugging
-        console.log('Stripe mode:', LIVE_MODE ? 'LIVE' : 'TEST');
+        const stripe = Stripe(STRIPE_PUBLIC_KEY);
     
       // Store paymentIntentId globally
       let paymentIntentId = null;
@@ -861,13 +856,11 @@
                   },
                   body: JSON.stringify({
                       invoice_number: document.querySelector('input[name="invoice_number"]').value,
-                      amount: document.querySelector('input[name="amount"]').value,
                       name: document.getElementById('name').value,
                       email: document.getElementById('email').value,
-                      routingNumber: document.getElementById('routing-number').value,
-                      accountNumber: document.getElementById('account-number').value,
                       accountType: document.getElementById('account-type').value,
-                      accountHolderType: 'individual'
+                      accountHolderType: 'individual',
+                      payment_request_id: crypto.randomUUID()
                   })
               });
               
@@ -960,6 +953,7 @@
                   },
                   body: JSON.stringify({
                       paymentIntentId: paymentIntentId,
+                      invoice_number: document.querySelector('input[name="invoice_number"]').value,
                       amounts: [deposit1, deposit2]
                   })
               });
@@ -1062,9 +1056,9 @@
                   body: JSON.stringify({
                       payment_method_id: paymentMethod.id,
                       invoice_number: document.getElementById('invoice_number').value,
-                      amount: document.getElementById('amount').value,
                       email: document.getElementById('card-email').value,
-                      name: document.getElementById('cardholder-name').value
+                      name: document.getElementById('cardholder-name').value,
+                      payment_request_id: crypto.randomUUID()
                   })
               });
               
@@ -1074,9 +1068,9 @@
                   throw new Error(data.error);
               }
               
-              if (data.requiresAction) {
-                  showStatus('Authentication required - please complete verification...', 'warning', true);
-                  
+              if (data.requiresConfirmation) {
+                  showStatus('Confirming payment securely with Stripe...', 'info', true);
+
                   const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
                       data.clientSecret,
                       {
@@ -1084,18 +1078,24 @@
                           receipt_email: document.getElementById('card-email').value
                       }
                   );
-                  
+
                   if (confirmError) {
                       throw confirmError;
                   }
-                  
+
                   if (paymentIntent.status === 'succeeded') {
                       handlePaymentSuccess();
+                  } else if (paymentIntent.status === 'processing') {
+                      showStatus('Payment is processing. The invoice will update after Stripe confirms it.', 'info', true);
+                      setTimeout(() => window.location.reload(), 5000);
                   } else {
-                      throw new Error('Payment processing failed after authentication. Status: ' + paymentIntent.status);
+                      throw new Error('Payment processing did not complete. Status: ' + paymentIntent.status);
                   }
               } else if (data.success) {
                   handlePaymentSuccess();
+              } else if (data.status === 'processing') {
+                  showStatus('Payment is processing. The invoice will update after Stripe confirms it.', 'info', true);
+                  setTimeout(() => window.location.reload(), 5000);
               } else {
                   throw new Error('Payment processing failed. Please try again.');
               }

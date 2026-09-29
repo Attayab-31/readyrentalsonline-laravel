@@ -48,7 +48,7 @@ return [
     |
     */
 
-    'back_to_system_url' => url('accounts'),
+    'back_to_system_url' => rtrim((string) env('APP_URL', 'http://localhost'), '/').'/accounts',
 
     'back_to_system_label' => "Back to App", // Displayed by default: "Back to {{ app.name }}"
 

@@ -35,7 +35,7 @@ class Email_functions
             $db_data['view_to_use'] = $email_details['view_to_use'];
     
             if ($db_data['email_subject'] == "" || $db_data['email_subject'] == null) {
-                $db_data['email_subject'] = env("APP_NAME") . ": New Message Recieved";
+                $db_data['email_subject'] = config('app.name') . ": New Message Recieved";
             }
     
             $AppSetting = AppSetting::find(1);
@@ -78,7 +78,7 @@ class Email_functions
             
             $mail->CharSet = 'UTF-8';
             $mail->IsHTML(true);
-            $mail->SetFrom("notification@readyrentalsonline.com", env("APP_NAME") . ' System');
+            $mail->SetFrom("notification@readyrentalsonline.com", config('app.name') . ' System');
             $mail->Subject = $db_data['email_subject'];
             $mail->Body = view($db_data['view_to_use'], compact('db_data'));
     
@@ -135,7 +135,7 @@ class Email_functions
             $mail->isHTML(true);
             
             // Set sender
-            $fromName = $fromName ?? env("APP_NAME") . ' System';
+            $fromName = $fromName ?? config('app.name') . ' System';
             $mail->setFrom($fromEmail, $fromName);
             
             // Set subject and body
@@ -209,7 +209,7 @@ class Email_functions
             $mail->isHTML(true);
             
             // Set sender
-            $fromName = $fromName ?? env("APP_NAME") . ' System';
+            $fromName = $fromName ?? config('app.name') . ' System';
             $mail->setFrom($fromEmail, $fromName);
             
             // Set subject and body

@@ -20,7 +20,7 @@ class PageController extends Controller
     {   
              
         $page_meta_data = array(
-                                'page_title'=>'Explore our Terms and Conditions for Applications |  '.env('APP_NAME'),
+                                'page_title'=>'Explore our Terms and Conditions for Applications |  '.config('app.name'),
                                 ); 
 
         return view('pages.terms_and_conditions_for_applications')->with($page_meta_data);

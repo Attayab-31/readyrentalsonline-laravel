@@ -68,7 +68,7 @@ public static function deleteDirectory($directory)
         $db_data['Property'] = Property::where('p_active_status' , 'active')->get();
              
         $page_meta_data = array(
-                                'page_title'=>'Welcome to '.env('APP_NAME'),
+                                'page_title'=>'Welcome to '.config('app.name'),
                                 ); 
 
         return view('welcome' ,compact('db_data'))->with($page_meta_data);
@@ -83,7 +83,7 @@ public static function deleteDirectory($directory)
         $db_data['Property_Count'] = Property::count();
             
         $page_meta_data = array(
-                                'page_title'=>'learn more about us | '.env('APP_NAME'),
+                                'page_title'=>'learn more about us | '.config('app.name'),
                                 ); 
 
         return view('about_us' ,compact('db_data'))->with($page_meta_data);
@@ -98,7 +98,7 @@ public static function deleteDirectory($directory)
         $db_data['Property_Count'] = Property::count();
             
         $page_meta_data = array(
-                                'page_title'=>'Get in touch with Us | '.env('APP_NAME'),
+                                'page_title'=>'Get in touch with Us | '.config('app.name'),
                                 ); 
 
         return view('contact_us' ,compact('db_data'))->with($page_meta_data);
@@ -139,7 +139,7 @@ public static function deleteDirectory($directory)
 
         $email_details = array(
                                'email_type' => "contact_us_form", 
-                               'email_subject' => env("APP_NAME")."| New Message Recieved", 
+                               'email_subject' => config('app.name')."| New Message Recieved",
                                'body' => $email_content, 
                                'view_to_use' => "email_templates.general_email_template",
                               ); 
@@ -190,7 +190,7 @@ public static function deleteDirectory($directory)
         }   
         
         $page_meta_data = array(
-                                'page_title'=>'Pay Invoice | '.env('APP_NAME'),
+                                'page_title'=>'Pay Invoice | '.config('app.name'),
                                 ); 
 
         return view('pay_invoice' , compact('invoice'))->with($page_meta_data);
@@ -372,8 +372,11 @@ public static function deleteDirectory($directory)
     
     // Create me a function that will send an email to all users with unread messages in the last 15 minutes
 
-    public function sendUnreadMessagesAlert()
+    public function sendUnreadMessagesAlert(Request $request)
     {   
+        $expectedToken = (string) config('services.unread_message_alert_token');
+        $providedToken = (string) $request->header('X-Alert-Token');
+        abort_unless($expectedToken !== '' && hash_equals($expectedToken, $providedToken), 403);
 
         $emails = [];
         // Get users with unread messages in the last 15 minutes
@@ -409,7 +412,7 @@ public static function deleteDirectory($directory)
 
         $mail->CharSet = 'UTF-8';
         $mail->IsHTML(true);
-        $mail->SetFrom("notification@readyrentalsonline.com", env("APP_NAME") . ' System');
+        $mail->SetFrom("notification@readyrentalsonline.com", config('app.name') . ' System');
         $mail->Subject = "Ready Rentals Online Message Notification";
         $mail->Body = view('email_templates.general_email_template', compact('db_data'));
         $mail->AddAddress('notification@readyrentalsonline.com');

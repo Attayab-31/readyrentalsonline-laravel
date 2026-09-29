@@ -62,7 +62,7 @@ class UserController extends Controller
     public function create()
     {   
         $page_meta_data = array(
-                                'page_title'=>'Create new User | '.env('APP_NAME'),
+                                'page_title'=>'Create new User | '.config('app.name'),
                                 ); 
 
         return view('Account.User.create')->with($page_meta_data);
@@ -118,7 +118,7 @@ class UserController extends Controller
         if($db_data['User'])
         {
             $page_meta_data = array(
-                                    'page_title'=>'Update User | '.env('APP_NAME'),
+                                    'page_title'=>'Update User | '.config('app.name'),
                                     ); 
             return view('Account.User.edit',compact('db_data'))->with($page_meta_data);
         }                        

@@ -42,4 +42,6 @@ return [
         'mode' => env('STRIPE_MODE', 'test'),
     ],
 
+    'unread_message_alert_token' => env('UNREAD_MESSAGE_ALERT_TOKEN'),
+
 ];

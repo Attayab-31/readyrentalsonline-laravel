@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Stripe\Stripe;
 use Stripe\Webhook;
 use Stripe\Exception\SignatureVerificationException;
@@ -21,6 +22,12 @@ class StripeWebhookController extends Controller
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
         $endpointSecret = config('services.stripe.webhook_secret');
+
+        if (! is_string($endpointSecret) || $endpointSecret === '') {
+            Log::critical('Stripe webhook signing secret is not configured.');
+            return response()->json(['error' => 'Webhook is not configured.'], 503);
+        }
+
         try {
             $event = Webhook::constructEvent(
                 $payload, 
@@ -30,7 +37,7 @@ class StripeWebhookController extends Controller
         } catch (SignatureVerificationException $e) {
             Log::error('Stripe webhook signature verification failed', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Invalid signature'], 403);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Stripe webhook processing error', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Webhook processing failed'], 400);
         }
@@ -39,6 +46,19 @@ class StripeWebhookController extends Controller
         Log::info('Stripe Webhook Received', ['type' => $event->type]);
 
         try {
+            DB::beginTransaction();
+            $alreadyProcessed = DB::table('stripe_webhook_events')->insertOrIgnore([
+                'event_id' => $event->id,
+                'event_type' => $event->type,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]) === 0;
+
+            if ($alreadyProcessed) {
+                DB::rollBack();
+                return response()->json(['status' => 'already_processed']);
+            }
+
             $paymentIntent = $event->data->object ?? null;
             $invoice = null;
 
@@ -57,10 +77,6 @@ class StripeWebhookController extends Controller
                     
                 case 'payment_intent.requires_action':
                     $invoice = $this->handlePaymentIntentRequiresAction($paymentIntent);
-                    break;
-                    
-                case 'charge.succeeded':
-                    $this->handleChargeSucceeded($event->data->object);
                     break;
                     
                 case 'payment_intent.created':
@@ -87,53 +103,19 @@ class StripeWebhookController extends Controller
                 ]);
             }
 
+            DB::commit();
             return response()->json(['status' => 'success']);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
             Log::error('Stripe webhook handler error', [
                 'error' => $e->getMessage(),
                 'event_type' => $event->type ?? null,
                 'payment_intent' => $paymentIntent->id ?? null
             ]);
             return response()->json(['error' => 'Handler processing failed'], 500);
-        }
-    }
-
-    protected function handleChargeSucceeded($charge)
-    {
-        // Sometimes charge.succeeded comes before payment_intent.succeeded
-        // We can use this to verify the payment if needed
-        
-        Log::debug('Charge succeeded', [
-            'charge_id' => $charge->id,
-            'payment_intent' => $charge->payment_intent,
-            'amount' => $charge->amount,
-            'status' => $charge->status
-        ]);
-
-        // If the associated payment intent hasn't been marked as succeeded yet,
-        // we can update our records here if needed
-        $invoice = Invoice::where('i_payment_intent_id', $charge->payment_intent)->first();
-        
-        if ($invoice && $invoice->i_payment_status !== self::PAYMENT_STATUS_SUCCEEDED) {
-            $invoice->update([
-                'i_status' => 'paid',
-                'i_payment_status' => self::PAYMENT_STATUS_SUCCEEDED,
-                'i_payment_date' => now(),
-                'i_payment_metadata->charge_id' => $charge->id
-            ]);
-            
-            // You might want to send a payment confirmation email here
-            // if it wasn't already sent by handlePaymentIntentSucceeded
-            $this->sendPaymentSuccessEmail($invoice, (object)[
-                'id' => $charge->payment_intent,
-                'amount' => $charge->amount,
-                'metadata' => (object)[
-                    'customer_email' => $invoice->tenant->email,
-                    'customer_name' => $invoice->tenant->name
-                ],
-                'payment_method_types' => ['card'] // Default, adjust as needed
-            ]);
         }
     }
 
@@ -144,13 +126,31 @@ class StripeWebhookController extends Controller
             return null;
         }
 
-        $invoice = Invoice::where('i_payment_intent_id', $paymentIntent->id)->first();
+        $invoice = Invoice::where('i_payment_intent_id', $paymentIntent->id)
+            ->where('invoice_id', $paymentIntent->metadata->invoice_id ?? null)
+            ->where('i_invoice_number', $paymentIntent->metadata->invoice_number ?? null)
+            ->first();
+
+        if ($invoice && ((int) $paymentIntent->amount !== (int) round(((float) $invoice->i_total) * 100)
+            || (isset($paymentIntent->amount_received) && (int) $paymentIntent->amount_received !== (int) round(((float) $invoice->i_total) * 100))
+            || strtolower((string) $paymentIntent->currency) !== 'usd'
+            || (bool) $paymentIntent->livemode !== (config('services.stripe.mode', 'test') === 'live'))) {
+            Log::critical('Stripe payment does not match invoice amount, currency, or configured mode.', [
+                'invoice_number' => $invoice->i_invoice_number,
+                'payment_intent' => $paymentIntent->id,
+                'currency' => $paymentIntent->currency ?? null,
+                'mode' => ! empty($paymentIntent->livemode) ? 'live' : 'test',
+            ]);
+
+            return null;
+        }
         
-        if ($invoice) {
+        if ($invoice && $invoice->i_status !== 'paid') {
             $updateData = [
                 'i_status' => 'paid',
                 'i_payment_status' => self::PAYMENT_STATUS_SUCCEEDED,
                 'i_payment_date' => now(),
+                'i_amount_paid' => $invoice->i_total,
                 'i_payment_method' => $paymentIntent->payment_method_types[0] ?? 'us_bank_account',
                 'i_microdeposit_verified' => $this->wasMicrodepositVerified($paymentIntent)
             ];
@@ -183,7 +183,7 @@ class StripeWebhookController extends Controller
 
         $invoice = Invoice::where('i_payment_intent_id', $paymentIntent->id)->first();
         
-        if ($invoice) {
+        if ($invoice && $invoice->i_status !== 'paid') {
             $invoice->update([
                 'i_payment_status' => self::PAYMENT_STATUS_PENDING,
                 'i_payment_metadata' => [
@@ -208,7 +208,7 @@ class StripeWebhookController extends Controller
 
         $invoice = Invoice::where('i_payment_intent_id', $paymentIntent->id)->first();
         
-        if ($invoice) {
+        if ($invoice && $invoice->i_status !== 'paid') {
             $failureMessage = $paymentIntent->last_payment_error->message ?? 'Payment failed';
             
             $invoice->update([
@@ -237,15 +237,33 @@ class StripeWebhookController extends Controller
         $invoice = Invoice::where('i_payment_intent_id', $paymentIntent->id)->first();
         
         if ($invoice) {
-            $verificationUrl = $paymentIntent->next_action->verify_with_microdeposits->hosted_verification_url ?? null;
-            $arrivalDate = $paymentIntent->next_action->verify_with_microdeposits->arrival_date ?? null;
+            $verification = $paymentIntent->next_action->verify_with_microdeposits ?? null;
+            $isAchMicrodepositVerification = in_array('us_bank_account', $paymentIntent->payment_method_types ?? [], true)
+                && ($paymentIntent->next_action->type ?? null) === 'verify_with_microdeposits'
+                && $verification !== null;
+
+            // A card requiring 3DS also emits requires_action. It is not an ACH
+            // microdeposit flow and must not trigger the bank verification email.
+            if (! $isAchMicrodepositVerification) {
+                if ($invoice->i_status !== 'paid') {
+                    $invoice->update([
+                        'i_payment_status' => self::PAYMENT_STATUS_PENDING,
+                        'i_payment_metadata' => ['status' => 'requires_action'],
+                    ]);
+                }
+
+                return $invoice;
+            }
+
+            $verificationUrl = $verification->hosted_verification_url ?? null;
+            $arrivalDate = $verification->arrival_date ?? null;
 
             $updateData = [
                 'i_payment_status' => self::PAYMENT_STATUS_REQUIRES_VERIFICATION,
                 'i_payment_metadata' => [
                     'verification_url' => $verificationUrl,
                     'arrival_date' => $arrivalDate ? date('Y-m-d H:i:s', $arrivalDate) : null,
-                    'microdeposit_type' => $paymentIntent->next_action->verify_with_microdeposits->microdeposit_type ?? null
+                    'microdeposit_type' => $verification->microdeposit_type ?? null
                 ]
             ];
 
@@ -279,7 +297,7 @@ protected function sendPaymentSuccessEmail($invoice, $paymentIntent)
             'email_templates.Invoice_Alert_Email',
             [],
             'notification@readyrentalsonline.com',
-            env('APP_NAME') . ' System',
+            config('app.name') . ' System',
             [
                 'title' => 'Payment Received',
                 'heading' => 'Payment Successful',
@@ -356,7 +374,7 @@ protected function sendPaymentProcessingEmail($invoice, $paymentIntent)
             'email_templates.Invoice_Alert_Email',
             [],
             'notification@readyrentalsonline.com',
-            env('APP_NAME') . ' System',
+            config('app.name') . ' System',
             [
                 'title' => 'Payment Processing',
                 'heading' => 'Payment Processing',
@@ -426,7 +444,7 @@ protected function sendPaymentFailedEmail($invoice, $paymentIntent, $failureMess
             'email_templates.Invoice_Alert_Email',
             [],
             'notification@readyrentalsonline.com',
-            env('APP_NAME') . ' System',
+            config('app.name') . ' System',
             [
                 'title' => 'Payment Failed',
                 'heading' => 'Payment Failed',
@@ -502,7 +520,7 @@ protected function sendVerificationRequiredEmail($invoice, $paymentIntent, $veri
             'email_templates.Invoice_Alert_Email',
             [],
             'notification@readyrentalsonline.com',
-            env('APP_NAME') . ' System',
+            config('app.name') . ' System',
             [
                 'title' => 'Bank Account Verification Required',
                 'heading' => 'Verification Required',

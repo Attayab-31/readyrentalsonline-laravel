@@ -74,7 +74,7 @@ class ProfileController extends Controller
             $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
-            $profile_picture = Str::slug($request->p_title.'-'.env("APP_NAME"),'-').'-'.rand(0,99999).'.'.$extension;
+            $profile_picture = Str::slug($request->p_title.'-'.config('app.name'),'-').'-'.rand(0,99999).'.'.$extension;
             $destinationPath = 'resources/files/dynamic';
             $image->move($destinationPath,$profile_picture);
         

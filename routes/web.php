@@ -83,13 +83,13 @@ Route::post('process-online-application/step-9/{pa_tracking_id}', [App\Http\Cont
 // Route::get('/invoices/pay/{i_invoice_number}', [App\Http\Controllers\WelcomeController::class, 'pay_invoice'])->name('WelcomeController.pay_invoice');
 // Route::post('/invoices/process-invoice-payment/{i_invoice_number}', [App\Http\Controllers\WelcomeController::class, 'process_invoice_payment'])->name('WelcomeController.process_invoice_payment');
 
-Route::get('/send-unread-message-email-alert', [App\Http\Controllers\WelcomeController::class, 'sendUnreadMessagesAlert'])->name('WelcomeController.sendUnreadMessagesAlert');
+Route::post('/send-unread-message-email-alert', [App\Http\Controllers\WelcomeController::class, 'sendUnreadMessagesAlert'])->name('WelcomeController.sendUnreadMessagesAlert');
 
 
 
 
-Route::post('/complete-payment', [App\Http\Controllers\WelcomeController::class, 'completePayment'])->name('WelcomeController.completePayment');
-Route::post('/create-payment-intent', [App\Http\Controllers\WelcomeController::class, 'createPaymentIntent'])->name('WelcomeController.createPaymentIntent');
+// Legacy unauthenticated payment-intent routes removed. Invoice payments use
+// InvoicePaymentController and are reconciled by the signed Stripe webhook.
 
 
 

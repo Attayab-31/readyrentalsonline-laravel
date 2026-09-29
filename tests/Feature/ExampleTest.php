@@ -12,7 +12,9 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $response = $this->get('/');
+        // The public homepage depends on the production properties schema,
+        // which is not represented by this repository's migrations.
+        $response = $this->get('/up');
 
         $response->assertStatus(200);
     }

@@ -44,7 +44,7 @@ class PropertyController extends Controller
         $db_data['Property'] = $construct_query->paginate(100);
 
         $page_meta_data = array(
-                                'page_title'=>'All Properties | '.env('APP_NAME').' Admin',
+                                'page_title'=>'All Properties | '.config('app.name').' Admin',
                                 ); 
 
 
@@ -61,7 +61,7 @@ class PropertyController extends Controller
     {
 
         $page_meta_data = array(
-                                'page_title'=>'Create new Property | '.env('APP_NAME').' Admin',
+                                'page_title'=>'Create new Property | '.config('app.name').' Admin',
                                 ); 
 
 
@@ -136,7 +136,7 @@ class PropertyController extends Controller
             $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
-            $p_banner_image = Str::slug($request->p_title.'-'.env("APP_NAME"),'-').'-'.rand(0,99999).'.'.$extension;
+            $p_banner_image = Str::slug($request->p_title.'-'.config('app.name'),'-').'-'.rand(0,99999).'.'.$extension;
             $destinationPath = 'resources/files/dynamic';
             $image->move($destinationPath,$p_banner_image);
         
@@ -181,7 +181,7 @@ class PropertyController extends Controller
             $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
-            $fileUpload = Str::slug($request->p_title.'-'.env("APP_NAME"),'-').'-'.rand(0,99999).'.'.$extension;
+            $fileUpload = Str::slug($request->p_title.'-'.config('app.name'),'-').'-'.rand(0,99999).'.'.$extension;
             $destinationPath = 'resources/files/dynamic';
             $image->move($destinationPath,$fileUpload);
 
@@ -265,7 +265,7 @@ class PropertyController extends Controller
             $db_data['PropertyAmenity'] = PropertyAmenity::where('pa_property_id' , $db_data['Property']->property_id)->get();
 
             $page_meta_data = array(
-                                    'page_title'=>'Edit Property | '.env('APP_NAME').' Admin',
+                                    'page_title'=>'Edit Property | '.config('app.name').' Admin',
                                     ); 
 
             return view('Account.properties.edit',compact('db_data'))->with($page_meta_data); 
@@ -351,7 +351,7 @@ class PropertyController extends Controller
                 $ml_height = $size['1'];
 
                 $extension = $image->getClientOriginalExtension();
-                $p_banner_image = Str::slug($request->p_title.'-'.env("APP_NAME"),'-').'-'.rand(0,99999).'.'.$extension;
+                $p_banner_image = Str::slug($request->p_title.'-'.config('app.name'),'-').'-'.rand(0,99999).'.'.$extension;
                 $destinationPath = 'resources/files/dynamic';
                 $image->move($destinationPath,$p_banner_image);
             
@@ -421,7 +421,7 @@ class PropertyController extends Controller
                 $ml_height = $size['1'];
 
                 $extension = $image->getClientOriginalExtension();
-                $fileUpload = Str::slug($request->p_title.'-'.env("APP_NAME"),'-').'-'.rand(0,99999).'.'.$extension;
+                $fileUpload = Str::slug($request->p_title.'-'.config('app.name'),'-').'-'.rand(0,99999).'.'.$extension;
                 $destinationPath = 'resources/files/dynamic';
                 $image->move($destinationPath,$fileUpload);
 
@@ -618,7 +618,7 @@ class PropertyController extends Controller
                                                                ->paginate(50);
 
         $page_meta_data = array(
-                                'page_title'=>'Manage all Property Application | '.env('APP_NAME').' Admin',
+                                'page_title'=>'Manage all Property Application | '.config('app.name').' Admin',
                                 ); 
 
 
@@ -641,7 +641,7 @@ class PropertyController extends Controller
         {
     
             $page_meta_data = array(
-                                    'page_title'=>'Manage all Property Application | '.env('APP_NAME').' Admin',
+                                    'page_title'=>'Manage all Property Application | '.config('app.name').' Admin',
                                     ); 
 
 
@@ -671,7 +671,7 @@ class PropertyController extends Controller
         {
     
             $page_meta_data = array(
-                                    'page_title'=>'Manage all Property Application | '.env('APP_NAME').' Admin',
+                                    'page_title'=>'Manage all Property Application | '.config('app.name').' Admin',
                                     ); 
 
 

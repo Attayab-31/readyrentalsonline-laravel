@@ -38,22 +38,93 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sub
 
 
 
-/* Progress Bar */
-
-.w3-red, .w3-hover-red:hover
-{
-    color:#fff !important;
-    background-color: green !important;
+.rr-application-progress {
+    margin: 0 0 20px;
+    padding: 20px 24px;
+    border: 1px solid var(--rr-line, #e1e8ef);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(16, 37, 58, 0.06);
 }
 
-.w3-light-grey, .w3-hover-light-grey:hover, .w3-light-gray, .w3-hover-light-gray:hover
-{
-    color: #000 !important;
-    background-color: #cecece !important;
+.rr-application-progress__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
 }
 
-.w3-center {
-    text-align: center !important;
+.rr-application-progress__eyebrow,
+.rr-application-progress__step {
+    margin: 0;
+}
+
+.rr-application-progress__eyebrow {
+    color: var(--rr-text-muted, #536879);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.rr-application-progress__step {
+    margin-top: 3px;
+    color: var(--rr-text-main, #0e2235);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.rr-application-progress__percentage {
+    flex: 0 0 auto;
+    color: var(--rr-slate-600, #2b5f8e);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.rr-application-progress__track {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e8eff5;
+}
+
+.rr-application-progress__fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #2b5f8e, #3b7bb5);
+    transition: width 240ms ease;
+}
+
+@media (max-width: 575px) {
+    .rr-application-progress {
+        margin-bottom: 16px;
+        padding: 16px;
+    }
+
+    .rr-application-progress__header {
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .rr-application-progress__step {
+        font-size: 0.95rem;
+    }
+
+    .rr-application-progress__percentage {
+        padding-top: 2px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rr-application-progress__fill {
+        transition: none;
+    }
 }
 
 

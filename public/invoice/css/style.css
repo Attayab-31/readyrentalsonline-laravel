@@ -1364,7 +1364,7 @@ hr {
 }
 
 .tm_invoice.tm_style2 .tm_logo img {
-  max-height: 60px;
+  max-height: 66px;
 }
 
 .tm_invoice.tm_style2 .tm_invoice_title {
@@ -2161,7 +2161,7 @@ hr {
     padding-left: 15px !important;
   }
   .tm_invoice.tm_style2 .tm_logo img {
-    max-height: 50px;
+    max-height: 54px;
   }
   .tm_curve_35 {
     -webkit-transform: skewX(0deg);
@@ -2588,7 +2588,7 @@ hr {
     padding: 12px 20px;
   }
   .tm_invoice.tm_style2 .tm_logo img {
-    max-height: 60px;
+    max-height: 66px;
   }
   .tm_curve_35 {
     -webkit-transform: skewX(-35deg);

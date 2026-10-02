@@ -49,19 +49,19 @@
 								
 											<td>
 												@if($application->pa_application_type == "online")
-												<span class="badge badge-light-success fs-7 bg-danger text-white">Online</span>
+												<span class="badge bg-success">Online</span>
 												@elseif($application->pa_application_type == "offline")
 												<div class="d-flex justify-content-start flex-column">
 													<a href="{{asset('resources/files/dynamic/'.$application->pa_application_document_attached)}}" download="" class="text-dark fw-bolder text-hover-primary fs-6">
-														<span class="badge badge-light-warning fs-7 bg-warning text-white">Offline</span>
+														<span class="badge bg-info">Offline</span>
 													</a>
 								
-													<a href="{{asset('resources/files/dynamic/'.$application->pa_application_document_attached)}}" download="" class="text-dark fw-bolder text-hover-primary mb-1 fs-6">
-														<span class="text-muted text-muted d-block fs-7">Download Form</span>
+													<a href="{{asset('resources/files/dynamic/'.$application->pa_application_document_attached)}}" download="" class="text-primary mb-1 fs-12">
+														<i class="ri-download-2-line"></i> Download Form
 													</a>
 												</div>
 												@else
-												<span class="badge badge-light-primary fs-7 fw-bold">{{$application->pa_application_type}}</span>
+												<span class="badge bg-secondary">{{$application->pa_application_type}}</span>
 												@endif
 											</td>
 							
@@ -78,7 +78,7 @@
 													</button>
 													<ul class="dropdown-menu dropdown-menu-end">
 														@if(Auth::user()->isSuperAdmin())
-														<li><a onclick="confirm_soft_delete(event)" href="{{url('accounts/properties/applications/delete-permanently/'.$application->property_application_id)}}" class="dropdown-item"> Delete</a></li>
+									<li><form method="post" action="{{url('accounts/properties/applications/delete-permanently/'.$application->property_application_id)}}" onsubmit="return confirm('Permanently delete this application?')">@csrf @method('DELETE')<button type="submit" class="dropdown-item">Delete</button></form></li>
 														@endif
 														<li><a href="{{url('accounts/properties/view-application-details/'.$application->property_application_id)}}" class="dropdown-item"> View Details</a></li>
 														@if($application->pa_application_type == "online")

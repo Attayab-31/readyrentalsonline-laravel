@@ -5,10 +5,8 @@ use Illuminate\Http\Request;
 use Hash;
 use Auth;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Str;
 use App\Models\User;
 use Carbon\Carbon;
-use App\Helpers\EmailHelper;
   
 
 class UserController extends Controller
@@ -57,6 +55,16 @@ class UserController extends Controller
                                 ); 
         return view('Account.User.show_listings' , compact('db_data'))->with($page_meta_data);
     } 
+
+    public function show($id)
+    {
+        $user = User::findOrFail($id);
+        $page_meta_data = [
+            'page_title' => 'User Profile | '.config('app.name'),
+        ];
+
+        return view('Account.User.show', compact('user'))->with($page_meta_data);
+    }
  
 
     public function create()
@@ -319,28 +327,8 @@ class UserController extends Controller
         
         foreach($db_data['Unverified_Users'] as $User)
         {
+            $User->sendEmailVerificationNotification();
             $alerts_count++;
-            
-            $email_verification_token = Str::random(25);
-            $db_data['verificationLink'] = url('verify-email/'.$email_verification_token);
- 
-            $User->email_verification_token = $email_verification_token;
-            $User->save();
-            
- 
-            $db_data['User'] = $User;
-            $email = $User->email;
-    
-            $email_content_body = view('emails.emailVerificationLink' , compact('db_data'))->render();
-            $db_data['nl_subject'] = "Please verify your email address!";
-    
-            $res = EmailHelper::sendEmail($recipient = $email,
-                                            $subject = $db_data['nl_subject'],
-                                            $content = $email_content_body,
-                                            $bcc = [],
-                                            $cc = [],
-                                            $attachmentPath=""
-                                        );
         }
  
  

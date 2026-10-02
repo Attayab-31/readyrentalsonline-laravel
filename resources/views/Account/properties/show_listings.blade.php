@@ -7,14 +7,12 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="card">
-                        <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Property Management</h4>
+                        <div class="card-header align-items-center d-flex justify-content-between">
+                            <h4 class="card-title mb-0">Property Management</h4>
                             <div class="flex-shrink-0">
-                                <div class="dropdown card-header-dropdown">
-                                    <a class="text-reset " href="{{url('accounts/properties/create')}}">
-                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light">+ Add new Property</button>
-                                    </a>
-                                </div>
+                                <a href="{{url('accounts/properties/create')}}" class="btn btn-primary btn-sm">
+                                    <i class="ri-add-line"></i> Add New Property
+                                </a>
                             </div>
                         </div><!-- end card header -->
                         <div class="card-body">
@@ -40,7 +38,7 @@
                                                             <img src="{{asset('resources/files/dynamic/'.$property->p_banner_image)}}" alt="" class="img-fluid d-block" />
                                                         </div>
                                                         <div>
-                                                            <h5 class="fs-13 my-1"><a href="apps-ecommerce-product-details.html" class="text-reset">{{$property->p_title}}</a></h5>
+                                                            <h5 class="fs-13 my-1"><a href="{{ url('properties/explore-details/'.$property->p_slug) }}" class="text-reset">{{$property->p_title}}</a></h5>
                                                             <span class="text-muted">{{$property->p_address}}</span>
                                                         </div>
                                                     </div>
@@ -62,22 +60,21 @@
 
 												<td>
 													@if($property->p_listing_status == "for-rent")
-														<span class="badge badge-light-success fs-7 fw-bold bg-danger text-white">Rental</span>
+														<span class="badge bg-primary">For Rent</span>
 													@elseif($property->p_listing_status == "for-sell")
-														<span class="badge badge-light-warning fs-7 fw-bold bg-warning text-white">For Sale</span>
+														<span class="badge bg-warning">For Sale</span>
 													@else
-														<span class="badge badge-light-primary fs-7 fw-bold">{{$property->p_listing_status}}</span>
+														<span class="badge bg-secondary">{{$property->p_listing_status}}</span>
 													@endif
 												</td>
 
-
 												<td>
 													@if($property->p_active_status == "active")
-														<span class="badge badge-light-danger fs-7 fw-bold bg-success text-white">Active</span>
+														<span class="badge bg-success">Active</span>
 													@elseif($property->p_active_status == "inactive")
-														<span class="badge badge-light-danger fs-7 fw-bold bg-danger text-white">In-Active</span>
+														<span class="badge bg-danger">Inactive</span>
 													@else
-														<span class="badge badge-light-primary fs-7 fw-bold">{{$property->p_active_status}}</span>
+														<span class="badge bg-secondary">{{$property->p_active_status}}</span>
 													@endif
 												</td>
 
@@ -92,16 +89,16 @@
                                                         </button>
                                                         <ul class="dropdown-menu dropdown-menu-end">
 															@if($property->p_active_status == "active")
-															<li><a onclick="inactivate_confirmation(event)" href="{{url('accounts/properties/change-active-status/'.$property->property_id.'/inactive')}}" class="dropdown-item">Mark In-Activate</a></li>
+										<li><form method="post" action="{{url('accounts/properties/change-active-status/'.$property->property_id.'/inactive')}}">@csrf @method('PATCH')<button type="submit" class="dropdown-item">Mark In-Activate</button></form></li>
 															@elseif($property->p_active_status == "inactive")
-															<li><a onclick="activate_confirmation(event)" href="{{url('accounts/properties/change-active-status/'.$property->property_id.'/active')}}" class="dropdown-item">Mark Activate</a></li>
+										<li><form method="post" action="{{url('accounts/properties/change-active-status/'.$property->property_id.'/active')}}">@csrf @method('PATCH')<button type="submit" class="dropdown-item">Mark Activate</button></form></li>
 															@else
-															<li><a onclick="activate_confirmation(event)" href="{{url('accounts/properties/change-active-status/'.$property->property_id.'/active')}}" class="dropdown-item">Activate</a></li>
+										<li><form method="post" action="{{url('accounts/properties/change-active-status/'.$property->property_id.'/active')}}">@csrf @method('PATCH')<button type="submit" class="dropdown-item">Activate</button></form></li>
 															@endif
 
 															<li><a href="{{ url('accounts/properties/'.$property->property_id.'/edit') }}" class="dropdown-item"> Edit</a></li>
 															@if(Auth::user()->user_type =="super-admin")
-																<li><a onclick="confirm_soft_delete(event)" href="{{url('accounts/properties/delete-property-permanently/'.$property->property_id)}}" class="dropdown-item"> Delete</a> </li>
+											<li><form method="post" action="{{url('accounts/properties/delete-property-permanently/'.$property->property_id)}}" onsubmit="return confirm('Permanently delete this property?')">@csrf @method('DELETE')<button type="submit" class="dropdown-item">Delete</button></form></li>
 															@endif
  
                                                         </ul>
@@ -126,4 +123,3 @@
     </div> 
 
 @endsection
-

@@ -113,7 +113,7 @@ Route::prefix('accounts')->middleware(['auth'])->group(function ()
     
 
     Route::get('/chat/print_converstaion/{unique_identifier}', [App\Http\Controllers\Account\ChatController::class, 'print_conversation'])->name('chat.print_conversation');
-    Route::get('/chat/delete_converstaion/{unique_identifier}', [App\Http\Controllers\Account\ChatController::class, 'delete_conversation'])->name('chat.delete_conversation');
+    Route::post('/chat/delete_converstaion/{unique_identifier}', [App\Http\Controllers\Account\ChatController::class, 'delete_conversation'])->name('chat.delete_conversation');
  
 
 
@@ -122,7 +122,7 @@ Route::prefix('accounts')->middleware(['auth'])->group(function ()
 
     Route::middleware([AdminAccess::class])->group(function ()
     {   
-        Route::get('/invoices/delete/{id}', [App\Http\Controllers\Account\InvoiceController::class, 'delete'])->name('InvoiceController.delete');
+        Route::delete('/invoices/delete/{id}', [App\Http\Controllers\Account\InvoiceController::class, 'delete'])->name('InvoiceController.delete');
         Route::get('/invoices/create', [App\Http\Controllers\Account\InvoiceController::class, 'create'])->name('InvoiceController.create');
         Route::post('/invoices/store', [App\Http\Controllers\Account\InvoiceController::class, 'store'])->name('InvoiceController.store');
         Route::get('/invoices/edit/{id}', [App\Http\Controllers\Account\InvoiceController::class, 'edit'])->name('InvoiceController.edit');
@@ -131,24 +131,24 @@ Route::prefix('accounts')->middleware(['auth'])->group(function ()
 
         
         // App Caches
-        Route::get('caches/clear-app-cache', [App\Http\Controllers\Account\AccountController::class, 'clearAppCache'])->name('AccountController.clearAppCache');
-        Route::get('caches/clear-content-cache', [App\Http\Controllers\Account\AccountController::class, 'cacheContentCache'])->name('AccountController.cacheContentCache');
+        Route::post('caches/clear-app-cache', [App\Http\Controllers\Account\AccountController::class, 'clearAppCache'])->name('AccountController.clearAppCache');
+        Route::post('caches/clear-content-cache', [App\Http\Controllers\Account\AccountController::class, 'cacheContentCache'])->name('AccountController.cacheContentCache');
 
 
         // Users
         Route::get('/users/resend-verification-email/{user_id?}', [App\Http\Controllers\Account\UserController::class, 'resend_verification_email_to_all_unverified_users'])->name('users.resend_verification_email_to_all_unverified_users');
         Route::post('/users/delete-users-in-bulk', [App\Http\Controllers\Account\UserController::class, 'delete_users_in_bulk'])->name('users.delete_users_in_bulk');
-        Route::get('/users/delete/{id}', [App\Http\Controllers\Account\UserController::class, 'delete'])->name('users.delete');
-        Route::get('/users/update-status/{id}/{status}', [App\Http\Controllers\Account\UserController::class, 'update_status'])->name('users.update_status');
+        Route::delete('/users/delete/{id}', [App\Http\Controllers\Account\UserController::class, 'delete'])->name('users.delete');
+        Route::patch('/users/update-status/{id}/{status}', [App\Http\Controllers\Account\UserController::class, 'update_status'])->name('users.update_status');
         Route::resource('users', App\Http\Controllers\Account\UserController::class);
          
         
         Route::get('/properties/applications', [App\Http\Controllers\Account\PropertyController::class,'application_listings']);
         Route::get('/properties/view-application-details/{appplication_id}', [App\Http\Controllers\Account\PropertyController::class,'application_details']);
         Route::get('/properties/print-application-details/{appplication_id}',[App\Http\Controllers\Account\PropertyController::class,'print_application_details']);
-        Route::get('/properties/applications/delete-permanently/{appplication_id}', [App\Http\Controllers\Account\PropertyController::class,'delete_application_permanently']);
-        Route::get('/properties/delete-property-permanently/{id}', [App\Http\Controllers\Account\PropertyController::class,'delete_property_permanently']);
-        Route::get('/properties/change-active-status/{id}/{status}', [App\Http\Controllers\Account\PropertyController::class,'change_activate_status']);
+        Route::delete('/properties/applications/delete-permanently/{appplication_id}', [App\Http\Controllers\Account\PropertyController::class,'delete_application_permanently']);
+        Route::delete('/properties/delete-property-permanently/{id}', [App\Http\Controllers\Account\PropertyController::class,'delete_property_permanently']);
+        Route::patch('/properties/change-active-status/{id}/{status}', [App\Http\Controllers\Account\PropertyController::class,'change_activate_status']);
         Route::resource('properties', App\Http\Controllers\Account\PropertyController::class);
 
     });

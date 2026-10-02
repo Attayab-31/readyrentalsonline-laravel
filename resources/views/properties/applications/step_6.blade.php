@@ -1,12 +1,10 @@
 @extends('layouts.front_end')
 @section('page_content')
 
-<?php
-    $totalSteps = 8; // Total number of steps
-    $currentStep = 6; // Current step, change this value based on the current page
-    // Calculate the width percentage
-    $stepWidth = ($currentStep / $totalSteps) * 100;
-?>
+@php
+    $totalSteps = 9;
+    $currentStep = 6;
+@endphp
 
  <!-- FEATURE AREA START ( Feature - 6) -->
  <div class="ltn__feature-area section-bg-1 pt-50 pb-90 mb-120---">
@@ -16,9 +14,7 @@
  
             <div class="col-lg-12 col-sm-12 col-12">
                 
-                <div class="w3-light-grey">
-                    <div class="w3-container w3-red w3-center" style="width:<?= $stepWidth; ?>%">Step <?= $currentStep; ?> of <?= $totalSteps; ?></div>
-                </div>
+                @include('partials.application-progress', ['currentStep' => $currentStep, 'totalSteps' => $totalSteps])
 
                 <div class="ltn__feature-item ltn__feature-item-6 bg-white  box-shadow-1" id="form-cotaniner">
                     <div id="form_res" style="display:none"></div> 

@@ -125,7 +125,6 @@ class InvoicePaymentController extends Controller
                     'mode' => config('services.stripe.mode', 'test'),
                 ],
                 'receipt_email' => $validated['email'],
-                'return_url' => route('invoices.pay', ['i_invoice_number' => $invoice->i_invoice_number]),
             ];
 
             if ($paymentMethod === Invoice::PAYMENT_METHOD_CARD) {

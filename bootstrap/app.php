@@ -11,6 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Cloudflared connects to the local Laravel server and forwards the
+        // public HTTPS scheme. Trust that scheme only from the loopback proxy.
+        $middleware->trustProxies(
+            at: '127.0.0.1',
+            headers: \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO,
+        );
         
         $middleware->validateCsrfTokens(except: [
             'stripe/webhook'

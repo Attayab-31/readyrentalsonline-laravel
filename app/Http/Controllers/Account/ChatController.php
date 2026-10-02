@@ -17,17 +17,8 @@ class ChatController extends Controller
      */
     public function index()
     {
-        // Get a list of users for the chat interface
-        if(auth()->user()->user_type == 'tenant')
-        {
-            $db_data['threadList'] = User::where('id', '!=', auth()->id())
-                                          ->where('user_type' , "superAdmin")
-                                          ->orWhere('user_type' , "admin")
-                                          ->get();
-        }
-        else{
-            $db_data['threadList'] = User::where('id', '!=', auth()->id())->get();
-        }
+        $db_data['threadList'] = $this->threadListForCurrentUser();
+
         return view('Account.Chat.chats', compact('db_data'));
     }
 
@@ -37,20 +28,11 @@ class ChatController extends Controller
      */
     public function fetchMessages($uniqueIdentifier)
     {
- 
-        if(auth()->user()->user_type == 'tenant')
-        {
-            $db_data['threadList'] = User::where('id', '!=', auth()->id())
-                                          ->where('user_type' , "superAdmin")
-                                          ->orWhere('user_type' , "admin")
-                                          ->get();
-        }
-        else{
-            $db_data['threadList'] = User::where('id', '!=', auth()->id())->get();
-        }
-        
-        // Fetch the sender and receiver by unique identifier
-        $user = User::where('unique_identifier', $uniqueIdentifier)->firstOrFail();
+        $db_data['threadList'] = $this->threadListForCurrentUser();
+
+        // Limit the selected thread to the recipients allowed for this role.
+        $user = $db_data['threadList']->firstWhere('unique_identifier', $uniqueIdentifier);
+        abort_unless($user, 404);
         
         $db_data['messages'] = Message::where(function ($query) use ($user) {
                     $query->where('sender_id', auth()->id())
@@ -66,6 +48,20 @@ class ChatController extends Controller
  
         return view('Account.Chat.thread', compact('db_data' , 'user'));
         // return response()->json($messages);
+    }
+
+    /**
+     * Return the conversations visible to the signed-in account role.
+     */
+    private function threadListForCurrentUser()
+    {
+        $query = User::where('id', '!=', auth()->id());
+
+        if (auth()->user()->isTenant()) {
+            $query->whereIn('user_type', ['superAdmin', 'admin']);
+        }
+
+        return $query->get();
     }
     
 
@@ -116,35 +112,9 @@ class ChatController extends Controller
             'message' => $validated['message'],
         ]);
     
-        // Send email notification to the receiver
-        $senderName = auth()->user()->first_name.' '.auth()->user()->last_name; // or whatever field you use for user's name
-        $receiverEmail = $receiver->email;
+        // A notification failure must not make an already-saved message look unsent.
+        $this->sendMessageNotification($receiver, $validated['message']);
         
-        $loginUrl = url('/login'); // or a direct link to the chat if you have one
-        
-        $emailResult = Email_functions::sendNewEmail_For_Webhook(
-            $receiverEmail,
-            'New Message from ' . $senderName,
-            'email_templates.new_message_notification',
-            [], // BCC array
-            "notification@readyrentalsonline.com",
-            "ReadyRentalsOnline.com",
-            [
-                'receiverName' => $receiver->name,
-                'senderName' => $senderName,
-                'messageContent' => $validated['message'],
-                'loginUrl' => $loginUrl
-            ]
-        );
- 
-        // Log email result if needed
-        if ($emailResult['res_code'] !== 200) {
-            \Log::error('Failed to send message notification email', [
-                'error' => $emailResult['message'],
-                'receiver_id' => $receiver->id
-            ]);
-        }
-    
         $messageHtml = view('Account.Chat.message_partial', ['message' => $message])->render();
     
         return response()->json([
@@ -152,6 +122,42 @@ class ChatController extends Controller
             'lastMessageId' => $message->id,
         ]);
     } 
+
+    protected function sendMessageNotification(User $receiver, string $messageContent): void
+    {
+        $sender = auth()->user();
+        $senderName = trim($sender->first_name . ' ' . $sender->last_name);
+        $receiverName = trim($receiver->first_name . ' ' . $receiver->last_name);
+
+        try {
+            $emailResult = Email_functions::sendNewEmail_For_Webhook(
+                $receiver->email,
+                'New Message from ' . $senderName,
+                'email_templates.new_message_notification',
+                [],
+                'notification@readyrentalsonline.com',
+                'ReadyRentalsOnline.com',
+                [
+                    'receiverName' => $receiverName,
+                    'senderName' => $senderName,
+                    'messageContent' => $messageContent,
+                    'loginUrl' => url('/login'),
+                ]
+            );
+
+            if (($emailResult['res_code'] ?? null) !== 200) {
+                \Log::error('Failed to send message notification email', [
+                    'error' => $emailResult['message'] ?? 'Unknown email delivery error',
+                    'receiver_id' => $receiver->id,
+                ]);
+            }
+        } catch (\Throwable $exception) {
+            \Log::error('Failed to send message notification email', [
+                'error' => $exception->getMessage(),
+                'receiver_id' => $receiver->id,
+            ]);
+        }
+    }
      
      
      
@@ -168,7 +174,7 @@ class ChatController extends Controller
      {
          $validated = $request->validate([
              'receiver_id' => 'required|exists:users,unique_identifier',
-             'last_message_id' => 'required|integer',
+             'last_message_id' => 'nullable|integer|min:0',
          ]);
      
          $receiver = User::where('unique_identifier', $validated['receiver_id'])->firstOrFail();
@@ -183,7 +189,7 @@ class ChatController extends Controller
                   ->where('receiver_id', auth()->id());
             });
         })
-        ->where('id', '>', $request->last_message_id)
+        ->where('id', '>', (int) ($validated['last_message_id'] ?? 0))
         ->orderBy('id', 'asc');
         
         $newMessages = $query->get();

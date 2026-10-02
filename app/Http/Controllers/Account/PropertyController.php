@@ -33,12 +33,12 @@ class PropertyController extends Controller
 
         if(isset($first_name) &&  !empty($first_name) && $first_name != "" && $first_name != NULL )
         {
-            $construct_query->where('first_name', 'like', '%'.$first_name.'%');      
+            $construct_query->where('p_title', 'like', '%'.$first_name.'%');
         }
 
         if(isset($email) &&  !empty($email) && $email != "" && $email != NULL )
         {
-            $construct_query->where('email', 'like', '%'.$email.'%');      
+            $construct_query->where('p_address', 'like', '%'.$email.'%');
         }
 
         $db_data['Property'] = $construct_query->paginate(100);
@@ -137,7 +137,7 @@ class PropertyController extends Controller
 
             $extension = $image->getClientOriginalExtension();
             $p_banner_image = Str::slug($request->p_title.'-'.config('app.name'),'-').'-'.rand(0,99999).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$p_banner_image);
         
         }
@@ -166,13 +166,9 @@ class PropertyController extends Controller
         $new_property_id = $new_property->property_id;
  
         /*Upload Property Images*/
-        $sider_files_Count = count($_FILES['fileUpload']['name']);
-
         $collect_PropertyImage =  array();
-        for($i = 0; $i < $sider_files_Count-1; $i++)
+        foreach (array_filter((array) $request->file('fileUpload', [])) as $image)
         {
-
-            $image = $request->file('fileUpload')[$i];
             $size = getimagesize($image);
 
             list($width, $height, $type, $attr) = $size;
@@ -182,7 +178,7 @@ class PropertyController extends Controller
 
             $extension = $image->getClientOriginalExtension();
             $fileUpload = Str::slug($request->p_title.'-'.config('app.name'),'-').'-'.rand(0,99999).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$fileUpload);
 
              $image_data = array(
@@ -202,15 +198,13 @@ class PropertyController extends Controller
 
 
         /*Upload pruct images and desctiption*/
-        $pa_title = $request->pa_title;
-        $total_pa_title = count($request->pa_title);
+        $pa_title = array_filter((array) $request->input('pa_title', []), fn ($title) => filled($title));
         $collect_PropertyAmenity =  array();
-
-        for($i = 0; $i < $total_pa_title-1; $i++)
+        foreach ($pa_title as $title)
         {
             $image_data = array(
                               'pa_property_id' => $new_property_id,
-                              'pa_title' => $pa_title[$i],
+                              'pa_title' => $title,
                               );
             $collect_PropertyAmenity[] = $image_data;
         }
@@ -222,16 +216,24 @@ class PropertyController extends Controller
 
 
         if ($new_property_id) {
-            return response()->json([
-                'success' => true,
-                'message' => 'New Property Added',
-                'redirect_url' => url('accounts/properties'), // Optional if you need a redirect
-            ]);
+            if ($request->ajax() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'New Property Added',
+                    'redirect_url' => url('accounts/properties'),
+                ]);
+            }
+
+            return redirect('accounts/properties')->with('success', 'New Property Added');
         } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Something went wrong. Please try again',
-            ]);
+            if ($request->ajax() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Something went wrong. Please try again',
+                ], 500);
+            }
+
+            return back()->withInput()->with('failure', 'Something went wrong. Please try again');
         }
 
     }
@@ -341,6 +343,7 @@ class PropertyController extends Controller
             /*Upload the Image file*/
             if($request->hasFile('p_banner_image'))
             {
+                $previousBanner = $db_data['Property']->p_banner_image;
             
                 $image = $request->file('p_banner_image');
                 $size = getimagesize($image);
@@ -352,7 +355,7 @@ class PropertyController extends Controller
 
                 $extension = $image->getClientOriginalExtension();
                 $p_banner_image = Str::slug($request->p_title.'-'.config('app.name'),'-').'-'.rand(0,99999).'.'.$extension;
-                $destinationPath = 'resources/files/dynamic';
+                $destinationPath = public_path('resources/files/dynamic');
                 $image->move($destinationPath,$p_banner_image);
             
             }
@@ -378,6 +381,13 @@ class PropertyController extends Controller
             $property_to_update->p_short_description = $request->p_short_description;
             $property_to_update->p_description = $request->p_description;
             $property_to_update->save();
+
+            if (!empty($previousBanner) && $previousBanner !== $p_banner_image) {
+                $previousBannerPath = public_path('resources/files/dynamic/'.$previousBanner);
+                if (is_file($previousBannerPath)) {
+                    unlink($previousBannerPath);
+                }
+            }
             $property_to_update_id = $property_to_update->property_id;
 
 
@@ -397,7 +407,10 @@ class PropertyController extends Controller
                     $ProductSliderImage = PropertyImage::find($image_id);
                     if($ProductSliderImage)
                     {
-                        File::delete(asset('resources/files/dynamic/'.$ProductSliderImage->psi_picture));
+                        $imagePath = public_path('resources/files/dynamic/'.$ProductSliderImage->pi_image_name);
+                        if (is_file($imagePath)) {
+                            File::delete($imagePath);
+                        }
                         $ProductSliderImage->delete();
                     }
                 }
@@ -406,13 +419,9 @@ class PropertyController extends Controller
 
 
             /*Upload Property Images*/
-            $sider_files_Count = count($_FILES['fileUpload']['name']);
-
             $collect_PropertyImage =  array();
-            for($i = 0; $i < $sider_files_Count-1; $i++)
+            foreach (array_filter((array) $request->file('fileUpload', [])) as $image)
             {
-
-                $image = $request->file('fileUpload')[$i];
                 $size = getimagesize($image);
 
                 list($width, $height, $type, $attr) = $size;
@@ -422,7 +431,7 @@ class PropertyController extends Controller
 
                 $extension = $image->getClientOriginalExtension();
                 $fileUpload = Str::slug($request->p_title.'-'.config('app.name'),'-').'-'.rand(0,99999).'.'.$extension;
-                $destinationPath = 'resources/files/dynamic';
+                $destinationPath = public_path('resources/files/dynamic');
                 $image->move($destinationPath,$fileUpload);
 
                  $image_data = array(
@@ -495,21 +504,15 @@ class PropertyController extends Controller
 
 
             /*Upload pruct images and desctiption*/
-            $pa_title = $request->pa_title;
-            $total_pa_title = count($request->pa_title);
+            $pa_title = array_filter((array) $request->input('pa_title', []), fn ($title) => filled($title));
             $collect_PropertyAmenity =  array();
-
-            for($i = 0; $i < $total_pa_title-1; $i++)
+            foreach ($pa_title as $title)
             {
-                if($pa_title[$i] !="" && $pa_title[$i] != NULL)
-                {
-                    $image_data = array(
-                                      'pa_property_id' => $property_id,
-                                      'pa_title' => $pa_title[$i],
-                                      );
-                    $collect_PropertyAmenity[] = $image_data;
-                }
- 
+                $image_data = array(
+                                  'pa_property_id' => $property_id,
+                                  'pa_title' => $title,
+                                  );
+                $collect_PropertyAmenity[] = $image_data;
             }
 
             if(!empty($collect_PropertyAmenity))
@@ -694,9 +697,16 @@ class PropertyController extends Controller
         $property_details = Property::find($property_id);
         if($property_details) 
         {
+            $imageNames = PropertyImage::where('pi_property_id', $property_details->property_id)->pluck('pi_image_name');
+            foreach ($imageNames->push($property_details->p_banner_image)->filter() as $imageName) {
+                $imagePath = public_path('resources/files/dynamic/'.$imageName);
+                if (is_file($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
 
-            $PropertyAmenity =  PropertyAmenity::where('pa_property_id' ,$property_details->property_id)->delete();
-            $PropertyImage =  PropertyImage::where('pi_property_id' ,$property_details->property_id)->delete();
+            PropertyAmenity::where('pa_property_id', $property_details->property_id)->delete();
+            PropertyImage::where('pi_property_id', $property_details->property_id)->delete();
             $property_details->delete();
  
             return redirect()->back()->with('success','Property deleted.');

@@ -18,7 +18,7 @@
                     <div class="card-body">
 
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-12 col-lg-6">
                                 <div class="mb-3">
                                     <label for="first_name" class="form-label">First Name <span class="text-danger fw-bold">*</span></label>
                                     <input type="text" name="first_name" id="first_name" value="{{$db_data['User']->first_name}}" class="form-control" placeholder="Type...">
@@ -26,7 +26,7 @@
                                 </div>
                             </div>
                                                             
-                            <div class="col-6">
+                            <div class="col-12 col-lg-6">
                                 <div class="mb-3">
                                     <label for="last_name" class="form-label">Last Name <span class="text-danger fw-bold">*</span></label>
                                     <input type="text" name="last_name" id="last_name" value="{{$db_data['User']->last_name}}" class="form-control" placeholder="Type...">
@@ -34,7 +34,7 @@
                                 </div>
                             </div>                                
 
-                            <div class="col-6">
+                            <div class="col-12 col-lg-6">
                                 <div class="mb-3">
                                     <label for="email" class="form-label">Email address <span class="text-danger fw-bold">*</span></label>
                                     <input type="email" name="email" id="email" value="{{$db_data['User']->email}}" class="form-control" placeholder="Type...">
@@ -42,14 +42,15 @@
                                 </div>
                             </div> 
                         
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="user_type" class="form-label">User type</label>
-                                    <select class="js-example-basic-single form-control" name="user_type">
-                                        <option value="">--Select--</option>
-                                        <option value="superAdmin" @if($db_data['User']->user_type == "superAdmin") selected @endif>super Admin</option>
+                            <div class="col-12 col-lg-6">
+                                <div class="mb-3 rr-admin-field">
+                                    <label for="user_type" class="form-label rr-admin-field-label">User type</label>
+                                    <select id="user_type" class="js-example-basic-single form-control rr-admin-select" name="user_type">
+                                        <option value="">Select user type</option>
+                                        <option value="superAdmin" @if($db_data['User']->user_type == "superAdmin") selected @endif>Super Admin</option>
                                         <option value="admin" @if($db_data['User']->user_type == "admin") selected @endif>Admin</option>
-                                        <option value="user" @if($db_data['User']->user_type == "user") selected @endif>user</option>
+                                        <option value="user" @if($db_data['User']->user_type == "user") selected @endif>User</option>
+                                        <option value="tenant" @if($db_data['User']->user_type == "tenant") selected @endif>Tenant</option>
                                     </select>
                                     <span class="text-danger form-error" id="user_type_error">{{ $errors->first('user_type') }}</span>
 
@@ -57,11 +58,11 @@
                             </div>
 
 
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="account_status" class="form-label">Account status</label>
-                                    <select class="js-example-basic-single form-control" name="account_status">
-                                        <option value="">--Select--</option>
+                            <div class="col-12 col-lg-6">
+                                <div class="mb-3 rr-admin-field">
+                                    <label for="account_status" class="form-label rr-admin-field-label">Account status</label>
+                                    <select id="account_status" class="js-example-basic-single form-control rr-admin-select" name="account_status">
+                                        <option value="">Select account status</option>
                                         <option value="active" @if($db_data['User']->account_status == "active") selected @endif>Active</option>
                                         <option value="suspended" @if($db_data['User']->account_status == "suspended") selected @endif>Suspended</option>
                                     </select>
@@ -71,7 +72,7 @@
                             </div>
 
 
-                            <div class="col-6">
+                            <div class="col-12 col-lg-6">
                                 <div class="text-center">
                                     <div class="profile-user position-relative d-inline-block mx-auto  mb-4">
                                         <img src="{{$db_data['User']->getProfilePicture($db_data['User']->profile_picture)}}" class="rounded-circle avatar-xl img-thumbnail user-profile-image" alt="user-profile-image">
@@ -84,7 +85,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <h5 class="fs-16 mb-1">Udpdate profile picture <span class="text-muted text-sm">(Optional)</span></h5>
+                                    <h5 class="fs-16 mb-1">Update profile picture <span class="text-muted text-sm">(Optional)</span></h5>
                                     <p class="text-muted mb-0">Click on camera to upload new photo</p>
                                 </div>
                             </div>
@@ -94,7 +95,7 @@
 
                         <div class="row mt-3">
 
-                            <div class="col-6">
+                            <div class="col-12 col-lg-6">
                                 <div class="mb-3">
                                     <label for="password" class="form-label">New password <span class="text-muted">Optional</span></label>
                                     <input type="password" name="password" id="password" value="" class="form-control" placeholder="Type...">
@@ -102,9 +103,9 @@
                                 </div>
                             </div>
                                                             
-                            <div class="col-6">
+                            <div class="col-12 col-lg-6">
                                 <div class="mb-3">
-                                    <label for="confirm_password" class="form-label">Confirm new passowrd <span class="text-muted">Optional</span></label>
+                                    <label for="confirm_password" class="form-label">Confirm new password <span class="text-muted">Optional</span></label>
                                     <input type="password" name="confirm_password" id="confirm_password" value="" class="form-control" placeholder="Type...">
                                     <span class="text-danger form-error" id="confirm_password_error">{{ $errors->first('confirm_password') }}</span>
                                 </div>

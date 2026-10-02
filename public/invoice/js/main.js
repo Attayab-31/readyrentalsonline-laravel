@@ -41,7 +41,7 @@
           canvasImageHeight
         );
       }
-      pdf.save('download.pdf');
+      pdf.save($('#tm_download_btn').attr('data-download-name') || 'download.pdf');
     });
   });
 

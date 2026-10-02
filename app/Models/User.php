@@ -14,6 +14,15 @@ class User extends Authenticatable implements MustVerifyEmail
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
 
+    protected static function booted(): void
+    {
+        static::creating(function (User $user): void {
+            if (blank($user->unique_identifier)) {
+                $user->unique_identifier = static::generateUniqueIdentifier();
+            }
+        });
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -117,7 +126,7 @@ class User extends Authenticatable implements MustVerifyEmail
            $sanitizedFileName = preg_replace('/[^A-Za-z0-9\-\_\.]/', '-', pathinfo($originalFileName, PATHINFO_FILENAME));
            $uniqueKey = time();
            $uniqueFileName = $sanitizedFileName . '-' . $uniqueKey . '.' . $extension;
-           $destinationPath = 'resources/files/dynamic';
+           $destinationPath = public_path('resources/files/dynamic');
            $file->move($destinationPath, $uniqueFileName);
             return $uniqueFileName; // Return the unique file name
         }

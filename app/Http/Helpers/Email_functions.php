@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log; // Ensure this is imported at the top
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
 use App\Models\User;
 use App\Models\AppSetting;
 use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Models\PropertyAmenity;
-use PHPMailer\PHPMailer;
 
 
 class Email_functions
@@ -39,78 +39,24 @@ class Email_functions
             }
     
             $AppSetting = AppSetting::find(1);
-    
-            if ($AppSetting) {
-                $as_contact_us_email_recipients = $AppSetting->as_contact_us_email_recipients;
-    
-                $as_smtp_host = $AppSetting->as_smtp_host;
-                $as_smtp_security_protocol = $AppSetting->as_smtp_security_protocol;
-                $as_smtp_port = $AppSetting->as_smtp_port;
-                $as_smtp_username = $AppSetting->as_smtp_username;
-                $as_smtp_password = $AppSetting->as_smtp_password;
-                $as_smtp_send_from = $AppSetting->as_smtp_send_from;
-    
-                if ($as_smtp_host != "" && $as_smtp_port != "" && $as_smtp_username != "" && $as_smtp_password != "" && $as_smtp_send_from != "") {
-                    $smtp_enabled = "yes";
-                } else {
-                    $smtp_enabled = "no";
-                }
-            } else {
-                $as_contact_us_email_recipients = "";
-                $smtp_enabled = "no";
-            }
-    
-            $mail = new PHPMailer\PHPMailer(); // Create a new PHPMailer instance
-    
-            if ($smtp_enabled == "yes") {
-                $mail->SMTPDebug = 0; // debugging: 1 = errors and messages, 2 = messages only
-                $mail->isSMTP();
-                $mail->Host = $as_smtp_host;
-                $mail->SMTPAuth = true;
-                $mail->Username = $as_smtp_username;
-                $mail->Password = $as_smtp_password;
-                $mail->SMTPSecure = $as_smtp_security_protocol;
-                $mail->Port = $as_smtp_port;
-            } else {
-                $mail->SMTPDebug = 0; // debugging: 1 = errors and messages, 2 = messages only
-                $mail->SMTPAuth = false; // Authentication disabled
-            }
-            
-            $mail->CharSet = 'UTF-8';
-            $mail->IsHTML(true);
-            $mail->SetFrom("notification@readyrentalsonline.com", config('app.name') . ' System');
-            $mail->Subject = $db_data['email_subject'];
-            $mail->Body = view($db_data['view_to_use'], compact('db_data'));
-    
-            $emails = explode(',', $as_contact_us_email_recipients);
-            foreach ($emails as $email) {
-                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $mail->AddAddress($email);
-                }
-            }
-    
-            // Send the email and check for success or failure
-            if ($mail->Send()) {
-                $res = array(
-                    'res_code' => 200,
-                );
-            } else {
-                $res = array(
-                    'res_code' => 100,
-                );
-            }
-    
-            return $res;
-    
-        } catch (\Exception $e) {
-            // Log the error with exception message
-            Log::error('Email sending failed: ' . $e->getMessage());
-    
-            // Return failure response
-            return array(
-                'res_code' => 500,
-                'message' => 'An error occurred while sending the email.',
+            $recipients = $AppSetting?->as_contact_us_email_recipients
+                ?: config('mail.contact_recipients', '');
+
+            return self::sendRenderedEmail(
+                $recipients,
+                $db_data['email_subject'],
+                view($db_data['view_to_use'], compact('db_data'))->render(),
+                [],
+                'notification@readyrentalsonline.com',
+                config('app.name') . ' System'
             );
+        } catch (\Throwable $exception) {
+            Log::error('Email sending failed', ['exception' => $exception->getMessage()]);
+
+            return [
+                'res_code' => 500,
+                'message' => 'An error occurred while preparing the email.',
+            ];
         }
     }
     
@@ -123,70 +69,10 @@ class Email_functions
         string $view = "email_templates.general_email_template",
         array $bcc = [],
         string $fromEmail = "notification@readyrentalsonline.com",
-        string $fromName = null,
+        ?string $fromName = null,
         array $data = [] // Add this parameter
     ): array {
-        $mail = new PHPMailer\PHPMailer(true); // Enable exceptions
-    
-        try {
-            // Basic configuration
-            $mail->SMTPDebug = 0;
-            $mail->CharSet = 'UTF-8';
-            $mail->isHTML(true);
-            
-            // Set sender
-            $fromName = $fromName ?? config('app.name') . ' System';
-            $mail->setFrom($fromEmail, $fromName);
-            
-            // Set subject and body
-            $mail->Subject = $subject;
-            
-            // Add this line before sending:
-            $mail->Body = view($view, $data)->render();
-    
-            // Process recipients
-            if (is_string($to)) {
-                $to = explode(',', $to);
-            }
-    
-            foreach ($to as $email) {
-                $email = trim($email);
-                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $mail->addAddress($email);
-                }
-            }
-    
-            // Add BCC recipients
-            foreach ($bcc as $bccEmail) {
-                $bccEmail = trim($bccEmail);
-                if (filter_var($bccEmail, FILTER_VALIDATE_EMAIL)) {
-                    $mail->addBCC($bccEmail);
-                }
-            }
-        
-        
-
-            
-            // Send email
-            if ($mail->send()) {
-                return [
-                    'res_code' => 200,
-                    'message' => 'Email sent successfully'
-                ];
-            }
-    
-        } catch (\Exception $e) {
-            return [
-                'res_code' => 500,
-                'message' => 'Email sending failed: ' . $e->getMessage()
-            ];
-        }
-    
-        // Fallback return (should never reach here due to exception handling)
-        return [
-            'res_code' => 500,
-            'message' => 'Unknown error occurred while sending email'
-        ];
+        return self::sendViewEmail($to, $subject, $view, $bcc, $fromEmail, $fromName, $data);
     }
 
 
@@ -197,65 +83,157 @@ class Email_functions
         string $view = "email_templates.Invoice_Alert_Email",
         array $bcc = [],
         string $fromEmail = "notification@readyrentalsonline.com",
-        string $fromName = null,
+        ?string $fromName = null,
         array $data = []
     ): array {
-        $mail = new PHPMailer\PHPMailer(true); // Enable exceptions
-    
+        return self::sendViewEmail($to, $subject, $view, $bcc, $fromEmail, $fromName, $data);
+    }
+
+    private static function sendViewEmail(
+        string|array $to,
+        string $subject,
+        string $view,
+        array $bcc,
+        string $fromEmail,
+        ?string $fromName,
+        array $data
+    ): array {
         try {
-            // Basic configuration
-            $mail->SMTPDebug = 0;
-            $mail->CharSet = 'UTF-8';
-            $mail->isHTML(true);
-            
-            // Set sender
-            $fromName = $fromName ?? config('app.name') . ' System';
-            $mail->setFrom($fromEmail, $fromName);
-            
-            // Set subject and body
-            $mail->Subject = $subject;
-            $mail->Body = view($view, $data)->render();
-    
-            // Process recipients
-            if (is_string($to)) {
-                $to = explode(',', $to);
-            }
-    
-            foreach ($to as $email) {
-                $email = trim($email);
-                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $mail->addAddress($email);
-                }
-            }
-    
-            // Add BCC recipients
-            foreach ($bcc as $bccEmail) {
-                $bccEmail = trim($bccEmail);
-                if (filter_var($bccEmail, FILTER_VALIDATE_EMAIL)) {
-                    $mail->addBCC($bccEmail);
-                }
-            }
-        
-            // Send email
-            if ($mail->send()) {
-                return [
-                    'res_code' => 200,
-                    'message' => 'Email sent successfully'
-                ];
-            }
-    
-        } catch (\Exception $e) {
+            return self::sendRenderedEmail(
+                $to,
+                $subject,
+                view($view, $data)->render(),
+                $bcc,
+                $fromEmail,
+                $fromName ?? config('app.name') . ' System'
+            );
+        } catch (\Throwable $exception) {
+            Log::error('Email could not be prepared', [
+                'view' => $view,
+                'exception' => $exception->getMessage(),
+            ]);
+
             return [
                 'res_code' => 500,
-                'message' => 'Email sending failed: ' . $e->getMessage()
+                'message' => 'Email could not be prepared.',
             ];
         }
-    
-        // Fallback return (should never reach here due to exception handling)
-        return [
-            'res_code' => 500,
-            'message' => 'Unknown error occurred while sending email'
-        ];
+    }
+
+    private static function sendRenderedEmail(
+        string|array $to,
+        string $subject,
+        string $html,
+        array $bcc,
+        string $fromEmail,
+        string $fromName
+    ): array {
+        $recipients = self::validAddresses($to);
+        $bccRecipients = self::validAddresses($bcc);
+
+        if ($recipients === []) {
+            Log::error('Email was not sent because no valid recipients are configured.');
+
+            return [
+                'res_code' => 500,
+                'message' => 'No valid email recipients are configured.',
+            ];
+        }
+
+        try {
+            $mailerName = self::configuredMailerName();
+            if ($mailerName === 'app_settings_smtp') {
+                $fromEmail = config("mail.mailers.{$mailerName}.from.address", $fromEmail);
+                $fromName = config("mail.mailers.{$mailerName}.from.name", $fromName);
+            }
+
+            $sentMessage = Mail::mailer($mailerName)->send([], [], function ($message) use (
+                $recipients,
+                $bccRecipients,
+                $subject,
+                $html,
+                $fromEmail,
+                $fromName
+            ): void {
+                $message->to($recipients)
+                    ->from($fromEmail, $fromName)
+                    ->subject($subject)
+                    ->html($html);
+
+                if ($bccRecipients !== []) {
+                    $message->bcc($bccRecipients);
+                }
+            });
+
+            if ($sentMessage === null) {
+                Log::error('Configured mail transport did not send the email.', [
+                    'mailer' => $mailerName,
+                    'recipient_count' => count($recipients),
+                ]);
+
+                return [
+                    'res_code' => 500,
+                    'message' => 'Configured mail transport did not send the email.',
+                ];
+            }
+
+            return [
+                'res_code' => 200,
+                'message' => $mailerName === 'log'
+                    ? 'Email recorded by the log mailer; it was not delivered to an inbox.'
+                    : 'Email accepted by the configured mail transport.',
+            ];
+        } catch (\Throwable $exception) {
+            Log::error('Email sending failed', [
+                'mailer' => $mailerName ?? config('mail.default'),
+                'recipient_count' => count($recipients),
+                'exception' => $exception->getMessage(),
+            ]);
+
+            return [
+                'res_code' => 500,
+                'message' => 'Email sending failed: ' . $exception->getMessage(),
+            ];
+        }
+    }
+
+    private static function configuredMailerName(): string
+    {
+        $settings = AppSetting::find(1);
+        if (! $settings || ! filled($settings->as_smtp_host) || ! filled($settings->as_smtp_port)) {
+            return (string) config('mail.default');
+        }
+
+        $mailerName = 'app_settings_smtp';
+        Config::set("mail.mailers.{$mailerName}", [
+            'transport' => 'smtp',
+            'host' => $settings->as_smtp_host,
+            'port' => (int) $settings->as_smtp_port,
+            'encryption' => $settings->as_smtp_security_protocol ?: null,
+            'username' => $settings->as_smtp_username ?: null,
+            'password' => $settings->as_smtp_password ?: null,
+            'timeout' => 15,
+            'local_domain' => parse_url(config('app.url'), PHP_URL_HOST),
+        ]);
+        Config::set("mail.mailers.{$mailerName}.from", [
+            'address' => $settings->as_smtp_send_from ?: config('mail.from.address'),
+            'name' => config('mail.from.name', config('app.name')),
+        ]);
+        Mail::purge($mailerName);
+
+        return $mailerName;
+    }
+
+    private static function validAddresses(string|array $addresses): array
+    {
+        $addresses = is_array($addresses) ? $addresses : explode(',', $addresses);
+
+        return collect($addresses)
+            ->map(fn ($address) => trim((string) $address))
+            ->filter(fn ($address) => filter_var($address, FILTER_VALIDATE_EMAIL))
+            ->unique()
+            ->values()
+            ->all();
     }
 
 

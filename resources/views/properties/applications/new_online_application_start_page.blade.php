@@ -1,30 +1,26 @@
 @extends('layouts.front_end')
 @section('page_content')
 
-    <?php
-        $totalSteps = 8; // Total number of steps
-        $currentStep = 1; // Current step, change this value based on the current page
-        // Calculate the width percentage
-        $stepWidth = ($currentStep / $totalSteps) * 100;
-    ?>
+    @php
+        $totalSteps = 9;
+        $currentStep = 1;
+    @endphp
 
  <!-- FEATURE AREA START ( Feature - 6) -->
  <div class="ltn__feature-area section-bg-1 pt-50 pb-90 mb-120---">
     <div class="container">
 
         <div class="row ltn__custom-gutter--- justify-content-center">
- 
+
             <div class="col-lg-12 col-sm-12 col-12">
-                
-                <div class="w3-light-grey">
-                    <div class="w3-container w3-red w3-center" style="width:<?= $stepWidth; ?>%">Step <?= $currentStep; ?> of <?= $totalSteps; ?></div>
-                </div>
- 
+
+                @include('partials.application-progress', ['currentStep' => $currentStep, 'totalSteps' => $totalSteps])
+
 
                 <div class="ltn__feature-item ltn__feature-item-6 bg-white  box-shadow-1">
- 
 
-                    
+
+
                     <h4 class="title-2">
                         {{-- <span class="step-number">Step 1:</span> --}}
                         Select Property and Co-Applicants
@@ -34,10 +30,10 @@
 
                         <div id="form_res" style="display:none"></div> 
 
-                        <p class="text-left"> To track your order please enter your Order ID in the box below and press the "Track Order" button. This was given to you on your receipt and in the confirmation email you should have received. </p>
-                        
+                        <p class="text-left">Choose a rental home and the number of co-applicants to begin. You can complete the application in steps and return using the tracking link provided after you start.</p>
+
                         <div class="form-inner-part">
-                            
+
                             <div class="row">
 
                                 <div class="col-md-12">
@@ -45,7 +41,7 @@
                                         Select the Property <span class="required-field">*</span> <span class="field_error" id="pa_property_id_error" >{{ $errors->first('pa_property_id')}}</span>
                                     </label>
                                     <div class="input-item">
-                                        <select class="input_field" name="pa_property_id" id="pa_property_id">
+                                        <select class="input_field" name="pa_property_id" id="pa_property_id" required>
                                             <option value="">--Select--</option>
                                             @foreach($db_data['Property'] as $Property)
                                                 <option value="{{$Property->property_id}}"
@@ -66,7 +62,7 @@
                                     </label>
                                     <p>If you have any co-applicants then please select the correct number. You will need to fill details for each applicant.</p>
                                     <div class="input-item">
-                                        <select class="input_field" name="pa_number_of_co_applicants" id="pa_number_of_co_applicants">
+                                        <select class="input_field" name="pa_number_of_co_applicants" id="pa_number_of_co_applicants" required>
                                             <option value="">--Select--</option>
                                             <option value="0" @if(old('pa_number_of_co_applicants') == "0") selected @endif >I will be the only Adult resident (1 Person)</option>
                                             <option value="1" @if(old('pa_number_of_co_applicants') == "1") selected @endif >I have 1 Co-Applicant (2 People)</option>
@@ -77,7 +73,7 @@
                                         </select>
                                     </div>
                                 </div>
- 
+
                             </div>
 
                         </div>
@@ -88,11 +84,10 @@
                     </form>
                 </div>
             </div>
- 
+
         </div>
     </div>
 </div>
 <!-- FEATURE AREA END -->
 
 @endsection
- 

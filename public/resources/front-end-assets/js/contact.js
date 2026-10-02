@@ -195,16 +195,16 @@ function initializeCanvas(canvas, ctx) {
     function getMousePos(canvasDom, mouseEvent) {
         var rect = canvasDom.getBoundingClientRect();
         return {
-            x: mouseEvent.clientX - rect.left,
-            y: mouseEvent.clientY - rect.top
+            x: (mouseEvent.clientX - rect.left) * canvasDom.width / rect.width,
+            y: (mouseEvent.clientY - rect.top) * canvasDom.height / rect.height
         };
     }
 
     function getTouchPos(canvasDom, touchEvent) {
         var rect = canvasDom.getBoundingClientRect();
         return {
-            x: touchEvent.touches[0].clientX - rect.left,
-            y: touchEvent.touches[0].clientY - rect.top
+            x: (touchEvent.touches[0].clientX - rect.left) * canvasDom.width / rect.width,
+            y: (touchEvent.touches[0].clientY - rect.top) * canvasDom.height / rect.height
         };
     }
 
@@ -247,13 +247,17 @@ function initializeCanvas(canvas, ctx) {
 
 // Initialize canvas 1
 var canvas = document.getElementById("sig-canvas");
-var ctx = canvas.getContext("2d");
-initializeCanvas(canvas, ctx);
+var ctx = canvas ? canvas.getContext("2d") : null;
+if (canvas && ctx) {
+    initializeCanvas(canvas, ctx);
+}
 
 // Initialize canvas 2
 var canvas2 = document.getElementById("sig-canvas2");
-var ctx2 = canvas2.getContext("2d");
-initializeCanvas(canvas2, ctx2);
+var ctx2 = canvas2 ? canvas2.getContext("2d") : null;
+if (canvas2 && ctx2) {
+    initializeCanvas(canvas2, ctx2);
+}
 
   
   
@@ -275,20 +279,23 @@ initializeCanvas(canvas2, ctx2);
 
   var sigValue = document.getElementById("e_sign");
   var clearBtn = document.getElementById("clearsignatureBtn");
-  clearBtn.addEventListener("click", function(e) {
-    clearCanvas();
-    sigText.innerHTML = "Data URL for your signature will go here!";
-    sigImage.setAttribute("src", "");
-  }, false);
+  if (clearBtn) {
+      clearBtn.addEventListener("click", function(e) {
+        clearCanvas();
+        if (typeof sigText !== 'undefined') sigText.innerHTML = "Data URL for your signature will go here!";
+        if (typeof sigImage !== 'undefined') sigImage.setAttribute("src", "");
+      }, false);
+  }
 
  
 
   var sigValue2 = document.getElementById("e_sign2");
   var clearBtn2 = document.getElementById("clearsignatureBtn2");
-  clearBtn2.addEventListener("click", function(e) {
-    clearCanvas2();
-    // Additional code for canvas2...
-  }, false);
+  if (clearBtn2) {
+      clearBtn2.addEventListener("click", function(e) {
+        clearCanvas2();
+      }, false);
+  }
 
 
 
@@ -348,7 +355,7 @@ initializeCanvas(canvas2, ctx2);
 		var formData = new FormData($(this)[0]);
 
 		$.ajax({
-		  url:window.location.origin+"/contact-us/process-form",
+		  url:$(this).attr('action'),
 		  type: "POST",
 		  dataType: 'JSON',
 		  headers: {
@@ -368,13 +375,12 @@ initializeCanvas(canvas2, ctx2);
 		    {
 			      $("#form_res").css("display", "block");
 			      $("#form_res").html(res_msg_markup);
+			      $('#contact-form').hide();
 
 			      $('html, body').animate({
 					scrollTop: $("#form_container").offset().top
 	    			}, 500);
 
-		    		$('#contact-form')[0].reset();
-		    		
 		    }
 		    else if(res_code == "100")
 		    {
@@ -457,7 +463,7 @@ initializeCanvas(canvas2, ctx2);
 		var formData = new FormData($(this)[0]);
 
 		$.ajax({
-		  url:window.location.origin+"/properties/process-inquiry-form",
+		  url:$(this).attr('action'),
 		  type: "POST",
 		  dataType: 'JSON',
 		  headers: {
@@ -482,7 +488,7 @@ initializeCanvas(canvas2, ctx2);
 					scrollTop: $("#form_container").offset().top
 	    			}, 500);
 
-		    		$('#contact-form')[0].reset();
+                    $('#prop_inqury_form')[0].reset();
 		    		
 		    }
 		    else if(res_code == "100")
@@ -580,7 +586,7 @@ initializeCanvas(canvas2, ctx2);
 		$('.input_field').removeClass("input_field_error");
 
 		$.ajax({
-		  url:window.location.origin+"/applications/apply-online/process-form",
+		  url:$(this).attr('action'),
 		  type: "POST",
 		  dataType: 'JSON',
 		  headers: {
@@ -692,7 +698,7 @@ initializeCanvas(canvas2, ctx2);
 
 
       	e.preventDefault();
-      	// $('#form-sbm-btn').prop('disabled', true);
+	      $('#form-sbm-btn').prop('disabled', true);
       	$('#form-sbm-btn').text('Processing... Please Wait!');
 
       	$("#form_res").css("display", "none");
@@ -720,7 +726,7 @@ initializeCanvas(canvas2, ctx2);
 
 
 		$.ajax({
-		  url:window.location.origin+"/applications/upload-application-form/process-form",
+		  url:$(this).attr('action'),
 		  type: "POST",
 		  dataType: 'JSON',
 		  headers: {

@@ -5,8 +5,22 @@
 <div class="row">
    <div class="col-xxl-12">
       <div class="card">
-         <div class="card-header align-items-center d-flex">
-            <h4 class="card-title mb-0 flex-grow-1">Application Details</h4>
+         <div class="card-header align-items-center d-flex justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-3">
+               <img src="{{ asset('logo/ready_rentals_light.svg') }}" alt="Ready Rentals Online" style="height: 48px; width: auto;">
+               <div>
+                  <h4 class="card-title mb-0">Application Details</h4>
+                  <span class="text-muted fs-12">{{ $db_data['PropertyApplication']->pa_applicant_name }}</span>
+               </div>
+            </div>
+            <div class="d-flex gap-2">
+               <a href="{{ url('accounts/properties/print-application-details/'.$db_data['PropertyApplication']->property_application_id) }}" class="btn btn-soft-primary btn-sm" target="_blank">
+                  <i class="ri-printer-line align-middle"></i> Print Application
+               </a>
+               <a href="{{ url('accounts/properties/applications') }}" class="btn btn-soft-secondary btn-sm">
+                  <i class="ri-arrow-left-line align-middle"></i> Back to List
+               </a>
+            </div>
          </div>
          <div class="card-body">
             <div class="row mt-1 mb-2">

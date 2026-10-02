@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -28,6 +29,42 @@ class PasswordResetTest extends TestCase
         $this->post('/forgot-password', ['email' => $user->email]);
 
         Notification::assertSentTo($user, ResetPassword::class);
+    }
+
+    public function test_reset_password_notification_uses_the_branded_template(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create();
+
+        $this->post('/forgot-password', ['email' => $user->email]);
+
+        Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
+            $mail = $notification->toMail($user);
+
+            return $mail->view === 'emails.passwordResetLink'
+                && str_contains($mail->viewData['resetUrl'], route('password.reset', [
+                    'token' => $notification->token,
+                    'email' => $user->email,
+                ], false));
+        });
+    }
+
+    public function test_verification_notification_uses_the_branded_template(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->unverified()->create();
+
+        $user->sendEmailVerificationNotification();
+
+        Notification::assertSentTo($user, VerifyEmail::class, function ($notification) use ($user) {
+            $mail = $notification->toMail($user);
+
+            return $mail->view === 'emails.emailVerificationLink'
+                && $mail->viewData['db_data']['User']->is($user)
+                && str_contains($mail->viewData['db_data']['verificationLink'], 'verify-email/'.$user->id.'/');
+        });
     }
 
     public function test_reset_password_screen_can_be_rendered(): void

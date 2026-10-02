@@ -1,101 +1,40 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Property Shared With You</title>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-        }
-        .email-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .property-card { 
-            border: 1px solid #ddd; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .property-image { 
-            width: 100%; 
-            height: auto;
-            max-height: 300px;
-            object-fit: cover;
-        }
-        .property-details { 
-            padding: 20px; 
-        }
-        .property-title { 
-            font-size: 20px; 
-            font-weight: bold; 
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .property-address {
-            color: #666;
-            margin-bottom: 10px;
-        }
-        .property-price { 
-            color: #2a6496; 
-            font-weight: bold; 
-            margin: 10px 0; 
-            font-size: 18px;
-        }
-        .sender-message { 
-            background-color: #f9f9f9; 
-            padding: 15px; 
-            border-radius: 5px; 
-            margin: 15px 0;
-            border-left: 4px solid #2a6496;
-        }
-        .btn-view { 
-            display: inline-block; 
-            padding: 12px 24px; 
-            background: #2a6496; 
-            color: white !important; 
-            text-decoration: none; 
-            border-radius: 5px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 15px;
-        }
-        .footer-text {
-            text-align: center; 
-            margin-top: 20px; 
-            color: #777;
-            font-size: 14px;
-        }
-    </style>
-</head>
-<body>
-    <div class="email-container">
-        <div class="property-card">
-            <img src="{{ $property_image }}" alt="{{ $property_title }}" class="property-image">
-            <div class="property-details">
-                <div class="property-title">{{ $property_title }}</div>
-                <div class="property-address">{{ $property_address }}</div>
-                <div class="property-price">${{ number_format($property_price, 2) }}</div>
-                
-                @if($message)
-                <div class="sender-message">
-                    <strong>Message from {{ $sender_name }}:</strong>
-                    <p>{{ $message }}</p>
-                </div>
+@extends('email_templates.layouts.email')
+
+@section('email_title', 'A property shared with you')
+
+@section('content')
+    <h1 style="margin:0 0 16px; color:#20364d; font-size:24px; line-height:1.3;">A home worth a look</h1>
+    <p style="margin:0 0 20px;">{{ $sender_name }} shared this Ready Rentals property with you.</p>
+
+    @if(!empty($property_image))
+        <img src="{{ $property_image }}" alt="{{ $property_title }}" width="516" style="width:100%; max-width:516px; height:auto; margin:0 0 20px; border-radius:6px;">
+    @endif
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%; border:1px solid #e2e8ef; border-radius:6px;">
+        <tr>
+            <td style="padding:20px;">
+                <h2 style="margin:0 0 8px; color:#20364d; font-size:20px; line-height:1.35;">{{ $property_title }}</h2>
+                @if(!empty($property_address))
+                    <p style="margin:0 0 10px; color:#667587; font-size:14px;">{{ $property_address }}</p>
                 @endif
-                
-                <a href="{{ $property_url }}" class="btn-view" style="color: white;">View Property</a>
-            </div>
-        </div>
-        
-        <p class="footer-text">
-            This property was shared with you by {{ $sender_name }} via Ready Rentals Online.
-        </p>
-    </div>
-</body>
-</html>
+                @if(is_numeric($property_price ?? null))
+                    <p style="margin:0 0 18px; color:#20364d; font-size:18px; font-weight:bold;">${{ number_format((float) $property_price, 2) }}</p>
+                @endif
+
+                @if(!empty($message))
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%; margin:0 0 20px; background-color:#f5f8fb; border-left:4px solid #d78a20;">
+                        <tr>
+                            <td style="padding:14px 16px; color:#344255; font-size:14px; line-height:1.6; overflow-wrap:anywhere;">
+                                <strong style="display:block; margin-bottom:5px;">A note from {{ $sender_name }}</strong>
+                                {{ $message }}
+                            </td>
+                        </tr>
+                    </table>
+                @endif
+
+                <a href="{{ $property_url }}" style="display:inline-block; padding:13px 22px; border-radius:5px; background-color:#20364d; color:#ffffff; font-size:15px; font-weight:bold; text-decoration:none;">View property</a>
+            </td>
+        </tr>
+    </table>
+    <p style="margin:20px 0 0; color:#667587; font-size:13px;">Shared with you by {{ $sender_name }} through Ready Rentals Online.</p>
+@endsection

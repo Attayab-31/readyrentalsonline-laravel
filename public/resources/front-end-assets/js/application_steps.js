@@ -171,9 +171,8 @@ $('#online-application-form-with-steps').on('submit', function(e) {
     }
 
     // Change button text to include spinner
-    let submitButton = $(this).find('button[type="submit"]');
-    let originalButtonText = submitButton.html();
-    submitButton.html('<i class="fas fa-spinner fa-spin"></i> Processing... Please wait').attr('disabled', true);
+    let submitButton = $(this).find('button[type="submit"]').get(0);
+    RRButtonLoading.start(submitButton, 'Processing…');
 
     // Add a 2-second delay before making the AJAX call
     setTimeout(function() {
@@ -217,7 +216,7 @@ $('#online-application-form-with-steps').on('submit', function(e) {
             },
             complete: function() {
                 // Reset button text and re-enable it
-                submitButton.html(originalButtonText).attr('disabled', false);
+                RRButtonLoading.stop(submitButton);
             }
         });
     }, 2000); // 2000 milliseconds = 2 seconds

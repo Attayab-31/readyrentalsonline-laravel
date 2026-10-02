@@ -40,10 +40,10 @@
                                 </div>
                                 @endif
 
-                                <div class="col-md-3">
-                                    <label for="i_status" class="form-label">Invoice Status</label>
-                                    <select class="js-example-basic-single form-control" name="i_status">
-                                        <option value="">--Select--</option>
+                                <div class="col-md-3 rr-admin-field">
+                                    <label for="i_status" class="form-label rr-admin-field-label">Invoice Status</label>
+                                    <select id="i_status" class="js-example-basic-single form-control rr-admin-select" name="i_status">
+                                        <option value="">All invoice statuses</option>
                                         <option value="paid" @if(app('request')->input('i_status') == "paid") selected @endif>Paid</option>
                                         <option value="overdue" @if(app('request')->input('i_status') == "overdue") selected @endif>Overdue</option>
                                         <option value="cancelled" @if(app('request')->input('i_status') == "cancelled") selected @endif>Cancelled</option>
@@ -54,9 +54,13 @@
                         </div>
                         <div class="card-footer">
                             <div class="col-lg-12">
-                                <div class="text-end">
-                                    <a href="{{ url()->current() }}" class="btn btn-warning" id="formSubmitBTN">Reset Filters</a>
-                                    <button type="submit" class="btn btn-primary" id="formSubmitBTN">Submit</button>
+                                <div class="text-end d-flex justify-content-end gap-2">
+                                    <a href="{{ url()->current() }}" class="btn btn-soft-secondary">
+                                        <i class="ri-refresh-line"></i> Reset Filters
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="ri-search-line"></i> Filter Invoices
+                                    </button>
                                 </div>
                             </div><!--end col-->
                         </div>
@@ -72,8 +76,12 @@
     <div class="col-xxl-12">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="card-title mb-0">Invoices</h4>
-                <a href="{{ url('accounts/invoices/create') }}" class="btn btn-primary btn-sm">Create Invoice</a>
+                <h4 class="card-title mb-0">Invoices List</h4>
+                @if(!$isTenant)
+                <a href="{{ url('accounts/invoices/create') }}" class="btn btn-primary btn-sm">
+                    <i class="ri-add-line"></i> Create Invoice
+                </a>
+                @endif
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -102,7 +110,7 @@
                                             <img src="{{$invoice->tenant->getProfilePicture($invoice->tenant->profile_picture)}}" alt="" class="img-fluid d-block" />
                                         </div>
                                         <div>
-                                            <h5 class="fs-13 my-1"><a href="apps-ecommerce-product-details.html" class="text-reset">{{$invoice->tenant->first_name.' '.$invoice->tenant->last_name}}</a></h5>
+                                            <h5 class="fs-13 my-1"><a href="{{ route('users.show', $invoice->tenant->id) }}" class="text-reset">{{$invoice->tenant->first_name.' '.$invoice->tenant->last_name}}</a></h5>
                                             <span class="text-muted">{{$invoice->tenant->email}}</span>
                                         </div>
                                     </div>
@@ -156,9 +164,9 @@
                                             
                                             
                                             <li>
-                                                <a href="{{ url('accounts/invoices/delete/'.$invoice->invoice_id) }}" onclick="return confirm('Are you sure you want to delete this invoice?');" class="dropdown-item">
-                                                    <i class="ri-pencil-fill align-bottom me-0 text-muted"></i> Delete
-                                                </a>
+                                                <form method="post" action="{{ url('accounts/invoices/delete/'.$invoice->invoice_id) }}" onsubmit="return confirm('Are you sure you want to delete this invoice?')">@csrf @method('DELETE')
+                                                    <button type="submit" class="dropdown-item"><i class="ri-delete-bin-fill align-bottom me-0 text-muted"></i> Delete</button>
+                                                </form>
                                             </li>
 
 

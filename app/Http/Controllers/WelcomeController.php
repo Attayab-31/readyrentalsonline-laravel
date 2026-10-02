@@ -13,8 +13,10 @@ use App\Models\PropertyImage;
 use App\Models\PropertyAmenity;
 use App\Models\Invoice;
 
-use PHPMailer\PHPMailer;
 use App\Models\Message;
+use App\Mail\ContactInquiryMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
  
 use Stripe;
 
@@ -126,25 +128,56 @@ public static function deleteDirectory($directory)
                 'message' => 'required',
                 ];
 
-        $validatedData = $request->validate($Rules , $messages , $attributes);
+        $validatedData = $request->validate($Rules, $messages, $attributes);
+        $settings = AppSetting::find(1);
+        $recipients = collect(explode(',', (string) ($settings?->as_contact_us_email_recipients ?: config('mail.contact_recipients', ''))))
+            ->map(fn ($email) => trim($email))
+            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->unique()
+            ->values()
+            ->all();
 
+        $email_res = ['res_code' => 500];
 
-        $email_content = "
-                        <h2>Full name: <small>$request->full_name</small></h2>
-                        <h2>Email: <small>$request->email</small></h2>
-                        <h2>Service Type: <small>$request->service_type</small></h2>
-                        <h2>Phone Number: <small>$request->phone_number</small></h2>
-                        <h2>Message: <small>$request->message</small></h2>
-                       ";
+        if ($recipients !== []) {
+            try {
+                $mailerName = config('mail.default');
+                $smtpReady = $settings
+                    && filled($settings->as_smtp_host)
+                    && filled($settings->as_smtp_port);
 
-        $email_details = array(
-                               'email_type' => "contact_us_form", 
-                               'email_subject' => config('app.name')."| New Message Recieved",
-                               'body' => $email_content, 
-                               'view_to_use' => "email_templates.general_email_template",
-                              ); 
-        
-        $email_res = Email_functions::send_email($email_details);
+                if ($smtpReady) {
+                    $mailerName = 'contact_form_smtp';
+                    Config::set("mail.mailers.{$mailerName}", [
+                        'transport' => 'smtp',
+                        'host' => $settings->as_smtp_host,
+                        'port' => (int) $settings->as_smtp_port,
+                        'encryption' => $settings->as_smtp_security_protocol ?: null,
+                        'username' => $settings->as_smtp_username,
+                        'password' => $settings->as_smtp_password,
+                        'timeout' => 15,
+                        'local_domain' => parse_url(config('app.url'), PHP_URL_HOST),
+                    ]);
+                    Config::set("mail.mailers.{$mailerName}.from", [
+                        'address' => $settings->as_smtp_send_from ?: config('mail.from.address'),
+                        'name' => config('mail.from.name', config('app.name')),
+                    ]);
+                }
+
+                Mail::mailer($mailerName)
+                    ->to($recipients)
+                    ->send(new ContactInquiryMail($validatedData));
+
+                $email_res = ['res_code' => 200];
+            } catch (\Throwable $exception) {
+                Log::error('Contact inquiry email could not be sent.', [
+                    'exception' => $exception->getMessage(),
+                    'recipient_count' => count($recipients),
+                ]);
+            }
+        } else {
+            Log::error('Contact inquiry email could not be sent because no valid recipients are configured.');
+        }
 
 
         if($email_res['res_code'] == 200)
@@ -156,26 +189,25 @@ public static function deleteDirectory($directory)
                                            '
                         );
         }
-        elseif($email_res['res_code'] == 100)
+        else
         {
             $res = array(
                         'res_code' => 100,
                         'res_msg_markup' =>'<div class="alert alert-danger" role="alert"><b><i class="fas fa-times"></i> Email not sent!</b><br>
-                                                Something went wrong. Please try again leter!</div>
-                                            '                     
-                        );
-        }        
-        else
-        {
-            $res = array(
-                        'res_code' => 300,
-                        'res_msg_markup' =>'<div class="alert alert-primary" role="alert"><b><i class="fas fa-times"></i> Somting went wrong!</b><br>
-                                                Something went wrong. Please try again leter!</div>'                     
+                                                Something went wrong. Please try again later.</div>'
                         );
         }
 
+        $success = $res['res_code'] === 200;
+        $res['res_msg_markup'] = view('partials.contact_submission_status', ['success' => $success])->render();
 
-        return $res;
+        if ($request->expectsJson()) {
+            return response()->json($res);
+        }
+
+        return redirect('/contact-us')
+            ->with('contact_submission_status', $success ? 'success' : 'error')
+            ->withInput($success ? [] : $request->except('_token'));
 
     }    
 
@@ -263,14 +295,26 @@ public static function deleteDirectory($directory)
     
 
                 // Send Alert to the Admin About Invoide Payment 
-                $emailBody = view('email_templates.Invoice_Alert_Email', compact('invoice'))->render();
                 $to = "Readyrentals1@gmail.com";
                 $subject = $invoice->tenant->first_name.' '.$invoice->tenant->last_name." has paid the Invoice!";
 
-                $result = Email_functions::sendNewEmail(
+                $result = Email_functions::sendNewEmail_For_Webhook(
                     $to,
                     $subject,
-                    $emailBody
+                    'email_templates.Invoice_Alert_Email',
+                    [],
+                    'notification@readyrentalsonline.com',
+                    'Ready Rentals Online',
+                    [
+                        'heading' => 'Invoice payment received',
+                        'status' => 'paid',
+                        'statusText' => 'Payment received',
+                        'content' => '<p>' . e(trim($invoice->tenant->first_name . ' ' . $invoice->tenant->last_name))
+                            . ' paid invoice <strong>' . e($invoice->i_invoice_number)
+                            . '</strong> in the amount of <strong>$' . number_format((float) $invoice->i_total, 2) . '</strong>.</p>',
+                        'actionUrl' => url('/accounts/invoices'),
+                        'actionText' => 'View invoices',
+                    ]
                 );
 
 
@@ -349,11 +393,23 @@ public static function deleteDirectory($directory)
             \Log::info('Invoice updated successfully: ' . $request->invoice_number);
             
             // Send email notification
-            $emailBody = view('email_templates.Invoice_Alert_Email', compact('invoice'))->render();
-            Email_functions::sendNewEmail(
+            Email_functions::sendNewEmail_For_Webhook(
                 "Readyrentals1@gmail.com",
                 $invoice->tenant->first_name.' '.$invoice->tenant->last_name." has paid the Invoice!",
-                $emailBody
+                'email_templates.Invoice_Alert_Email',
+                [],
+                'notification@readyrentalsonline.com',
+                'Ready Rentals Online',
+                [
+                    'heading' => 'Invoice payment received',
+                    'status' => 'paid',
+                    'statusText' => 'Payment received',
+                    'content' => '<p>' . e(trim($invoice->tenant->first_name . ' ' . $invoice->tenant->last_name))
+                        . ' paid invoice <strong>' . e($invoice->i_invoice_number)
+                        . '</strong> in the amount of <strong>$' . number_format((float) $invoice->i_total, 2) . '</strong>.</p>',
+                    'actionUrl' => url('/accounts/invoices'),
+                    'actionText' => 'View invoices',
+                ]
             );
             
             \Log::info('Payment confirmation email sent');
@@ -404,38 +460,25 @@ public static function deleteDirectory($directory)
 
 
         $db_data['body'] = $email_content;
+        $result = Email_functions::sendNewEmail(
+            'notification@readyrentalsonline.com',
+            'Ready Rentals Online Message Notification',
+            'email_templates.general_email_template',
+            $emails,
+            'notification@readyrentalsonline.com',
+            config('app.name') . ' System',
+            compact('db_data')
+        );
 
-
-        $mail = new PHPMailer\PHPMailer(); // Create a new PHPMailer instance
-        $mail->SMTPDebug = 0; // debugging: 1 = errors and messages, 2 = messages only
-        $mail->SMTPAuth = false; // Authentication disabled
-
-        $mail->CharSet = 'UTF-8';
-        $mail->IsHTML(true);
-        $mail->SetFrom("notification@readyrentalsonline.com", config('app.name') . ' System');
-        $mail->Subject = "Ready Rentals Online Message Notification";
-        $mail->Body = view('email_templates.general_email_template', compact('db_data'));
-        $mail->AddAddress('notification@readyrentalsonline.com');
- 
-        foreach ($emails as $email)
-        {
-            if (filter_var($email, FILTER_VALIDATE_EMAIL))
-            { 
-                // Add address to BCC
-                $mail->AddBCC($email); 
-            }
-        }
-        
-        // Send the email and check for success or failure
-        if ($mail->Send())
-        {
-            // Add Log Here for email sent with reciepeitns emails
-            Log::info('Message Alert Email Sent to: '.implode(',', $emails));
-        }
-        else
-        {   
-            // Add Log Here for email not sent with reciepeitns emails with the error message
-            Log::error('Message Alert Email Not Sent to: '.implode(',', $emails).' | Error: '.$mail->ErrorInfo);
+        if (($result['res_code'] ?? null) === 200) {
+            Log::info('Message alert email accepted by the configured mail transport.', [
+                'recipient_count' => count($emails),
+            ]);
+        } else {
+            Log::error('Message alert email could not be sent.', [
+                'recipient_count' => count($emails),
+                'error' => $result['message'] ?? 'Unknown mail transport error.',
+            ]);
         }
 
     }

@@ -197,17 +197,19 @@
  
 								<div class="card-body">
 
-									<div class="row" style="margin-top: 40px;">
-		                                <div class="col-print-3">
-											<span class="card-label fw-bolder fs-3 mb-1">Rental Application</span>
+									<div class="row align-items-center" style="margin-top: 25px; margin-bottom: 20px;">
+		                                <div class="col-print-4">
+											<img src="{{ asset('logo/ready_rentals_light.svg') }}" alt="Ready Rentals Online" style="max-height: 54px; width: auto;">
 										</div>
 		                                
-		                                <div class="col-print-3">
-	                                        <span class="label">Date:</span><span class="desc" style="text-decoration: underline;"> {{ $db_data['PropertyApplication']->pa_created_at}}</span>
-		                                </div>
+		                                <div class="col-print-4 text-center">
+											<span class="card-label fw-bolder fs-3 mb-1 d-block" style="color: #10253a;">Rental Application</span>
+											<span class="text-muted fs-7">Official Tenant Application Record</span>
+										</div>
 
-		                                <div class="col-print-6">
-	                                        <span class="label">Property:</span><span class="desc" style="text-decoration: underline;"> {{ $db_data['PropertyApplication']->p_title}}</span>
+		                                <div class="col-print-4 text-end">
+	                                        <div><span class="label fw-bold">Date:</span> <span class="desc" style="text-decoration: underline;">{{ $db_data['PropertyApplication']->pa_created_at }}</span></div>
+	                                        <div><span class="label fw-bold">Property:</span> <span class="desc" style="text-decoration: underline;">{{ $db_data['PropertyApplication']->p_title }}</span></div>
 		                                </div>	
 
 									</div>

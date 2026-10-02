@@ -2,6 +2,10 @@
 
 return [
 
+    // The public contact address is the safe fallback when no app setting or
+    // environment override has been added yet.
+    'contact_recipients' => env('CONTACT_FORM_RECIPIENTS', 'info@readyrentalsonline.com'),
+
     /*
     |--------------------------------------------------------------------------
     | Default Mailer

@@ -30,16 +30,16 @@
     <div class="ltn__utilize-overlay"></div>
 
     <!-- BREADCRUMB AREA START -->
-    <div class="ltn__breadcrumb-area text-left bg-overlay-white-30 bg-image mb-0"  data-bs-bg="{{asset('resources/front-end-assets')}}/img/bg/14.jpg">
+    <div class="ltn__breadcrumb-area text-left mb-0" style="background: linear-gradient(135deg, var(--rr-navy-700) 0%, var(--rr-slate-600) 100%); padding: 50px 0;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="ltn__breadcrumb-inner">
-                        <h1 class="page-title">Property Details</h1>
+                        <h1 class="page-title text-white mb-2">Property Details</h1>
                         <div class="ltn__breadcrumb-list">
-                            <ul>
-                                <li><a href="{{url('/')}}"><span class="ltn__secondary-color"><i class="fas fa-home"></i></span> Home</a></li>
-                                <li>Property Details</li>
+                            <ul style="color: rgba(255,255,255,0.8);">
+                                <li><a href="{{url('/')}}" class="text-white"><i class="fas fa-home me-1"></i> Home</a></li>
+                                <li class="text-white-50">Property Details</li>
                             </ul>
                         </div>
                     </div>
@@ -49,7 +49,35 @@
     </div>
     <!-- BREADCRUMB AREA END -->
 
+    <section class="rr-detail-summary">
+        <div class="rr-shell rr-detail-summary-inner">
+            <div>
+                <p class="rr-eyebrow">{{ $db_data['Property']->p_listing_status === 'for-rent' ? 'For rent' : 'For sale' }}</p>
+                <h1>{{ $db_data['Property']->p_title }}</h1>
+                @if($db_data['Property']->p_address)
+                    <p class="rr-address"><span aria-hidden="true">&#x2316;</span> {{ $db_data['Property']->p_address }}</p>
+                @endif
+            </div>
+            <div class="rr-detail-summary-action">
+                <div class="rr-detail-price">
+                    @if(filled($db_data['Property']->p_price) && (float) $db_data['Property']->p_price > 0)
+                        <strong>${{ number_format((float) $db_data['Property']->p_price, 0) }}</strong>
+                        @if($db_data['Property']->p_listing_status === 'for-rent')<span>per month</span>@endif
+                    @else
+                        <strong class="rr-detail-price-note">Contact us for pricing</strong>
+                    @endif
+                </div>
+                @if($db_data['Property']->p_listing_status === 'for-rent')
+                    <a class="rr-button" href="{{url('applications')}}?property={{$db_data['Property']->p_slug}}">Apply now</a>
+                @else
+                    <a class="rr-button" href="{{url('contact-us')}}">Ask about this property</a>
+                @endif
+            </div>
+        </div>
+    </section>
+
     <!-- IMAGE SLIDER AREA START (img-slider-3) -->
+    @if($db_data['PropertyImage']->isNotEmpty())
     <div class="ltn__img-slider-area mb-90">
         <div class="container-fluid">
             <div class="row ltn__image-slider-5-active slick-arrow-1 slick-arrow-1-inner ltn__no-gutter-all">
@@ -65,6 +93,7 @@
              </div>
         </div>
     </div>
+    @endif
     <!-- IMAGE SLIDER AREA END -->
 
     <!-- SHOP DETAILS AREA START -->
@@ -73,52 +102,23 @@
             <div class="row">
                 <div class="col-lg-8 col-md-12">
                     <div class="ltn__shop-details-inner ltn__page-details-inner mb-60">
-                        <div class="ltn__blog-meta">
-                            <ul>
-                                <li class="ltn__blog-category">
-                                    <a href="#">Featured</a>
-                                </li>
-                                <li class="ltn__blog-category">
-                                @if($db_data['Property']->p_listing_status == "for-rent")
-                                    <a class="bg-orange" href="#">For Rent</a>
-                                @elseif($db_data['Property']->p_listing_status == "for-sell")
-                                    <a class="bg-orange" href="#">For Sell</a>
-                                @endif
-                                </li>
-                                <li class="ltn__blog-date">
-                                    <i class="far fa-calendar-alt"></i>{{ $db_data['Property']->p_created_at }}
-                                </li>
-                            </ul>
-                        </div>
-                        <h1>{{ $db_data['Property']->p_title }}
-                          <a class="theme-btn-1 btn btn-effect-1" href="{{url('applications')}}" tabindex="0">APPLY NOW</a> 
-                        </h1>
-
-                        {{-- <div class="product-price"> --}}
-                        {{-- </div> --}}
-
-                        <label><span class="ltn__secondary-color"><i class="flaticon-pin"></i></span> {{ $db_data['Property']->p_address }}</label>
                         <h4 class="title-2">Description</h4>
                         <p>{!! $db_data['Property']->p_description !!}</p>
 
                         <h4 class="title-2">Property Detail</h4>  
                         <div class="property-detail-info-list section-bg-1 clearfix mb-60">                          
                             <ul>
-                                <li><label>Home Area: </label> <span>{{$db_data['Property']->p_area}}</span></li>
-                                <li><label>Rooms:</label> <span>{{$db_data['Property']->p_rooms}}</span></li>
+                                <li><label>Home Area: </label> <span>{{$db_data['Property']->p_area}} sq ft</span></li>
+                                <li><label>Bedrooms:</label> <span>{{$db_data['Property']->p_bedrooms}}</span></li>
                                 <li><label>Baths:</label> <span>{{$db_data['Property']->p_baths}}</span></li>
-                                <li><label>Year built:</label> <span>{{$db_data['Property']->b_year_built}}</span></li>
                             </ul>
                             <ul>
-                                {{-- <li><label>Lot Area:</label> <span>{{$db_data['Property']->p_area}} </span></li> --}}
-                                <li><label>Beds:</label> <span>{{$db_data['Property']->p_rooms}}</span></li>
-                                <li><label>Price:</label> <span>{{$db_data['Property']->p_price}}</span></li>
                                 <li><label>Property Status:</label> 
 
                                 @if($db_data['Property']->p_listing_status == "for-rent")
                                 	<span>For Rent</span>
                                 @elseif($db_data['Property']->p_listing_status == "for-sell")
-                                	<span>For Sell</span>
+                                    <span>For Sale</span>
                                 @endif
                                 </li>
 
@@ -203,21 +203,6 @@
                             </ul>
                         </div> --}}
 
-                        <h4 class="title-2">From Our Gallery</h4>
-                        <div class="ltn__property-details-gallery mb-30">
-                            <div class="row">
-
-				                @foreach($db_data['PropertyImage'] as $PropertyImage)
-                                <div class="col-md-6">
-                                    <a href="{{asset('resources/files/dynamic/'.$PropertyImage->pi_image_name)}}" data-rel="lightcase:myCollection">
-                                        <img class="mb-30" src="{{asset('resources/files/dynamic/'.$PropertyImage->pi_image_name)}}" alt="Image">
-                                    </a>
-                                </div>
-				                @endforeach
-
-                            </div>
-                        </div>
-
                         <h4 class="title-2 mb-10">Amenities</h4>
                         <div class="property-details-amenities mb-60">
                             <div class="row">
@@ -248,7 +233,28 @@
                     @if($db_data['Property']->p_map_location_markup != "" && $db_data['Property']->p_map_location_markup != null)
                         <h4 class="title-2">Location</h4>
                         <div class="property-details-google-map" style="margin-bottom: 175px;">
-                            {!! $db_data['Property']->p_map_location_markup !!}
+                            @php
+                                $storedPropertyMap = trim((string) $db_data['Property']->p_map_location_markup);
+                                $parsedPropertyMap = filter_var($storedPropertyMap, FILTER_VALIDATE_URL) ? parse_url($storedPropertyMap) : false;
+                                $isOpenStreetMapEmbed = is_array($parsedPropertyMap)
+                                    && ($parsedPropertyMap['scheme'] ?? '') === 'https'
+                                    && ($parsedPropertyMap['host'] ?? '') === 'www.openstreetmap.org'
+                                    && ($parsedPropertyMap['path'] ?? '') === '/export/embed.html';
+                            @endphp
+                            @if($isOpenStreetMapEmbed)
+                                <iframe
+                                    src="{{ $storedPropertyMap }}"
+                                    title="Map showing {{ $db_data['Property']->p_address }}"
+                                    width="100%"
+                                    height="360"
+                                    style="border: 0; border-radius: 12px;"
+                                    loading="lazy"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    allowfullscreen>
+                                </iframe>
+                            @else
+                                {!! $db_data['Property']->p_map_location_markup !!}
+                            @endif
                         </div>
                     @endif
  
@@ -277,7 +283,7 @@
 	                                                @if($Related_Property->p_listing_status == "for-rent")
 					                                    <li class="sale-badge">For Rent</li>
 					                                @elseif($Related_Property->p_listing_status == "for-sell")
-					                                    <li class="sale-badge">For Sell</li>
+					                                    <li class="sale-badge">For Sale</li>
 					                                @endif
 	                                            </ul>
 	                                        </div>
@@ -303,7 +309,11 @@
 	                                    </div>
 	                                    <div class="product-info-bottom">
 	                                        <div class="product-price">
-	                                            <span>${{$Related_Property->p_price}}<label>/Month</label></span>
+	                                            @if(filled($Related_Property->p_price) && (float) $Related_Property->p_price > 0)
+	                                                <span>${{ number_format((float) $Related_Property->p_price, 0) }}@if($Related_Property->p_listing_status === 'for-rent')<label>/Month</label>@endif</span>
+	                                            @else
+	                                                <span>Contact for pricing</span>
+	                                            @endif
 	                                        </div>
 	                                    </div>
 	                                </div>
@@ -470,332 +480,5 @@
         </div>
     </div>
     <!-- SHOP DETAILS AREA END -->
-
-    <!-- PRODUCT SLIDER AREA START -->
-    <div class="ltn__product-slider-area ltn__product-gutter pb-70 d-none">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="section-title-area ltn__section-title-2--- text-center---">
-                        <h1 class="section-title">Related Properties</h1>
-                    </div>
-                </div>
-            </div>
-            <div class="row ltn__related-product-slider-two-active slick-arrow-1">
-                <!-- ltn__product-item -->
-                <div class="col-xl-6 col-sm-6 col-12">
-                    <div class="ltn__product-item ltn__product-item-4 ltn__product-item-5 text-center---">
-                        <div class="product-img">
-                            <a href="product-details.html"><img src="{{asset('resources/front-end-assets')}}/img/product-3/1.jpg" alt="#"></a>
-                            <div class="real-estate-agent">
-                                <div class="agent-img">
-                                    <a href="team-details.html"><img src="{{asset('resources/front-end-assets')}}/img/blog/author.jpg" alt="#"></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-badge">
-                                <ul>
-                                    <li class="sale-badg">For Rent</li>
-                                </ul>
-                            </div>
-                            <h2 class="product-title"><a href="product-details.html">New Apartment Nice View</a></h2>
-                            <div class="product-img-location">
-                                <ul>
-                                    <li>
-                                        <a href="product-details.html"><i class="flaticon-pin"></i> Belmont Gardens, Chicago</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <ul class="ltn__list-item-2--- ltn__list-item-2-before--- ltn__plot-brief">
-                                <li><span>3 </span>
-                                    Bed
-                                </li>
-                                <li><span>2 </span>
-                                    Bath
-                                </li>
-                                <li><span>3450 </span>
-                                    Square Ft
-                                </li>
-                            </ul>
-                            <div class="product-hover-action">
-                                <ul>
-                                    <li>
-                                        <a href="#" title="Quick View" data-bs-toggle="modal" data-bs-target="#quick_view_modal">
-                                            <i class="flaticon-expand"></i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" title="Wishlist" data-bs-toggle="modal" data-bs-target="#liton_wishlist_modal">
-                                            <i class="flaticon-heart-1"></i></a>
-                                    </li>
-                                    <li>
-                                        <a href="portfolio-details.html" title="Compare">
-                                            <i class="flaticon-add"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="product-info-bottom">
-                            <div class="product-price">
-                                <span>$349,00<label>/Month</label></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- ltn__product-item -->
-                <div class="col-xl-6 col-sm-6 col-12">
-                    <div class="ltn__product-item ltn__product-item-4 ltn__product-item-5 text-center---">
-                        <div class="product-img">
-                            <a href="product-details.html"><img src="{{asset('resources/front-end-assets')}}/img/product-3/2.jpg" alt="#"></a>
-                            <div class="real-estate-agent">
-                                <div class="agent-img">
-                                    <a href="team-details.html"><img src="{{asset('resources/front-end-assets')}}/img/blog/author.jpg" alt="#"></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-badge">
-                                <ul>
-                                    <li class="sale-badg">For Sale</li>
-                                </ul>
-                            </div>
-                            <h2 class="product-title"><a href="product-details.html">New Apartment Nice View</a></h2>
-                            <div class="product-img-location">
-                                <ul>
-                                    <li>
-                                        <a href="product-details.html"><i class="flaticon-pin"></i> Belmont Gardens, Chicago</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <ul class="ltn__list-item-2--- ltn__list-item-2-before--- ltn__plot-brief">
-                                <li><span>3 </span>
-                                    Bed
-                                </li>
-                                <li><span>2 </span>
-                                    Bath
-                                </li>
-                                <li><span>3450 </span>
-                                    Square Ft
-                                </li>
-                            </ul>
-                            <div class="product-hover-action">
-                                <ul>
-                                    <li>
-                                        <a href="#" title="Quick View" data-bs-toggle="modal" data-bs-target="#quick_view_modal">
-                                            <i class="flaticon-expand"></i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" title="Wishlist" data-bs-toggle="modal" data-bs-target="#liton_wishlist_modal">
-                                            <i class="flaticon-heart-1"></i></a>
-                                    </li>
-                                    <li>
-                                        <a href="portfolio-details.html" title="Compare">
-                                            <i class="flaticon-add"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="product-info-bottom">
-                            <div class="product-price">
-                                <span>$349,00<label>/Month</label></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- ltn__product-item -->
-                <div class="col-xl-6 col-sm-6 col-12">
-                    <div class="ltn__product-item ltn__product-item-4 ltn__product-item-5 text-center---">
-                        <div class="product-img">
-                            <a href="product-details.html"><img src="{{asset('resources/front-end-assets')}}/img/product-3/3.jpg" alt="#"></a>
-                            <div class="real-estate-agent">
-                                <div class="agent-img">
-                                    <a href="team-details.html"><img src="{{asset('resources/front-end-assets')}}/img/blog/author.jpg" alt="#"></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-badge">
-                                <ul>
-                                    <li class="sale-badg">For Rent</li>
-                                </ul>
-                            </div>
-                            <h2 class="product-title"><a href="product-details.html">New Apartment Nice View</a></h2>
-                            <div class="product-img-location">
-                                <ul>
-                                    <li>
-                                        <a href="product-details.html"><i class="flaticon-pin"></i> Belmont Gardens, Chicago</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <ul class="ltn__list-item-2--- ltn__list-item-2-before--- ltn__plot-brief">
-                                <li><span>3 </span>
-                                    Bed
-                                </li>
-                                <li><span>2 </span>
-                                    Bath
-                                </li>
-                                <li><span>3450 </span>
-                                    Square Ft
-                                </li>
-                            </ul>
-                            <div class="product-hover-action">
-                                <ul>
-                                    <li>
-                                        <a href="#" title="Quick View" data-bs-toggle="modal" data-bs-target="#quick_view_modal">
-                                            <i class="flaticon-expand"></i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" title="Wishlist" data-bs-toggle="modal" data-bs-target="#liton_wishlist_modal">
-                                            <i class="flaticon-heart-1"></i></a>
-                                    </li>
-                                    <li>
-                                        <a href="portfolio-details.html" title="Compare">
-                                            <i class="flaticon-add"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="product-info-bottom">
-                            <div class="product-price">
-                                <span>$349,00<label>/Month</label></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- ltn__product-item -->
-                <div class="col-xl-6 col-sm-6 col-12">
-                    <div class="ltn__product-item ltn__product-item-4 ltn__product-item-5 text-center---">
-                        <div class="product-img">
-                            <a href="product-details.html"><img src="{{asset('resources/front-end-assets')}}/img/product-3/4.jpg" alt="#"></a>
-                            <div class="real-estate-agent">
-                                <div class="agent-img">
-                                    <a href="team-details.html"><img src="{{asset('resources/front-end-assets')}}/img/blog/author.jpg" alt="#"></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-badge">
-                                <ul>
-                                    <li class="sale-badg">For Rent</li>
-                                </ul>
-                            </div>
-                            <h2 class="product-title"><a href="product-details.html">New Apartment Nice View</a></h2>
-                            <div class="product-img-location">
-                                <ul>
-                                    <li>
-                                        <a href="product-details.html"><i class="flaticon-pin"></i> Belmont Gardens, Chicago</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <ul class="ltn__list-item-2--- ltn__list-item-2-before--- ltn__plot-brief">
-                                <li><span>3 </span>
-                                    Bed
-                                </li>
-                                <li><span>2 </span>
-                                    Bath
-                                </li>
-                                <li><span>3450 </span>
-                                    Square Ft
-                                </li>
-                            </ul>
-                            <div class="product-hover-action">
-                                <ul>
-                                    <li>
-                                        <a href="#" title="Quick View" data-bs-toggle="modal" data-bs-target="#quick_view_modal">
-                                            <i class="flaticon-expand"></i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" title="Wishlist" data-bs-toggle="modal" data-bs-target="#liton_wishlist_modal">
-                                            <i class="flaticon-heart-1"></i></a>
-                                    </li>
-                                    <li>
-                                        <a href="portfolio-details.html" title="Compare">
-                                            <i class="flaticon-add"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="product-info-bottom">
-                            <div class="product-price">
-                                <span>$349,00<label>/Month</label></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- ltn__product-item -->
-                <div class="col-xl-6 col-sm-6 col-12">
-                    <div class="ltn__product-item ltn__product-item-4 ltn__product-item-5 text-center---">
-                        <div class="product-img">
-                            <a href="product-details.html"><img src="{{asset('resources/front-end-assets')}}/img/product-3/5.jpg" alt="#"></a>
-                            <div class="real-estate-agent">
-                                <div class="agent-img">
-                                    <a href="team-details.html"><img src="{{asset('resources/front-end-assets')}}/img/blog/author.jpg" alt="#"></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-badge">
-                                <ul>
-                                    <li class="sale-badg">For Rent</li>
-                                </ul>
-                            </div>
-                            <h2 class="product-title"><a href="product-details.html">New Apartment Nice View</a></h2>
-                            <div class="product-img-location">
-                                <ul>
-                                    <li>
-                                        <a href="product-details.html"><i class="flaticon-pin"></i> Belmont Gardens, Chicago</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <ul class="ltn__list-item-2--- ltn__list-item-2-before--- ltn__plot-brief">
-                                <li><span>3 </span>
-                                    Bed
-                                </li>
-                                <li><span>2 </span>
-                                    Bath
-                                </li>
-                                <li><span>3450 </span>
-                                    Square Ft
-                                </li>
-                            </ul>
-                            <div class="product-hover-action">
-                                <ul>
-                                    <li>
-                                        <a href="#" title="Quick View" data-bs-toggle="modal" data-bs-target="#quick_view_modal">
-                                            <i class="flaticon-expand"></i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" title="Wishlist" data-bs-toggle="modal" data-bs-target="#liton_wishlist_modal">
-                                            <i class="flaticon-heart-1"></i></a>
-                                    </li>
-                                    <li>
-                                        <a href="portfolio-details.html" title="Compare">
-                                            <i class="flaticon-add"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="product-info-bottom">
-                            <div class="product-price">
-                                <span>$349,00<label>/Month</label></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--  -->
-            </div>
-        </div>
-    </div>
-    <!-- PRODUCT SLIDER AREA END -->
 
 @endsection

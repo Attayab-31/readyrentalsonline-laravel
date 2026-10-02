@@ -9,13 +9,6 @@
             <div class="col-12">
                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                     <h4 class="mb-sm-0">Invoice Details</h4>
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Accounts</a></li>
-                            <li class="breadcrumb-item"><a href="{{ url('accounts/invoices') }}">Invoices</a></li>
-                            <li class="breadcrumb-item active">#{{ $invoice->i_invoice_number }}</li>
-                        </ol>
-                    </div>
                 </div>
             </div>
         </div>
@@ -24,14 +17,23 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <h5 class="card-title mb-0">Invoice Information</h5>
-                            <div>
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="{{ asset('logo/ready_rentals_light.svg') }}" alt="Ready Rentals Online" style="height: 52px; width: auto;">
+                                <div>
+                                    <h5 class="card-title mb-0">Invoice #{{ $invoice->i_invoice_number }}</h5>
+                                    <span class="text-muted fs-12">Official Statement · Ready Rentals Online</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
                                 @if($invoice->i_status == 'unpaid')
                                 <a href="{{ url('accounts/invoices/edit/'.$invoice->invoice_id) }}" class="btn btn-soft-primary btn-sm">
                                     <i class="ri-edit-line align-bottom"></i> Edit
                                 </a>
                                 @endif
+                                <button type="button" class="btn btn-soft-secondary btn-sm" onclick="window.print()">
+                                    <i class="ri-printer-line align-bottom"></i> Print
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -4,6 +4,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
  
 use App\Models\User;
+use App\Models\Property;
+use App\Models\Invoice;
+use App\Models\Message;
 use Illuminate\Support\Facades\Artisan;
 
 class AccountController extends Controller
@@ -13,10 +16,21 @@ class AccountController extends Controller
     */
     public function index(Request $request)
     {
-        $db_data['TotalUsersCount'] = User::count();
+        $isAdmin = auth()->user()->isSuperAdmin() || auth()->user()->isAdmin();
+        $db_data['TotalUsersCount'] = $isAdmin ? User::count() : 0;
+        $db_data['TotalPropertiesCount'] = $isAdmin ? Property::count() : 0;
+        $invoiceCounts = Invoice::query()
+            ->selectRaw("SUM(CASE WHEN i_status = 'unpaid' THEN 1 ELSE 0 END) AS open_count, SUM(CASE WHEN i_status = 'paid' THEN 1 ELSE 0 END) AS paid_count")
+            ->when(!$isAdmin, function ($query) {
+                $query->where('i_tenant_id', auth()->id());
+            })
+            ->first();
+        $db_data['TotalInvoicesCount'] = (int) ($invoiceCounts->open_count ?? 0);
+        $db_data['TotalPaidInvoicesCount'] = (int) ($invoiceCounts->paid_count ?? 0);
+        $db_data['TotalUnReadMessages'] = Message::where('receiver_id', auth()->id())->where('is_read', false)->count();
             
         $data = array(
-                    'page_title'=>'Control Panel Dashboard',
+                    'page_title'=>'Dashboard',
                     );
         return view('Account.dashboard',compact('db_data'))->with($data);
     }

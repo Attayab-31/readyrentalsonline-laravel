@@ -31,12 +31,15 @@ class PropertyController extends Controller
 
         if(isset($search) &&  !empty($search) && $search != "" && $search != NULL )
         {
-            $construct_query->where('p_title', 'like', '%'.$search.'%');      
+            $construct_query->where(function ($query) use ($search) {
+                $query->where('p_title', 'like', '%'.$search.'%')
+                    ->orWhere('p_address', 'like', '%'.$search.'%');
+            });
         }
 
 
         $construct_query->orderBy('p_title','ASC');
-        $db_data['Property'] = $construct_query->get();
+        $db_data['Property'] = $construct_query->paginate(12)->withQueryString();
  
         $page_meta_data = array(
                                 'page_title'=>'Explore Our Properties '.config('app.name'),
@@ -175,7 +178,7 @@ class PropertyController extends Controller
     public function apply_online($value='')
     {
 
-        $db_data['Property'] = Property::where('p_active_status','active')
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')
                                          ->get();    
 
         $page_meta_data = array(
@@ -202,7 +205,7 @@ class PropertyController extends Controller
                     ];
  
         $Rules = [
-               'pa_property_id' => 'required|exists:properties,property_id',
+               'pa_property_id' => ['required', 'integer', \Illuminate\Validation\Rule::exists('properties', 'property_id')->where(fn ($query) => $query->where('p_active_status', 'active')->where('p_listing_status', 'for-rent'))],
                'pa_applicant_name' => 'required',
                'pa_applicant_social_sec_num' => 'required|digits:9',
                'pa_applicant_driv_lic_num' => 'required',
@@ -403,7 +406,7 @@ class PropertyController extends Controller
 
 
             
-            $folderPath = "resources/files/e-signs/"; //path location
+            $folderPath = public_path("resources/files/e-signs/"); //path location
 
             $img = $request->e_sign;
             $image_parts = explode(";base64,", $img);
@@ -416,7 +419,7 @@ class PropertyController extends Controller
 
  
  
-             $folderPath2 = "resources/files/e-signs/"; // Path location for the second canvas
+             $folderPath2 = public_path("resources/files/e-signs/"); // Path location for the second canvas
             
             $img2 = $request->e_sign2;
             $image_parts2 = explode(";base64,", $img2);
@@ -438,16 +441,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_1'))
         {
             $image = $request->file('additional_doc_1');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_1 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_1);
         
             array_push($pa_additional_documents, $additional_doc_1); 
@@ -458,16 +455,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_2'))
         {
             $image = $request->file('additional_doc_2');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_2 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_2);
         
             array_push($pa_additional_documents, $additional_doc_2); 
@@ -480,16 +471,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_3'))
         {
             $image = $request->file('additional_doc_3');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_3 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_3);
         
             array_push($pa_additional_documents, $additional_doc_3); 
@@ -501,16 +486,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_4'))
         {
             $image = $request->file('additional_doc_4');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_4 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_4);
         
             array_push($pa_additional_documents, $additional_doc_4); 
@@ -521,16 +500,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_5'))
         {
             $image = $request->file('additional_doc_5');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_5 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_5);
         
             array_push($pa_additional_documents, $additional_doc_5); 
@@ -541,16 +514,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_6'))
         {
             $image = $request->file('additional_doc_6');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_6 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_6);
         
             array_push($pa_additional_documents, $additional_doc_6); 
@@ -560,16 +527,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_7'))
         {
             $image = $request->file('additional_doc_7');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_7 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_7);
         
             array_push($pa_additional_documents, $additional_doc_7); 
@@ -580,16 +541,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_8'))
         {
             $image = $request->file('additional_doc_8');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_8 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_8);
         
             array_push($pa_additional_documents, $additional_doc_8); 
@@ -781,11 +736,11 @@ class PropertyController extends Controller
     public function apply_with_form_as_attachment($value='')
     {
 
-        $db_data['Property'] = Property::where('p_active_status','active')
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')
                                          ->get();    
 
         $page_meta_data = array(
-                                'page_title'=>"Apply Online | ".config('app.name'),
+                                'page_title'=>"Download Printable Application | ".config('app.name'),
                                ); 
 
         return view('properties.apply_with_form_as_attachment' , compact('db_data'))->with($page_meta_data);
@@ -801,7 +756,7 @@ class PropertyController extends Controller
                     ];
 
         $Rules = [
-                  'pa_property_id' => 'required|exists:properties,property_id',
+                  'pa_property_id' => ['required', 'integer', \Illuminate\Validation\Rule::exists('properties', 'property_id')->where(fn ($query) => $query->where('p_active_status', 'active')->where('p_listing_status', 'for-rent'))],
                   'pa_applicant_name' => 'required',
                   'pa_applicant_email' => 'required|email',
                   'pa_applicant_phone_num' => 'required',
@@ -821,16 +776,10 @@ class PropertyController extends Controller
         if($request->hasFile('pa_application_document_attached'))
         {
             $image = $request->file('pa_application_document_attached');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $pa_application_document_attached = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$pa_application_document_attached);
         }
         else
@@ -884,7 +833,7 @@ class PropertyController extends Controller
     public function upload_application($value='')
     {
 
-        $db_data['Property'] = Property::where('p_active_status','active')
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')
                                          ->get();    
 
         $page_meta_data = array(
@@ -912,7 +861,7 @@ class PropertyController extends Controller
                     ];
 
         $Rules = [
-                  'pa_property_id' => 'required|exists:properties,property_id',
+                  'pa_property_id' => ['required', 'integer', \Illuminate\Validation\Rule::exists('properties', 'property_id')->where(fn ($query) => $query->where('p_active_status', 'active')->where('p_listing_status', 'for-rent'))],
                   'pa_applicant_name' => 'required',
                   'pa_applicant_email' => 'required|email',
                   'pa_applicant_phone_num' => 'required',
@@ -941,7 +890,7 @@ class PropertyController extends Controller
  
  
         $img = $request->e_sign;
-        $folderPath = "resources/files/e-signs/"; //path location
+        $folderPath = public_path("resources/files/e-signs/"); //path location
          
         $image_parts = explode(";base64,", $img);
         $image_type_aux = explode("image/", $image_parts[0]);
@@ -957,16 +906,10 @@ class PropertyController extends Controller
         if($request->hasFile('pa_application_document_attached'))
         {
             $image = $request->file('pa_application_document_attached');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $pa_application_document_attached = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$pa_application_document_attached);
         }
         else
@@ -983,16 +926,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_1'))
         {
             $image = $request->file('additional_doc_1');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_1 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_1);
         
             array_push($pa_additional_documents, $additional_doc_1); 
@@ -1003,16 +940,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_2'))
         {
             $image = $request->file('additional_doc_2');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_2 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_2);
         
             array_push($pa_additional_documents, $additional_doc_2); 
@@ -1025,16 +956,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_3'))
         {
             $image = $request->file('additional_doc_3');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_3 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_3);
         
             array_push($pa_additional_documents, $additional_doc_3); 
@@ -1046,16 +971,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_4'))
         {
             $image = $request->file('additional_doc_4');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_4 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_4);
         
             array_push($pa_additional_documents, $additional_doc_4); 
@@ -1066,16 +985,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_5'))
         {
             $image = $request->file('additional_doc_5');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_5 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_5);
         
             array_push($pa_additional_documents, $additional_doc_5); 
@@ -1086,16 +999,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_6'))
         {
             $image = $request->file('additional_doc_6');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_6 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_6);
         
             array_push($pa_additional_documents, $additional_doc_6); 
@@ -1105,16 +1012,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_7'))
         {
             $image = $request->file('additional_doc_7');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_7 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_7);
         
             array_push($pa_additional_documents, $additional_doc_7); 
@@ -1125,16 +1026,10 @@ class PropertyController extends Controller
         if($request->hasFile('additional_doc_8'))
         {
             $image = $request->file('additional_doc_8');
-            $size = getimagesize($image);
-
-            list($width, $height, $type, $attr) = $size;
-            $file_mime = $size['mime'];
-            $ml_width = $size['0'];
-            $ml_height = $size['1'];
 
             $extension = $image->getClientOriginalExtension();
             $additional_doc_8 = Str::slug('Offline-Application-'.time().'-'.rand(0,99999)).'.'.$extension;
-            $destinationPath = 'resources/files/dynamic';
+            $destinationPath = public_path('resources/files/dynamic');
             $image->move($destinationPath,$additional_doc_8);
         
             array_push($pa_additional_documents, $additional_doc_8); 
@@ -1186,7 +1081,7 @@ class PropertyController extends Controller
 
     public function application_form_wizard(Request $request)
     {   
-        $db_data['Property'] = Property::where('p_active_status','active')->get();  
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')->get();
 
         $page_meta_data = array(
                                 'page_title'=>'Application '.config('app.name'),
@@ -1198,7 +1093,7 @@ class PropertyController extends Controller
 
     public function application_form_wizard_with_steps(Request $request)
     {   
-        $db_data['Property'] = Property::where('p_active_status','active')->get();  
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')->get();
         $page_meta_data = array(
                                 'page_title'=>'Application '.config('app.name'),
                                 ); 
@@ -1213,7 +1108,7 @@ class PropertyController extends Controller
 
     public function online_application(Request $request)
     {   
-        $db_data['Property'] = Property::where('p_active_status','active')->get();  
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')->get();
         $page_meta_data = array(
                                 'page_title'=>'Application '.config('app.name'),
                                 ); 
@@ -1231,8 +1126,8 @@ class PropertyController extends Controller
                 'pa_number_of_co_applicants' => 'Number of Co-applicants',
                 ];
         $Rules= [
-                'pa_property_id' => 'required',
-                'pa_number_of_co_applicants' => 'required',
+                'pa_property_id' => ['required', 'integer', \Illuminate\Validation\Rule::exists('properties', 'property_id')->where(fn ($query) => $query->where('p_active_status', 'active')->where('p_listing_status', 'for-rent'))],
+                'pa_number_of_co_applicants' => 'required|integer|between:0,5',
                 ];
 
         $validatedData = $request->validate($Rules , $messages , $attributes);
@@ -1266,7 +1161,7 @@ class PropertyController extends Controller
             abort(404);
         }
 
-        $db_data['Property'] = Property::where('p_active_status','active')->get();  
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')->get();
         $page_meta_data = array(
                                 'page_title'=>'Application '.config('app.name'),
                                 ); 
@@ -1360,7 +1255,7 @@ class PropertyController extends Controller
             abort(404);
         }
 
-        $db_data['Property'] = Property::where('p_active_status','active')->get();  
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')->get();
         $page_meta_data = array(
                                 'page_title'=>'Application '.config('app.name'),
                                 ); 
@@ -1469,7 +1364,7 @@ class PropertyController extends Controller
             abort(404);
         }
 
-        $db_data['Property'] = Property::where('p_active_status','active')->get();  
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')->get();
         $page_meta_data = array(
                                 'page_title'=>'Application '.config('app.name'),
                                 ); 
@@ -1579,7 +1474,7 @@ class PropertyController extends Controller
             abort(404);
         }
 
-        $db_data['Property'] = Property::where('p_active_status','active')->get();  
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')->get();
         $page_meta_data = array(
                                 'page_title'=>'Application '.config('app.name'),
                                 ); 
@@ -1710,7 +1605,7 @@ class PropertyController extends Controller
             abort(404);
         }
 
-        $db_data['Property'] = Property::where('p_active_status','active')->get();  
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')->get();
         $page_meta_data = array(
                                 'page_title'=>'Application '.config('app.name'),
                                 ); 
@@ -1804,7 +1699,7 @@ class PropertyController extends Controller
             abort(404);
         }
 
-        $db_data['Property'] = Property::where('p_active_status','active')->get();  
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')->get();
         $page_meta_data = array(
                                 'page_title'=>'Application '.config('app.name'),
                                 ); 
@@ -1868,7 +1763,7 @@ class PropertyController extends Controller
                         $image = $request->file($field);
                         $extension = $image->getClientOriginalExtension();
                         $filename = Str::slug('Offline-Application-' . time() . '-' . rand(0, 99999)) . '.' . $extension;
-                        $destinationPath = 'resources/files/dynamic';
+                        $destinationPath = public_path('resources/files/dynamic');
                         $image->move($destinationPath, $filename);
                         $pa_additional_documents[] = $filename;
                     } catch (Exception $e) {
@@ -1919,7 +1814,7 @@ class PropertyController extends Controller
             abort(404);
         }
 
-        $db_data['Property'] = Property::where('p_active_status','active')->get();  
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')->get();
         $page_meta_data = array(
                                 'page_title'=>'Application '.config('app.name'),
                                 ); 
@@ -1967,7 +1862,7 @@ class PropertyController extends Controller
             $validatedData = $request->validate($Rules , $messages);
     
                 
-            $folderPath = "resources/files/e-signs/"; //path location
+            $folderPath = public_path("resources/files/e-signs/"); //path location
             $img = $request->e_sign;
             $image_parts = explode(";base64,", $img);
             $image_type_aux = explode("image/", $image_parts[0]);
@@ -2020,7 +1915,7 @@ class PropertyController extends Controller
             abort(404);
         }
 
-        $db_data['Property'] = Property::where('p_active_status','active')->get();  
+        $db_data['Property'] = Property::where('p_active_status','active')->where('p_listing_status', 'for-rent')->get();
         $page_meta_data = array(
                                 'page_title'=>'Application '.config('app.name'),
                                 ); 

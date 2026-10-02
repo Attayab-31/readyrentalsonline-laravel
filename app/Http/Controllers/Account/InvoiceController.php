@@ -47,8 +47,10 @@ class InvoiceController extends Controller
             }
             elseif($request->input('i_status') == "open")
             {
-                $query->where('i_status', 'unpaid');
-                $query->orwhere('i_status', 'cancelled');
+                $query->where(function ($statusQuery) {
+                    $statusQuery->where('i_status', 'unpaid')
+                        ->orWhere('i_status', 'cancelled');
+                });
             }
         }
     

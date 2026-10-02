@@ -15,7 +15,7 @@
   {{-- Custom Styles --}}
     <style>
         .tm_invoice.tm_style2 .tm_logo img {
-            max-height: 50px;
+            max-height: 56px;
         }
         .custom-border
         {

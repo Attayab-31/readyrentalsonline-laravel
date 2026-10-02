@@ -2,8 +2,11 @@
 @section("styles")
 @endsection
 @section('content')
-    <div class="chat-wrapper d-lg-flex gap-1 mx-n4 mt-n4 p-1">
-        @include('Account.Chat.threadList' , ['threadList' => $db_data['threadList']])
+    <div class="row g-3 chat-index-layout">
+        @include('Account.Chat.threadList', [
+            'threadList' => $db_data['threadList'],
+            'columnClass' => 'col-12 col-lg-7 col-xl-6 col-xxl-5',
+        ])
     </div>
     <!-- end chat-wrapper -->
 @endsection

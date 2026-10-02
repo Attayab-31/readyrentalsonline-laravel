@@ -87,6 +87,23 @@
             height: calc(2.65rem + -4px) !important;
         }
 
+        @media (max-width: 767px) {
+            #form_container { padding: 12px; }
+            #wizard_container { min-height: 0 !important; padding: 24px 18px; }
+            #middle-wizard { padding: 0 !important; }
+            .custom-label { padding-bottom: 1rem; }
+            h3.main_question { font-size: 20px; line-height: 1.35; }
+            .step { padding-inline: 0 !important; }
+            .container_radio, .container_check { width: 100% !important; }
+            .form-control, select.form-control { min-height: 44px; }
+            .button-group, .submit, .forward, .backward { max-width: 100%; }
+        }
+
+        @media (max-width: 380px) {
+            #form_container { padding: 8px; }
+            #wizard_container { padding: 18px 12px; }
+        }
+
         
 
 /* 
@@ -112,7 +129,7 @@
 		{{-- <div class="container">
 		    <div class="row">
                 <div class="col-3">
-                     <a href="index.html"><img src="{{asset('wizard_assets')}}/img/logo.svg" alt="" width="178" height="45" class="d-none d-md-block"><img src="{{asset('wizard_assets')}}/img/logo_mobile.svg" alt="" width="62" height="45" class="d-block d-md-none"></a>
+                     <a href="{{ url('/') }}"><img src="{{asset('wizard_assets')}}/img/logo.svg" alt="" width="178" height="45" class="d-none d-md-block"><img src="{{asset('wizard_assets')}}/img/logo_mobile.svg" alt="" width="62" height="45" class="d-block d-md-none"></a>
                 </div>
                 <div class="col-9">
                     <div id="social">

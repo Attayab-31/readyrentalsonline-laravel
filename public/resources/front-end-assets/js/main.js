@@ -67,23 +67,47 @@
                 $ltn__utilize = $('.ltn__utilize'),
                 $ltn__utilizeOverlay = $('.ltn__utilize-overlay'),
                 $mobileMenuToggle = $('.mobile-menu-toggle');
+            function closeMobileMenu(restoreFocus) {
+                $body.removeClass('ltn__utilize-open');
+                $ltn__utilize.removeClass('ltn__utilize-open');
+                $ltn__utilizeOverlay.fadeOut();
+                $mobileMenuToggle.find('a').removeClass('close').attr('aria-expanded', 'false').attr('aria-label', 'Open menu');
+                $('#ltn__utilize-mobile-menu').attr('aria-hidden', 'true').attr('inert', '');
+                if (restoreFocus) $mobileMenuToggle.find('a').trigger('focus');
+            }
+
             $ltn__utilizeToggle.on('click', function (e) {
                 e.preventDefault();
                 var $this = $(this),
                     $target = $this.attr('href');
+                if ($this.parent().hasClass('mobile-menu-toggle') && $this.hasClass('close')) {
+                    closeMobileMenu(true);
+                    return;
+                }
                 $body.addClass('ltn__utilize-open');
                 $($target).addClass('ltn__utilize-open');
                 $ltn__utilizeOverlay.fadeIn();
                 if ($this.parent().hasClass('mobile-menu-toggle')) {
+                    $($target).removeAttr('inert');
                     $this.addClass('close');
+                    $this.attr('aria-expanded', 'true').attr('aria-label', 'Close menu');
+                    $($target).attr('aria-hidden', 'false');
+                    $($target).find('.ltn__utilize-menu > ul > li > a').first().trigger('focus');
                 }
             });
             $('.ltn__utilize-close, .ltn__utilize-overlay').on('click', function (e) {
                 e.preventDefault();
-                $body.removeClass('ltn__utilize-open');
-                $ltn__utilize.removeClass('ltn__utilize-open');
-                $ltn__utilizeOverlay.fadeOut();
-                $mobileMenuToggle.find('a').removeClass('close');
+                closeMobileMenu(true);
+            });
+            $(document).on('keydown', function (e) {
+                if (e.key !== 'Escape' || !$body.hasClass('ltn__utilize-open')) return;
+
+                closeMobileMenu(true);
+            });
+            $window.on('resize', function () {
+                if ($window.width() >= 1200 && $body.hasClass('ltn__utilize-open')) {
+                    closeMobileMenu(false);
+                }
             });
         })();
 
@@ -94,6 +118,10 @@
             var $ltn__utilizeNav = $('.ltn__utilize-menu, .overlay-menu'),
                 $ltn__utilizeNavSubMenu = $ltn__utilizeNav.find('.sub-menu');
 
+            $ltn__utilizeNavSubMenu.attr('aria-hidden', 'true').each(function () {
+                $(this).siblings('a').attr('aria-expanded', 'false');
+            });
+
             /*Add Toggle Button With Off Canvas Sub Menu*/
             $ltn__utilizeNavSubMenu.parent().prepend('<span class="menu-expand"></span>');
 
@@ -102,14 +130,22 @@
                 var $this = $(this);
                 if ($this.attr('href') === '#' || $this.hasClass('menu-expand')) {
                     e.preventDefault();
+                    var $submenu = $this.siblings('ul'),
+                        $toggle = $this.hasClass('menu-expand') ? $this.siblings('a').first() : $this;
                     if ($this.siblings('ul:visible').length) {
+                        $toggle.attr('aria-expanded', 'false');
+                        $submenu.attr('aria-hidden', 'true');
                         $this.parent('li').removeClass('active');
                         $this.siblings('ul').slideUp();
                         $this.parent('li').find('li').removeClass('active');
                         $this.parent('li').find('ul:visible').slideUp();
                     } else {
+                        $toggle.attr('aria-expanded', 'true');
+                        $submenu.attr('aria-hidden', 'false');
                         $this.parent('li').addClass('active');
                         $this.closest('li').siblings('li').removeClass('active').find('li').removeClass('active');
+                        $this.closest('li').siblings('li').find('a[aria-expanded="true"]').attr('aria-expanded', 'false');
+                        $this.closest('li').siblings('li').find('.sub-menu').attr('aria-hidden', 'true');
                         $this.closest('li').siblings('li').find('ul:visible').slideUp();
                         $this.siblings('ul').slideDown();
                     }

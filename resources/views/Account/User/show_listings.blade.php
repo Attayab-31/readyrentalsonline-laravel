@@ -23,19 +23,21 @@
                                         <input type="text" class="form-control"  id="searchTerm" name="searchTerm" value="{{ app('request')->input('searchTerm') }}" placeholder="Type something...">
                                     </div>
 
-                                    <div class="col-md-3">
-                                        <label for="user_type" class="form-label">User type</label>
-                                        <select class="js-example-basic-single form-control" name="user_type">
-                                            <option value="">--Select--</option>
-                                            <option value="superAdmin" @if(app('request')->input('user_type') == "superAdmin") selected @endif>super Admin</option>
-                                            <option value="user" @if(app('request')->input('user_type') == "user") selected @endif>user</option>
+                                    <div class="col-md-3 rr-admin-field">
+                                        <label for="user_type" class="form-label rr-admin-field-label">User type</label>
+                                        <select id="user_type" class="js-example-basic-single form-control rr-admin-select" name="user_type">
+                                            <option value="">All user types</option>
+                                            <option value="superAdmin" @if(app('request')->input('user_type') == "superAdmin") selected @endif>Super Admin</option>
+                                            <option value="admin" @if(app('request')->input('user_type') == "admin") selected @endif>Admin</option>
+                                            <option value="user" @if(app('request')->input('user_type') == "user") selected @endif>User</option>
+                                            <option value="tenant" @if(app('request')->input('user_type') == "tenant") selected @endif>Tenant</option>
                                         </select>
                                     </div>
 
-                                    <div class="col-md-3">
-                                        <label for="account_status" class="form-label">Account status</label>
-                                        <select class="js-example-basic-single form-control" name="account_status">
-                                            <option value="">--Select--</option>
+                                    <div class="col-md-3 rr-admin-field">
+                                        <label for="account_status" class="form-label rr-admin-field-label">Account status</label>
+                                        <select id="account_status" class="js-example-basic-single form-control rr-admin-select" name="account_status">
+                                            <option value="">All account statuses</option>
                                             <option value="active" @if(app('request')->input('account_status') == "active") selected @endif>Active</option>
                                             <option value="suspended" @if(app('request')->input('account_status') == "suspended") selected @endif>Suspended</option>
                                         </select>
@@ -47,9 +49,13 @@
                    
                             <div class="card-footer">
                                 <div class="col-lg-12">
-                                    <div class="text-end">
-                                        <a href="{{ url()->current() }}" class="btn btn-warning" id="formSubmitBTN">Reset Filters</a>
-                                        <button type="submit" class="btn btn-primary" id="formSubmitBTN">Submit</button>
+                                    <div class="text-end d-flex justify-content-end gap-2">
+                                        <a href="{{ url()->current() }}" class="btn btn-soft-secondary">
+                                            <i class="ri-refresh-line"></i> Reset Filters
+                                        </a>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="ri-search-line"></i> Filter Users
+                                        </button>
                                     </div>
                                 </div><!--end col-->
                             </div>
@@ -65,14 +71,12 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="card">
-                        <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">Application Users</h4>
+                        <div class="card-header align-items-center d-flex justify-content-between">
+                            <h4 class="card-title mb-0">Application Users</h4>
                             <div class="flex-shrink-0">
-                                <div class="dropdown card-header-dropdown">
-                                    <a class="text-reset " href="{{url('accounts/users/create')}}">
-                                        <button type="button" class="btn btn-soft-primary waves-effect waves-light">+ Create new user</button>
-                                    </a>
-                                </div>
+                                <a href="{{url('accounts/users/create')}}" class="btn btn-primary btn-sm">
+                                    <i class="ri-user-add-line"></i> Create New User
+                                </a>
                             </div>
                         </div><!-- end card header -->
                         <div class="card-body">
@@ -97,7 +101,7 @@
                                                             <img src="{{$user->getProfilePicture($user->profile_picture)}}" alt="" class="img-fluid d-block" />
                                                         </div>
                                                         <div>
-                                                            <h5 class="fs-13 my-1"><a href="apps-ecommerce-product-details.html" class="text-reset">{{$user->first_name.' '.$user->last_name}}</a></h5>
+                                                            <h5 class="fs-13 my-1"><a href="{{ route('users.show', $user->id) }}" class="text-reset">{{$user->first_name.' '.$user->last_name}}</a></h5>
                                                             <span class="text-muted">{{$user->email}}</span>
                                                         </div>
                                                     </div>
@@ -136,7 +140,7 @@
                                                         <ul class="dropdown-menu dropdown-menu-end">
                                                             {{-- <li><a href="{{url('accounts/users/'.$user->id)}}" class="dropdown-item"><i class="ri-eye-fill align-bottom me-0 text-muted"></i> View profile</a></li> --}}
                                                             <li><a href="{{url('accounts/users/'.$user->id.'/edit')}}" class="dropdown-item"><i class="ri-pencil-fill align-bottom me-0 text-muted"></i> Edit</a></li>
-                                                            <li><a href="{{url('accounts/users/delete/'.$user->id)}}" onclick="confirm_soft_delete(event)" class="dropdown-item"><i class="ri-delete-bin-fill align-bottom me-0 text-muted"></i> Delete</a></li>
+                                                            <li><form method="post" action="{{url('accounts/users/delete/'.$user->id)}}" onsubmit="return confirm('Delete this user?')">@csrf @method('DELETE')<button type="submit" class="dropdown-item"><i class="ri-delete-bin-fill align-bottom me-0 text-muted"></i> Delete</button></form></li>
                                                         </ul>
                                                     </div>
                                                 </td>

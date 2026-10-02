@@ -4,178 +4,197 @@
 @endsection
 
 @section('content')
- 
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0">Control Panel Dashboard</h4>
 
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                    </ol>
-                </div>
-
+    <!-- Welcome Banner -->
+    <div class="portal-welcome-banner">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <span class="portal-welcome-badge">
+                    <i class="ri-shield-check-line"></i>
+                    @if(Auth::user()->isSuperAdmin())
+                        Super Administrator
+                    @elseif(Auth::user()->isAdmin())
+                        Property Manager
+                    @elseif(Auth::user()->isTenant())
+                        Tenant Portal
+                    @else
+                        Client Portal
+                    @endif
+                </span>
+                <h2 class="portal-welcome-title">Welcome back, {{ Auth::user()->first_name }}!</h2>
+                <p class="portal-welcome-subtitle">Your rental portfolio, invoices and tenant activity at a glance.</p>
+                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                    <a href="{{ url('accounts/properties') }}" class="portal-property-summary">
+                        <i class="ri-building-2-line"></i>
+                        <strong>{{ number_format($db_data['TotalPropertiesCount']) }}</strong> properties in your portfolio
+                        <i class="ri-arrow-right-line"></i>
+                    </a>
+                @endif
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                    <a href="{{ url('accounts/invoices/create') }}" class="btn btn-light text-primary fw-semibold">
+                        <i class="ri-add-line"></i> Create Invoice
+                    </a>
+                    <a href="{{ url('accounts/properties/create') }}" class="btn btn-soft-primary bg-white bg-opacity-25 text-white border-0">
+                        <i class="ri-home-4-line"></i> Add Property
+                    </a>
+                @else
+                    <a href="{{ url('accounts/invoices') }}" class="btn btn-light text-primary fw-semibold">
+                        <i class="ri-receipt-line"></i> View Invoices
+                    </a>
+                    <a href="{{ url('accounts/chat') }}" class="btn btn-soft-primary bg-white bg-opacity-25 text-white border-0">
+                        <i class="ri-chat-3-line"></i> Message Board
+                    </a>
+                @endif
             </div>
         </div>
     </div>
-    <!-- end page title -->
 
- 
-    <div class="row">
+    <!-- Metric Cards Grid -->
+    <div class="row g-3">
         @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
         <div class="col-xl-3 col-md-6">
-            <!-- card -->
-            <div class="card card-animate">
+            <div class="card card-animate portal-metric-card accent-slate h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted mb-0">Total Users</p>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="portal-metric-label">Total Users</div>
+                        <div class="portal-metric-icon icon-navy">
+                            <i class="ri-user-shared-line"></i>
                         </div>
                     </div>
-                    <div class="d-flex align-items-end justify-content-between mt-4">
-                        <div>
-                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"> <span class="counter-value" data-target="{{$db_data['TotalUsersCount']}}">0</span></h4>
-                            <a href="{{url('accounts/users')}}" class="text-decoration-underline">View all users</a>
-                        </div>
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-success-subtle rounded fs-3">
-                                <i class="bx bx-user-plus text-success"></i>
-                            </span>
-                        </div>
+                    <div class="portal-metric-value mb-3">
+                        <span class="counter-value" data-target="{{ $db_data['TotalUsersCount'] }}">{{ $db_data['TotalUsersCount'] }}</span>
                     </div>
-                </div><!-- end card body -->
-            </div><!-- end card -->
-        </div><!-- end col -->
+                    <div>
+                        <a href="{{ url('accounts/users') }}" class="portal-metric-link">
+                            Manage user accounts <i class="ri-arrow-right-line"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
         @endif
-
-
-        {{-- If Tenant is logged in then show the count of their invoices --}}
-        @if(Auth::user()->isTenant())
-
-            {{-- Get the Total Invoices Count from the Modal below --}}
-            @php 
-                $db_data['TotalInvoicesCount'] = \App\Models\Invoice::where('i_tenant_id' , Auth::user()->id)->count();
-            @endphp
-            
-            
-            
-            {{-- Get the Total Invoices Count from the Modal below --}}
-            @php 
-                $db_data['TotalPaidInvoicesCount'] = \App\Models\Invoice::where('i_tenant_id' , Auth::user()->id)->where('i_status' , 'paid')->count();
-            @endphp
-            
-    
-        @elseif(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-            
-            {{-- Get the Total Invoices Count from the Modal below --}}
-            @php 
-                $db_data['TotalInvoicesCount'] = \App\Models\Invoice::where('i_status' , 'unpaid')->count();
-            @endphp
-            
-            
-            {{-- Get the Total Invoices Count from the Modal below --}}
-            @php 
-                $db_data['TotalPaidInvoicesCount'] = \App\Models\Invoice::where('i_status' , 'paid')->count();
-            @endphp
-
-        @endif
-    
-            <div class="col-xl-3 col-md-6">
-                <!-- card -->
-                <div class="card card-animate">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1">
-                                <p class="text-uppercase fw-medium text-muted mb-0">Open Invoices</p>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-end justify-content-between mt-4">
-                            <div>
-                                <h4 class="fs-22 fw-semibold ff-secondary mb-4"> <span class="counter-value" data-target="{{$db_data['TotalInvoicesCount']}}">0</span></h4>
-                                <a href="{{url('accounts/invoices?i_status=open')}}" class="text-decoration-underline">View all invoices</a>
-                            </div>
-                            <div class="avatar-sm flex-shrink-0">
-                                <span class="avatar-title bg-danger-subtle rounded fs-3">
-                                    <i class="bx bx-file text-danger"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div><!-- end card body -->
-                </div><!-- end card -->
-            </div><!-- end col -->
-
-
-
-            <div class="col-xl-3 col-md-6">
-                <!-- card -->
-                <div class="card card-animate">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1">
-                                <p class="text-uppercase fw-medium text-muted mb-0">Paid Invoices</p>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-end justify-content-between mt-4">
-                            <div>
-                                <h4 class="fs-22 fw-semibold ff-secondary mb-4"> <span class="counter-value" data-target="{{$db_data['TotalPaidInvoicesCount']}}">0</span></h4>
-                                <a href="{{url('accounts/invoices?i_status=paid')}}" class="text-decoration-underline">View all invoices</a>
-                            </div>
-                            <div class="avatar-sm flex-shrink-0">
-                                <span class="avatar-title bg-success-subtle rounded fs-3">
-                                    <i class="bx bx-file text-success"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div><!-- end card body -->
-                </div><!-- end card -->
-            </div><!-- end col -->
- 
-      
-        
- 
-
-        {{-- Get UnRead Message and display the count in the card --}}
-        @php 
-            $db_data['TotalUnReadMessages'] = \App\Models\Message::where('receiver_id' , Auth::user()->id)
-                                                                ->where('is_read' , false)
-                                                                ->count();
-        @endphp
 
         <div class="col-xl-3 col-md-6">
-            <!-- card -->
-            <div class="card card-animate">
+            <div class="card card-animate portal-metric-card accent-rose h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted mb-0">Unread Messages</p>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="portal-metric-label">Open / Unpaid Invoices</div>
+                        <div class="portal-metric-icon icon-rose">
+                            <i class="ri-file-warning-line"></i>
                         </div>
                     </div>
-                    <div class="d-flex align-items-end justify-content-between mt-4">
-                        <div>
-                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"> <span class="counter-value" data-target="{{$db_data['TotalUnReadMessages']}}">0</span></h4>
-                            <a href="{{url('accounts/chat')}}" class="text-decoration-underline">View all messages</a>
-                        </div>
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-info-subtle rounded fs-3">
-                                <i class="bx bx-envelope text-info"></i>
-                            </span>
-                        </div>
+                    <div class="portal-metric-value mb-3 text-danger">
+                        <span class="counter-value" data-target="{{ $db_data['TotalInvoicesCount'] }}">0</span>
                     </div>
-                </div><!-- end card body -->
-            </div><!-- end card -->
-        </div><!-- end col -->
+                    <div>
+                        <a href="{{ url('accounts/invoices?i_status=open') }}" class="portal-metric-link text-danger">
+                            View open invoices <i class="ri-arrow-right-line"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate portal-metric-card accent-emerald h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="portal-metric-label">Paid Invoices</div>
+                        <div class="portal-metric-icon icon-emerald">
+                            <i class="ri-checkbox-circle-line"></i>
+                        </div>
+                    </div>
+                    <div class="portal-metric-value mb-3 text-success">
+                        <span class="counter-value" data-target="{{ $db_data['TotalPaidInvoicesCount'] }}">0</span>
+                    </div>
+                    <div>
+                        <a href="{{ url('accounts/invoices?i_status=paid') }}" class="portal-metric-link text-success">
+                            View paid invoices <i class="ri-arrow-right-line"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate portal-metric-card accent-amber h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="portal-metric-label">Unread Messages</div>
+                        <div class="portal-metric-icon icon-amber">
+                            <i class="ri-mail-unread-line"></i>
+                        </div>
+                    </div>
+                    <div class="portal-metric-value mb-3">
+                        <span class="counter-value" data-target="{{ $db_data['TotalUnReadMessages'] }}">0</span>
+                    </div>
+                    <div>
+                        <a href="{{ url('accounts/chat') }}" class="portal-metric-link">
+                            Open message board <i class="ri-arrow-right-line"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-
-
-
-
+    <!-- Quick Shortcuts Row -->
+    @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+    <div class="row g-3 mt-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="card-title mb-0">Management Quick Links</h5>
+                    <span class="badge bg-primary">Ready Rentals Operations</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{{ url('accounts/properties') }}" class="text-decoration-none">
+                                <div class="p-3 border rounded-3 text-center hover-elevate bg-light">
+                                    <i class="ri-building-line fs-2 text-primary mb-2 d-block"></i>
+                                    <h6 class="mb-1 text-dark">Properties</h6>
+                                    <small class="text-muted">Manage rental listings</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{{ url('accounts/properties/applications') }}" class="text-decoration-none">
+                                <div class="p-3 border rounded-3 text-center hover-elevate bg-light">
+                                    <i class="ri-file-text-line fs-2 text-primary mb-2 d-block"></i>
+                                    <h6 class="mb-1 text-dark">Applications</h6>
+                                    <small class="text-muted">Review submitted rental forms</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{{ url('accounts/invoices') }}" class="text-decoration-none">
+                                <div class="p-3 border rounded-3 text-center hover-elevate bg-light">
+                                    <i class="ri-money-dollar-circle-line fs-2 text-success mb-2 d-block"></i>
+                                    <h6 class="mb-1 text-dark">Invoices</h6>
+                                    <small class="text-muted">Track rent & ACH payments</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{{ url('accounts/chat') }}" class="text-decoration-none">
+                                <div class="p-3 border rounded-3 text-center hover-elevate bg-light">
+                                    <i class="ri-chat-smile-2-line fs-2 text-warning mb-2 d-block"></i>
+                                    <h6 class="mb-1 text-dark">Messages</h6>
+                                    <small class="text-muted">Tenant communications</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 
 @endsection
-
 
 @section("scripts")
 @endsection

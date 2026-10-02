@@ -1,0 +1,344 @@
+.rr-print-application-hero {
+    padding: 18px 0 40px;
+    background: #f4f7fa;
+}
+
+.rr-print-application-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 34px;
+    color: #607a92;
+    font-size: 13px;
+}
+
+.rr-print-application-breadcrumb a {
+    color: #2b5f8e;
+    font-weight: 650;
+}
+
+.rr-print-application-breadcrumb a:hover {
+    color: #10253a;
+}
+
+.rr-print-application-breadcrumb i {
+    color: #9aa4ac;
+    font-size: 10px;
+}
+
+.rr-print-application-breadcrumb [aria-current="page"] {
+    color: #536879;
+}
+
+.rr-print-application-hero__content {
+    max-width: 760px;
+    padding: 16px 0 0;
+}
+
+.rr-print-application-eyebrow {
+    margin: 0 0 9px;
+    color: #2b5f8e;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .13em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.rr-print-application-hero h1 {
+    margin: 0 0 12px;
+    color: #0e2235;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 750;
+    letter-spacing: -.035em;
+    line-height: 1.12;
+}
+
+.rr-print-application-hero__content > p:last-child {
+    max-width: 650px;
+    margin: 0;
+    color: #536879;
+    font-size: clamp(15px, 1.8vw, 17px);
+    line-height: 1.7;
+}
+
+.rr-print-application-main {
+    padding: 0 0 88px;
+    background: #f4f7fa;
+}
+
+.rr-print-application-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr);
+    align-items: stretch;
+    gap: 24px;
+}
+
+.rr-print-application-card,
+.rr-print-application-next {
+    min-width: 0;
+    padding: clamp(24px, 4vw, 40px);
+    border: 1px solid #e1e8ef;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 12px 32px rgba(16, 37, 58, .06);
+}
+
+.rr-print-application-card {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.rr-print-application-card__icon {
+    display: grid;
+    width: 54px;
+    height: 54px;
+    margin-bottom: 22px;
+    place-items: center;
+    border-radius: 16px;
+    background: #e8eff5;
+    color: #2b5f8e;
+    font-size: 23px;
+}
+
+.rr-print-application-card h2,
+.rr-print-application-next h2 {
+    margin: 0;
+    color: #0e2235;
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 750;
+    letter-spacing: -.025em;
+    line-height: 1.25;
+}
+
+.rr-print-application-card__description {
+    max-width: 520px;
+    margin: 12px 0 22px;
+    color: #536879;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.rr-print-application-file {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 58px;
+    margin-bottom: 20px;
+    padding: 12px 14px;
+    border: 1px solid #e1e8ef;
+    border-radius: 11px;
+    background: #f8fafc;
+    color: #536879;
+    font-size: 13px;
+}
+
+.rr-print-application-file > i {
+    color: #2b5f8e;
+    font-size: 17px;
+}
+
+.rr-print-application-file strong {
+    margin-left: auto;
+    padding: 5px 8px;
+    border-radius: 6px;
+    background: #e8eff5;
+    color: #1d466c;
+    font-size: 10px;
+    letter-spacing: .06em;
+}
+
+.rr-print-application-download {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    width: 100%;
+    min-height: 54px;
+    overflow: hidden;
+    padding: 0 20px;
+    border-radius: 999px;
+    background: #2b5f8e;
+    color: #fff !important;
+    font-size: 14px;
+    font-weight: 750;
+    transition: color .25s ease, background-color .25s ease;
+}
+
+.rr-print-application-download::after {
+    position: absolute;
+    z-index: 0;
+    inset: 0 auto 0 0;
+    width: 0;
+    border-radius: inherit;
+    background: #fff;
+    content: "";
+    transition: width .3s ease;
+}
+
+.rr-print-application-download > span,
+.rr-print-application-download__arrow {
+    position: relative;
+    z-index: 1;
+}
+
+.rr-print-application-download > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rr-print-application-download:hover,
+.rr-print-application-download:focus-visible {
+    color: #10253a !important;
+    outline: 2px solid #2b5f8e;
+    outline-offset: 3px;
+}
+
+.rr-print-application-download:hover::after,
+.rr-print-application-download:focus-visible::after {
+    width: 100%;
+}
+
+.rr-print-application-card__note {
+    margin: 13px 0 0;
+    color: #607a92;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.rr-print-application-next {
+    background: linear-gradient(145deg, #fff 0%, #f8fafc 100%);
+}
+
+.rr-print-application-next h2 {
+    font-size: clamp(20px, 2.5vw, 24px);
+}
+
+.rr-print-application-next ol {
+    display: grid;
+    gap: 21px;
+    margin: 24px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.rr-print-application-next li {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+}
+
+.rr-print-application-next li > span {
+    display: grid;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border: 1px solid #c8d9e4;
+    border-radius: 50%;
+    background: #e8eff5;
+    color: #1d466c;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.rr-print-application-next li strong {
+    display: block;
+    margin: 1px 0 4px;
+    color: #0e2235;
+    font-size: 14px;
+}
+
+.rr-print-application-next li p {
+    margin: 0;
+    color: #607a92;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.rr-print-application-upload {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+    padding: 0 16px;
+    border: 1px solid #d2dce5;
+    border-radius: 999px;
+    color: #1d466c;
+    font-size: 13px;
+    font-weight: 750;
+    transition: background-color .2s ease, border-color .2s ease;
+}
+
+.rr-print-application-upload:hover,
+.rr-print-application-upload:focus-visible {
+    border-color: #9bb3c6;
+    background: #e8eff5;
+    color: #10253a;
+}
+
+.rr-print-application-online {
+    display: inline-block;
+    margin-top: 16px;
+    color: #2b5f8e;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+@media (max-width: 767px) {
+    .rr-print-application-hero {
+        padding-top: 14px;
+        padding-bottom: 28px;
+    }
+
+    .rr-print-application-breadcrumb {
+        gap: 7px;
+        margin-bottom: 24px;
+        font-size: 12px;
+    }
+
+    .rr-print-application-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .rr-print-application-card,
+    .rr-print-application-next {
+        padding: 24px;
+        border-radius: 15px;
+    }
+
+    .rr-print-application-main {
+        padding-bottom: 56px;
+    }
+}
+
+@media (max-width: 380px) {
+    .rr-print-application-card,
+    .rr-print-application-next {
+        padding: 20px 17px;
+    }
+
+    .rr-print-application-file {
+        gap: 8px;
+        padding-inline: 10px;
+        font-size: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rr-print-application-download,
+    .rr-print-application-download::after,
+    .rr-print-application-upload {
+        transition: none;
+    }
+}

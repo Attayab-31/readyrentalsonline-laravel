@@ -97,7 +97,7 @@
                     alt=""
                     aria-hidden="true"
                     draggable="false"
-                    style="--rr-piece-clip: {{ $clip }}; --rr-piece-delay: {{ 3200 + ($index * 58) }}ms;"
+                    style="--rr-piece-clip: {{ $clip }}; --rr-piece-delay: {{ 2650 + ($index * 40) }}ms;"
                 >
             @endforeach
         </div>

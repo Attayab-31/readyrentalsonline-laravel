@@ -14,10 +14,40 @@
 
     if (showOnLoad) document.body.classList.add('rr-page-transition-active');
 
+    function timeToMilliseconds(value) {
+      var amount = parseFloat(value);
+      if (!Number.isFinite(amount)) return 0;
+
+      return value.indexOf('ms') !== -1 ? amount : amount * 1000;
+    }
+
+    function requiredPreloaderDuration() {
+      var longestAnimation = 0;
+      var pieces = preloader.querySelectorAll('.rr-page-preloader__piece');
+
+      pieces.forEach(function (piece) {
+        var styles = window.getComputedStyle(piece);
+        if (styles.animationName === 'none') return;
+
+        var durations = styles.animationDuration.split(',');
+        var delays = styles.animationDelay.split(',');
+
+        durations.forEach(function (duration, index) {
+          var delay = delays[index % delays.length];
+          longestAnimation = Math.max(
+            longestAnimation,
+            timeToMilliseconds(duration) + timeToMilliseconds(delay)
+          );
+        });
+      });
+
+      return Math.max(minimumPreloaderDuration, longestAnimation + 100);
+    }
+
     function hidePreloader() {
       window.clearTimeout(transitionTimeout);
       window.clearTimeout(loadTimeout);
-      var remaining = minimumPreloaderDuration - (Date.now() - visibleSince);
+      var remaining = requiredPreloaderDuration() - (Date.now() - visibleSince);
 
       if (remaining > 0) {
         window.clearTimeout(finishTimeout);
@@ -46,7 +76,7 @@
       document.body.classList.add('rr-page-transition-active');
 
       window.clearTimeout(transitionTimeout);
-      transitionTimeout = window.setTimeout(hidePreloader, 12000);
+      transitionTimeout = window.setTimeout(hidePreloader, Math.max(12000, requiredPreloaderDuration() + 8000));
     }
 
     function handoffToHome() {
@@ -62,7 +92,7 @@
         } else {
           form.requestSubmit();
         }
-      }, Math.max(0, minimumPreloaderDuration - (Date.now() - visibleSince)));
+      }, Math.max(0, requiredPreloaderDuration() - (Date.now() - visibleSince)));
     }
 
     if (showOnLoad) {
@@ -104,7 +134,7 @@
           return;
         }
         window.location.assign(link.href);
-      }, Math.max(0, minimumPreloaderDuration - (Date.now() - visibleSince)));
+      }, Math.max(0, requiredPreloaderDuration() - (Date.now() - visibleSince)));
     });
 
     document.addEventListener('submit', function (event) {

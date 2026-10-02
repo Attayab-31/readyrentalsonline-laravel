@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Ready Rentals Online - Client & Admin Portal" name="description" />
     <meta content="Ready Rentals Online" name="author" />
+    <meta name="theme-color" content="#10253a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script>document.documentElement.classList.add('rr-js');</script>
     <script>
         (function () {
@@ -16,9 +19,11 @@
     </script>
 
     <!-- Favicon and Brand Icons -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('logo/icon.svg') }}">
-    <link rel="shortcut icon" href="{{ asset('logo/icon.svg') }}" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="{{ asset('logo/icon.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}?v={{ filemtime(public_path('favicon.svg')) }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}?v={{ filemtime(public_path('favicon-32x32.png')) }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('logo/apple-touch-icon.png') }}?v={{ filemtime(public_path('logo/apple-touch-icon.png')) }}">
+    <link rel="manifest" href="{{ asset('manifest.webmanifest') }}?v={{ filemtime(public_path('manifest.webmanifest')) }}">
 
     @if(request()->is('accounts/users*', 'accounts/invoices*'))
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -71,23 +76,6 @@
                         <span id="current-date-time"></span>
                     </div>
                     <div class="d-flex align-items-center">
-
-                        <div class="dropdown d-md-none topbar-head-dropdown header-item">
-                            <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-search-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="bx bx-search fs-22"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-search-dropdown">
-                                <form class="p-3">
-                                    <div class="form-group m-0">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search ..." aria-label="Recipient's username">
-                                            <button class="btn btn-primary" type="submit"><i class="mdi mdi-magnify"></i></button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
- 
 
                         <div class="ms-1 header-item d-none d-sm-flex">
                             <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="admin-fullscreen-toggle" data-toggle="fullscreen" aria-label="Enter full screen" title="Enter full screen" aria-pressed="false">
@@ -648,24 +636,29 @@
     @yield('scripts')
 
     <script>
-        document.querySelectorAll('.light-dark-mode').forEach(function (button) {
-            button.addEventListener('click', function () {
-                var root = document.documentElement;
-                var nextTheme = root.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
-                root.setAttribute('data-bs-theme', nextTheme);
-                localStorage.setItem('rr-account-theme', nextTheme);
-                button.setAttribute('aria-label', nextTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-                button.title = nextTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
-                var icon = button.querySelector('i');
-                if (icon) icon.className = nextTheme === 'dark' ? 'bx bx-sun fs-22' : 'bx bx-moon fs-22';
+        (function () {
+            var root = document.documentElement;
+            var buttons = document.querySelectorAll('.light-dark-mode');
+
+            function syncThemeControls() {
+                var isDark = root.getAttribute('data-bs-theme') === 'dark';
+                localStorage.setItem('rr-account-theme', isDark ? 'dark' : 'light');
+
+                buttons.forEach(function (button) {
+                    var label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+                    var icon = button.querySelector('i');
+                    button.setAttribute('aria-label', label);
+                    button.title = label;
+                    if (icon) icon.className = isDark ? 'bx bx-sun fs-22' : 'bx bx-moon fs-22';
+                });
+            }
+
+            syncThemeControls();
+            new MutationObserver(syncThemeControls).observe(root, {
+                attributes: true,
+                attributeFilter: ['data-bs-theme']
             });
-        });
-        document.querySelectorAll('.light-dark-mode').forEach(function (button) {
-            var isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-            var icon = button.querySelector('i');
-            if (icon) icon.className = isDark ? 'bx bx-sun fs-22' : 'bx bx-moon fs-22';
-            button.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
-        });
+        })();
     </script>
 
     <script>

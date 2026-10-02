@@ -34,7 +34,11 @@ textarea.form-control { min-height: 110px; }
 }
 
 @media (max-width: 767.98px) {
-    .main-content { margin-left: 0 !important; }
+    .main-content {
+        margin-left: 0 !important;
+        padding-bottom: calc(60px + env(safe-area-inset-bottom)) !important;
+    }
+    #back-to-top { display: none !important; }
     .layout-width { padding-inline: 10px; }
     .navbar-header { gap: 4px; }
     .navbar-brand-box.horizontal-logo { width: auto; padding-inline: 4px; }

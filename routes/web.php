@@ -32,6 +32,8 @@ Route::post('properties/process-inquiry-form', [App\Http\Controllers\PropertyCon
 
 Route::get('applications', [App\Http\Controllers\PropertyController::class, 'applications']);
 
+Route::get('online-application/{pa_tracking_id}/setup', [App\Http\Controllers\PropertyController::class, 'edit_online_application_setup']);
+Route::post('process-online-application/{pa_tracking_id}/setup', [App\Http\Controllers\PropertyController::class, 'update_online_application_setup']);
 Route::get('applications/apply-online', [App\Http\Controllers\PropertyController::class, 'apply_online']);
 Route::post('applications/apply-online/process-form', [App\Http\Controllers\PropertyController::class, 'apply_online_process_form']);
     

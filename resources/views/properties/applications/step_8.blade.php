@@ -2,7 +2,7 @@
 @section('page_content')
 
 @php
-    $totalSteps = 9;
+    $totalSteps = 8;
     $currentStep = 8;
 @endphp
 
@@ -32,8 +32,6 @@
                         
                         <span class="required-field">*</span> <span class="field_error" id="e_sign_error">{{ $errors->first('e_sign') }}</span>
                     </h4>
-                    {{-- <p class="text-left" style="margin-bottom:0px !important;"> **Please do not leave any questions blank, Type N/A in the box if the questions does not apply to you or you don't have the answer at the time.</p> --}}
-
                     <form id="online-application-form-with-steps" action="{{url('process-online-application/step-8/'.$db_data['PropertyApplication']->pa_tracking_id)}}" class="ltn__form-box contact-form-box" method="post">
                     @csrf
 
@@ -45,13 +43,14 @@
                                  
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <canvas id="sig-canvas" width="620" height="200">
-                                            Your borwser does not support Canvas.
+                                        <canvas id="sig-canvas" width="620" height="200" tabindex="0" aria-label="Draw your signature in this box">
+                                            Your browser does not support the signature box. Please use another browser or call us for help.
                                         </canvas>
                                     </div>
                                 </div>
                                 <input type="hidden" name="e_sign" id="e_sign" value="">
-                                <span id="clearsignatureBtn" class="btn">Clear Your Signature</span>
+                                <p class="rr-application-instructions">Use your finger or mouse to sign in the box. If you make a mistake, choose “Clear signature” and try again.</p>
+                                <button type="button" id="clearsignatureBtn" class="btn">Clear signature</button>
  
  
                             </div>
@@ -76,9 +75,9 @@
                             
                         </div>
                         <hr>
-                        <div class="btn-wrapper mt-0" style="text-align:right !important;">
+                        <div class="btn-wrapper mt-0 rr-application-actions">
                             <a href="{{url('/online-application/step-7/'.$db_data['PropertyApplication']->pa_tracking_id)}}" class="btn theme-btn-1 btn-effect-1 text-s" >Back</a>
-                            <button class="btn theme-btn-1 btn-effect-1 text-uppercase" type="submit">Save and Continue</button>
+                            <button class="btn theme-btn-1 btn-effect-1 text-uppercase" type="submit">Submit Application</button>
                         </div>
                     </form>
                 </div>

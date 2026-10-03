@@ -62,16 +62,16 @@ $(document).ready(function()
         function getMousePos(canvasDom, mouseEvent) {
             var rect = canvasDom.getBoundingClientRect();
             return {
-                x: mouseEvent.clientX - rect.left,
-                y: mouseEvent.clientY - rect.top
+                x: (mouseEvent.clientX - rect.left) * (canvasDom.width / rect.width),
+                y: (mouseEvent.clientY - rect.top) * (canvasDom.height / rect.height)
             };
         }
 
         function getTouchPos(canvasDom, touchEvent) {
             var rect = canvasDom.getBoundingClientRect();
             return {
-                x: touchEvent.touches[0].clientX - rect.left,
-                y: touchEvent.touches[0].clientY - rect.top
+                x: (touchEvent.touches[0].clientX - rect.left) * (canvasDom.width / rect.width),
+                y: (touchEvent.touches[0].clientY - rect.top) * (canvasDom.height / rect.height)
             };
         }
 
@@ -152,85 +152,133 @@ $(document).ready(function()
 $('#online-application-form-with-steps').on('submit', function(e) {
     e.preventDefault();
 
-    // Clear previous errors
-    $('.field_error').text('');
-    $('.input-error').removeClass('input-error');
-    $('#form_res').hide().empty();
+    var form = this;
+    var $form = $(form);
+    var $response = $form.find('#form_res');
+    var submitEvent = e.originalEvent;
+    var submitButton = (submitEvent && submitEvent.submitter) || $form.find('button[type="submit"]').get(0);
+    var action = form.getAttribute('action');
 
-    // Get form action URL
-    let formActionUrl = $(this).attr('action');
-
-    // Gather form data
-    let formData = new FormData(this);
-
-    // Check for canvas and add its data URL if available
-    var canvas = document.getElementById("sig-canvas");
-    if (canvas) {
-        var dataUrl = canvas.toDataURL();
-        formData.append("e_sign", dataUrl);
+    if (!action || !submitButton || submitButton.disabled) {
+        return;
     }
 
-    // Change button text to include spinner
-    let submitButton = $(this).find('button[type="submit"]').get(0);
-    RRButtonLoading.start(submitButton, 'Processing…');
+    $form.find('.field_error').text('');
+    $form.find('.input-error').removeClass('input-error').removeAttr('aria-invalid');
+    $response.hide().empty();
 
-    // Add a 2-second delay before making the AJAX call
-    setTimeout(function() {
-        $.ajax({
-            type: 'POST',
-            url: formActionUrl, // Use the form action URL
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                // Handle success response
-                window.location.href = response.redirect_url; // Redirect on success
-            },
-            error: function(response) {
-                if (response.status === 422) {
-                    // Validation error response
-                    let errors = response.responseJSON.errors;
-                    let errorMessages = '<ul>';
-                    $.each(errors, function(key, value) {
-                        $('#' + key + '_error').text(value[0]); // Display validation error
-                        $('#' + key).addClass('input-error'); // Add error class to the field
-                        errorMessages += '<li>' + value[0] + '</li>';
-                    });
-                    errorMessages += '</ul>';
-                    // $('#form_res').html(errorMessages).show(); // Show error messages in the container
+    var formData = new FormData(form);
+    var signatureCanvas = document.getElementById('sig-canvas');
+    if (signatureCanvas) {
+        formData.set('e_sign', signatureCanvas.toDataURL());
+    }
 
-                    $("#form_res").css("display", "block");
-                    $("#form_res").html('<div class="alert alert-danger blink" style="margin-bottom:1.2rem" role="alert"><p class="response_title" style="color:red;"><i class="fas fa-times"></i> Error(s) Found!</p>\
-                    <b>please correct errors below and Continue!</b></div>');
+    RRButtonLoading.start(submitButton, 'Saving your answers…');
 
-                    // Ensure the DOM is updated before scrolling
-                    setTimeout(function() {
-                        $('html, body').animate({
-                            scrollTop: $("#form_res").offset().top
-                        }, 500);
-                    }, 100); // Short delay to ensure DOM update
-                } else {
-                    // Handle other errors
-                    alert('An error occurred. Please try again.');
-                }
-            },
-            complete: function() {
-                // Reset button text and re-enable it
-                RRButtonLoading.stop(submitButton);
+    $.ajax({
+        type: 'POST',
+        url: action,
+        data: formData,
+        contentType: false,
+        processData: false,
+        headers: { Accept: 'application/json' },
+        success: function(response) {
+            if (response && typeof response.redirect_url === 'string' && response.redirect_url !== '') {
+                window.location.assign(response.redirect_url);
+                return;
             }
-        });
-    }, 2000); // 2000 milliseconds = 2 seconds
+
+            showApplicationMessage($response, 'We could not continue just now. Please try again.');
+            RRButtonLoading.stop(submitButton);
+        },
+        error: function(xhr) {
+            if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
+                showValidationErrors($form, $response, xhr.responseJSON.errors);
+                RRButtonLoading.stop(submitButton);
+                return;
+            }
+
+            showApplicationMessage(
+                $response,
+                xhr.responseJSON && xhr.responseJSON.message
+                    ? xhr.responseJSON.message
+                    : 'We could not save your answers. Please try again or call 1-267-549-9625 for help.'
+            );
+            RRButtonLoading.stop(submitButton);
+        }
+    });
 });
 
-    
-    
+function showApplicationMessage($container, message) {
+    $container
+        .empty()
+        .append($('<div>', {
+            class: 'alert alert-danger rr-application-error',
+            role: 'alert',
+            tabindex: '-1',
+            text: message
+        }))
+        .show();
 
+    var messageElement = $container.children().get(0);
+    messageElement.focus();
+    messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
-    // Input change handler
-    $(document).on('input change', '.input-error', function() {
-        $(this).removeClass('input-error');
-        $('#' + $(this).attr('id') + '_error').text(''); // Clear the associated error message
+function showValidationErrors($form, $response, errors) {
+    var errorList = $('<ul>');
+    var firstInvalidField = null;
+
+    $.each(errors, function(key, messages) {
+        var message = Array.isArray(messages) ? messages[0] : messages;
+        var field = document.getElementById(key);
+        var fieldError = document.getElementById(key + '_error');
+
+        if (field && $form.get(0).contains(field)) {
+            $(field)
+                .addClass('input-error')
+                .attr('aria-invalid', 'true')
+                .attr('aria-describedby', key + '_error');
+            firstInvalidField = firstInvalidField || field;
+        }
+
+        if (fieldError && $form.get(0).contains(fieldError)) {
+            fieldError.textContent = message;
+        }
+
+        errorList.append($('<li>', { text: message }));
     });
+
+    var summary = $('<div>', {
+        class: 'alert alert-danger rr-application-error',
+        role: 'alert',
+        tabindex: '-1'
+    }).append(
+        $('<p>', { text: 'Please check the following and try again:' }),
+        errorList
+    );
+
+    $response.empty().append(summary).show();
+    summary.get(0).focus();
+    summary.get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    if (firstInvalidField) {
+        window.setTimeout(function() {
+            firstInvalidField.focus({ preventScroll: true });
+        }, 300);
+    }
+}
+
+$(document).on('input change', '#online-application-form-with-steps .input-error', function() {
+    $(this).removeClass('input-error').removeAttr('aria-invalid');
+    var fieldError = document.getElementById(this.id + '_error');
+    if (fieldError) {
+        fieldError.textContent = '';
+        if ($(this).attr('aria-describedby') === fieldError.id) {
+            $(this).removeAttr('aria-describedby');
+        }
+    }
+});
 
 
 

@@ -3,8 +3,8 @@
 
 
 @php
-    $totalSteps = 9;
-    $currentStep = 9;
+    $totalSteps = 8;
+    $currentStep = 8;
 @endphp
 
  <!-- FEATURE AREA START ( Feature - 6) -->
@@ -15,11 +15,9 @@
  
             <div class="col-lg-12 col-sm-12 col-12">
                 
-                @include('partials.application-progress', ['currentStep' => $currentStep, 'totalSteps' => $totalSteps])
-
                 <div class="ltn__feature-item ltn__feature-item-6 bg-white  box-shadow-1" id="form-cotaniner">
  
-                    <h4 class="title-2">Thank You!</h4>
+                    <h4 class="title-2">This Step Is Complete</h4>
                     
                     {{-- <p class="text-left" style="margin-bottom:0px !important;"> Your data is saved!</p> --}}
 
@@ -30,6 +28,9 @@
                     
                         <div class="form-inner-part">
                             @php 
+                                $number_of_co_Applicants = 0;
+                                $CoApplicantsAdded = 0;
+
                                 if($db_data['PropertyApplication']->pa_record_type == "applicant")
                                 {
                                     if($db_data['PropertyApplication']->pa_number_of_co_applicants > 0)
@@ -74,8 +75,7 @@
                             <p>{{$page_description}}</p>
                         </div>
                         <hr>
-                        <div class="btn-wrapper mt-0" style="text-align:right !important;">
-                            <a href="{{url('/online-application/step-8/'.$db_data['PropertyApplication']->pa_tracking_id)}}" class="btn theme-btn-1 btn-effect-1 text-s">Back</a>
+                        <div class="btn-wrapper mt-0 rr-application-actions">
                             <button class="btn theme-btn-1 btn-effect-1 text-s" type="submit">{{$button_label}}</button>
                         </div>
                     </form>

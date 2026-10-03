@@ -1,18 +1,32 @@
 
-input[type="text"], input[type="email"], input[type="password"], input[type="submit"],input[type="date"], textarea, select {
+input[type="text"], input[type="email"], input[type="password"], input[type="submit"], input[type="tel"], input[type="date"], textarea, select {
     background-color: var(--white);
     border: 2px solid;
     border-color: var(--border-color-9);
-    height: 40px !important;
+    min-height: 48px !important;
+    height: 48px !important;
     -webkit-box-shadow: none;
     box-shadow: none;
-    padding-left: 20px;
+    padding: 10px 42px 10px 14px;
     font-size: 16px;
     color: var(--ltn__paragraph-color);
     width: 100%;
-    margin-bottom: 15px;
-    border-radius: 0;
-    padding-right: 40px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+}
+
+textarea {
+    min-height: 110px !important;
+    height: auto !important;
+}
+
+.contact-form-box input:focus,
+.contact-form-box select:focus,
+.contact-form-box textarea:focus,
+#sig-canvas:focus {
+    border-color: #2b5f8e;
+    outline: 3px solid rgba(43, 95, 142, 0.2);
+    outline-offset: 1px;
 }
 
 
@@ -100,6 +114,79 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sub
     transition: width 240ms ease;
 }
 
+.rr-application-progress__help {
+    margin: 12px 0 0;
+    color: var(--rr-text-muted, #536879);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.rr-application-progress__help a {
+    color: var(--rr-slate-600, #2b5f8e);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.rr-application-instructions {
+    margin: 10px 0 16px;
+    padding: 12px 14px;
+    border-left: 4px solid #2b5f8e;
+    border-radius: 6px;
+    background: #f2f6fa;
+    color: #29445b;
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+.rr-application-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.rr-application-actions .btn {
+    min-height: 48px;
+    margin: 0;
+}
+
+.rr-application-error {
+    margin-bottom: 20px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.rr-application-error:focus {
+    outline: 3px solid rgba(176, 35, 24, 0.25);
+    outline-offset: 2px;
+}
+
+.rr-application-error p {
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.rr-application-error ul {
+    margin: 0;
+    padding-left: 22px;
+}
+
+#sig-canvas {
+    display: block;
+    width: 100%;
+    max-width: 620px;
+    height: auto;
+    touch-action: none;
+}
+
+.field_error {
+    display: block;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
 @media (max-width: 575px) {
     .rr-application-progress {
         margin-bottom: 16px;
@@ -118,6 +205,20 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sub
     .rr-application-progress__percentage {
         padding-top: 2px;
         font-size: 0.8rem;
+    }
+
+    .rr-application-progress__help {
+        font-size: 0.9rem;
+    }
+
+    .rr-application-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .rr-application-actions .btn {
+        width: 100%;
+        min-height: 50px;
     }
 }
 

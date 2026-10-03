@@ -3,7 +3,7 @@
 
 
 @php
-    $totalSteps = 9;
+    $totalSteps = 8;
     $currentStep = 7;
 @endphp
 
@@ -121,7 +121,7 @@
 
                         </div>
                         <hr>
-                        <div class="btn-wrapper mt-0" style="text-align:right !important;">
+                        <div class="btn-wrapper mt-0 rr-application-actions">
                             <a href="{{url('/online-application/step-6/'.$db_data['PropertyApplication']->pa_tracking_id)}}" class="btn theme-btn-1 btn-effect-1 text-s" >Back</a>
                             <button class="btn theme-btn-1 btn-effect-1 text-uppercase" type="submit">Save and Continue</button>
                         </div>

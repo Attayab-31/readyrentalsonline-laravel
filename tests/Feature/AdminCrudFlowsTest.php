@@ -115,7 +115,46 @@ class AdminCrudFlowsTest extends TestCase
         ]);
         $applicationStart->assertOk()->assertJsonStructure(['redirect_url']);
         $application = PropertyApplication::where('pa_property_id', $property->property_id)->firstOrFail();
-        $this->get($applicationStart->json('redirect_url'))->assertOk();
+        $this->get($applicationStart->json('redirect_url'))
+            ->assertOk()
+            ->assertSee('Step 2 of 8')
+            ->assertSee('Social Security Number')
+            ->assertSee('/online-application/'.$application->pa_tracking_id.'/setup');
+        $this->get('/online-application/'.$application->pa_tracking_id.'/setup')
+            ->assertOk()
+            ->assertSee('Choose a Home and Household Size');
+        $this->postJson('/process-online-application/'.$application->pa_tracking_id.'/setup', [
+            'pa_property_id' => $property->property_id,
+            'pa_number_of_co_applicants' => 1,
+        ])->assertOk()->assertJsonStructure(['redirect_url']);
+        $this->assertDatabaseHas('property_applications', [
+            'property_application_id' => $application->property_application_id,
+            'pa_property_id' => $property->property_id,
+            'pa_number_of_co_applicants' => 1,
+        ]);
+        $this->postJson('/process-online-application/'.$application->pa_tracking_id.'/setup', [
+            'pa_property_id' => 999999,
+            'pa_number_of_co_applicants' => 1,
+        ])->assertUnprocessable()->assertJsonValidationErrors(['pa_property_id']);
+        $this->postJson('/process-online-application/step-2/'.$application->pa_tracking_id, [
+            'pa_applicant_name' => 'Test Applicant',
+            'pa_applicant_social_sec_num' => '000000000',
+            'pa_applicant_driv_lic_num' => 'TEST1234',
+            'pa_applicant_dob' => '1990-01-01',
+            'pa_applicant_email' => 'applicant@example.test',
+            'pa_applicant_own_or_rent_monthly_payment' => '1200',
+            'pa_applicant_phone_num' => '2675499625',
+        ])->assertOk()->assertJsonStructure(['redirect_url']);
+        $this->get('/online-application/'.$application->pa_tracking_id.'/setup')->assertOk();
+        foreach (range(3, 8) as $step) {
+            $this->get('/online-application/step-'.$step.'/'.$application->pa_tracking_id)
+                ->assertOk()
+                ->assertSee('Step '.$step.' of 8');
+        }
+        $this->get('/online-application/step-9/'.$application->pa_tracking_id)
+            ->assertOk()
+            ->assertSee('This Step Is Complete')
+            ->assertDontSee('/online-application/step-8/'.$application->pa_tracking_id);
         $this->get('/accounts/properties/applications')->assertOk();
         $this->get('/accounts/properties/view-application-details/'.$application->property_application_id)->assertOk();
         $this->delete('/accounts/properties/applications/delete-permanently/'.$application->property_application_id)

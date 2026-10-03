@@ -3,7 +3,7 @@
 
 
 @php
-    $totalSteps = 9;
+    $totalSteps = 8;
     $currentStep = 4;
 @endphp
 
@@ -30,7 +30,7 @@
                         @endif
 
                     </h4>
-                    <p class="text-left" style="margin-bottom:0px !important;"> **Please do not leave any questions blank, Type N/A in the box if the questions does not apply to you or you don't have the answer at the time.</p>
+                    <p class="rr-application-instructions">Please answer each question. If you do not know an answer or a question does not apply, enter “N/A”.</p>
 
                     <form id="online-application-form-with-steps" action="{{url('process-online-application/step-4/'.$db_data['PropertyApplication']->pa_tracking_id)}}" class="ltn__form-box contact-form-box" method="post">
                     @csrf
@@ -159,7 +159,7 @@
 
                         </div>
                         <hr>
-                        <div class="btn-wrapper mt-0" style="text-align:right !important;">
+                        <div class="btn-wrapper mt-0 rr-application-actions">
                             <a href="{{url('/online-application/step-3/'.$db_data['PropertyApplication']->pa_tracking_id)}}" class="btn theme-btn-1 btn-effect-1 text-s" >Back</a>
                             <button class="btn theme-btn-1 btn-effect-1 text-uppercase" type="submit">Save and Continue</button>
                         </div>

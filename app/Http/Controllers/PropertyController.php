@@ -1112,7 +1112,57 @@ class PropertyController extends Controller
         $page_meta_data = array(
                                 'page_title'=>'Application '.config('app.name'),
                                 ); 
-        return view('properties.applications.new_online_application_start_page',compact('db_data'))->with($page_meta_data);
+        return view('properties.applications.new_online_application_start_page', compact('db_data'))
+            ->with('application', null)
+            ->with($page_meta_data);
+    }
+
+    public function edit_online_application_setup(string $pa_tracking_id)
+    {
+        $application = PropertyApplication::where('pa_tracking_id', $pa_tracking_id)
+            ->where('pa_record_type', 'applicant')
+            ->where(function ($query) {
+                $query->whereNull('pa_current_step')->orWhere('pa_current_step', 2);
+            })
+            ->firstOrFail();
+
+        $db_data['Property'] = Property::where('p_active_status', 'active')
+            ->where('p_listing_status', 'for-rent')
+            ->get();
+
+        return view('properties.applications.new_online_application_start_page', compact('db_data', 'application'))
+            ->with('page_title', 'Application '.config('app.name'));
+    }
+
+    public function update_online_application_setup(Request $request, string $pa_tracking_id)
+    {
+        $application = PropertyApplication::where('pa_tracking_id', $pa_tracking_id)
+            ->where('pa_record_type', 'applicant')
+            ->where(function ($query) {
+                $query->whereNull('pa_current_step')->orWhere('pa_current_step', 2);
+            })
+            ->firstOrFail();
+
+        $validatedData = $request->validate([
+            'pa_property_id' => [
+                'required',
+                'integer',
+                \Illuminate\Validation\Rule::exists('properties', 'property_id')
+                    ->where(fn ($query) => $query->where('p_active_status', 'active')->where('p_listing_status', 'for-rent')),
+            ],
+            'pa_number_of_co_applicants' => 'required|integer|between:0,5',
+        ], [], [
+            'pa_property_id' => 'Property',
+            'pa_number_of_co_applicants' => 'Number of adults applying',
+        ]);
+
+        $application->pa_property_id = $validatedData['pa_property_id'];
+        $application->pa_number_of_co_applicants = $validatedData['pa_number_of_co_applicants'];
+        $application->save();
+
+        return response()->json([
+            'redirect_url' => url('online-application/step-2/'.$application->pa_tracking_id),
+        ]);
     }
     
 
@@ -1964,6 +2014,8 @@ class PropertyController extends Controller
             {
 
                 //Check the Number of the CoApplicants Records Has been Saved.
+                $number_of_co_Applicants = 0;
+                $CoApplicantsAdded = 0;
                 $db_data['ParentPropertyApplication'] = PropertyApplication::where('property_application_id' , $db_data['PropertyApplication']->pa_parent_application_id)->first();
                 if($db_data['ParentPropertyApplication'])
                 {

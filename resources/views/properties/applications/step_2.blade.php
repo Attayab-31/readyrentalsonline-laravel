@@ -4,7 +4,7 @@
 
 
 @php
-    $totalSteps = 9;
+    $totalSteps = 8;
     $currentStep = 2;
 @endphp
 
@@ -33,7 +33,7 @@
                             Co-Applicant's Information
                         @endif
                     </h4>
-                    <p class="text-left" style="margin-bottom:0px !important;"> **Please do not leave any questions blank, Type N/A in the box if the questions does not apply to you or you don't have the answer at the time.</p>
+                    <p class="rr-application-instructions">Please answer each question. If you do not know an answer or a question does not apply, enter “N/A”.</p>
 
                     <form id="online-application-form-with-steps" action="{{url('process-online-application/step-2/'.$db_data['PropertyApplication']->pa_tracking_id)}}" class="ltn__form-box contact-form-box" method="post">
                     @csrf
@@ -49,27 +49,27 @@
                                         Name <span class="required-field">*</span> <span class="field_error" id="pa_applicant_name_error" >{{ $errors->first('pa_applicant_name')}}</span>
                                     </label>
                                     <div class="input-item">
-                                        <input type="text" class="input_field" id="pa_applicant_name" name="pa_applicant_name" placeholder=" Type..." placeholders="Enter name" value="{{ $db_data['PropertyApplication']->pa_applicant_name}}">
+                                        <input type="text" class="input_field" id="pa_applicant_name" name="pa_applicant_name" autocomplete="name" placeholder="Enter your full name" value="{{ $db_data['PropertyApplication']->pa_applicant_name}}">
                                     </div>
                                 </div>
 
 
                                 <div class="col-md-4">
                                     <label for="pa_applicant_social_sec_num"  class="required fs-7 fw-normal ">
-                                        SS# <span class="required-field">*</span> <span class="field_error" id="pa_applicant_social_sec_num_error" >{{ $errors->first('pa_applicant_social_sec_num')}}</span>
+                                        Social Security Number <span class="required-field">*</span> <span class="field_error" id="pa_applicant_social_sec_num_error" >{{ $errors->first('pa_applicant_social_sec_num')}}</span>
                                     </label>
                                     <div class="input-item">
-                                        <input type="text" class="input_field" id="pa_applicant_social_sec_num" name="pa_applicant_social_sec_num" placeholder=" Type..." placeholders="Enter name" value="{{ $db_data['PropertyApplication']->pa_applicant_social_sec_num}}">
+                                        <input type="text" inputmode="numeric" autocomplete="off" class="input_field" id="pa_applicant_social_sec_num" name="pa_applicant_social_sec_num" placeholder="Enter your Social Security Number" value="{{ $db_data['PropertyApplication']->pa_applicant_social_sec_num}}">
                                     </div>
                                 </div>
                                 
                                 
                                 <div class="col-md-4">
                                     <label for="pa_applicant_driv_lic_num"  class="required fs-7 fw-normal ">
-                                        Driver Lic # <span class="required-field">*</span> <span class="field_error" id="pa_applicant_driv_lic_num_error" >{{ $errors->first('pa_applicant_driv_lic_num')}}</span>
+                                        Driver’s License Number <span class="required-field">*</span> <span class="field_error" id="pa_applicant_driv_lic_num_error" >{{ $errors->first('pa_applicant_driv_lic_num')}}</span>
                                     </label>
                                     <div class="input-item">
-                                        <input type="text" class="input_field" id="pa_applicant_driv_lic_num" name="pa_applicant_driv_lic_num" placeholder=" Type..." placeholders="Enter name" value="{{ $db_data['PropertyApplication']->pa_applicant_driv_lic_num}}">
+                                        <input type="text" autocomplete="off" class="input_field" id="pa_applicant_driv_lic_num" name="pa_applicant_driv_lic_num" placeholder="Enter your driver’s license number" value="{{ $db_data['PropertyApplication']->pa_applicant_driv_lic_num}}">
                                     </div>
                                 </div>
                                                                 
@@ -79,7 +79,7 @@
                                         Date of Birth <span class="required-field">*</span> <span class="field_error" id="pa_applicant_dob_error" >{{ $errors->first('pa_applicant_dob')}}</span>
                                     </label>
                                     <div class="input-item">
-                                        <input type="date" class="input_field" id="pa_applicant_dob" name="pa_applicant_dob" placeholder=" Type..." placeholders="Enter name" value="{{ $db_data['PropertyApplication']->pa_applicant_dob}}">
+                                        <input type="date" autocomplete="bday" class="input_field" id="pa_applicant_dob" name="pa_applicant_dob" value="{{ $db_data['PropertyApplication']->pa_applicant_dob}}">
                                     </div>
                                 </div>
 
@@ -89,7 +89,7 @@
                                         Email <span class="required-field">*</span> <span class="field_error" id="pa_applicant_email_error" >{{ $errors->first('pa_applicant_email')}}</span>
                                     </label>
                                     <div class="input-item">
-                                        <input type="email" class="input_field" id="pa_applicant_email" name="pa_applicant_email" placeholder=" Type..." placeholders="Enter name" value="{{ $db_data['PropertyApplication']->pa_applicant_email}}">
+                                        <input type="email" autocomplete="email" class="input_field" id="pa_applicant_email" name="pa_applicant_email" placeholder="name@example.com" value="{{ $db_data['PropertyApplication']->pa_applicant_email}}">
                                     </div>
                                 </div>
 
@@ -105,10 +105,10 @@
 
                                 <div class="col-md-4">
                                     <label for="pa_applicant_phone_num"  class="required fs-7 fw-normal ">
-                                        Phone# <span class="required-field">*</span> <span class="field_error" id="pa_applicant_phone_num_error" >{{ $errors->first('pa_applicant_phone_num')}}</span>
+                                        Phone Number <span class="required-field">*</span> <span class="field_error" id="pa_applicant_phone_num_error" >{{ $errors->first('pa_applicant_phone_num')}}</span>
                                     </label>
                                     <div class="input-item">
-                                        <input type="text" class="input_field" id="pa_applicant_phone_num" name="pa_applicant_phone_num" placeholder=" Type..." placeholders="Enter name" value="{{ $db_data['PropertyApplication']->pa_applicant_phone_num}}">
+                                        <input type="tel" inputmode="numeric" autocomplete="tel" class="input_field" id="pa_applicant_phone_num" name="pa_applicant_phone_num" placeholder="10-digit phone number" value="{{ $db_data['PropertyApplication']->pa_applicant_phone_num}}">
                                     </div>
                                 </div>    
 
@@ -116,7 +116,8 @@
 
                         </div>
                         <hr>
-                        <div class="btn-wrapper mt-0" style="text-align:right !important;">
+                        <div class="btn-wrapper mt-0 rr-application-actions">
+                            <a href="{{url('/online-application/'.$db_data['PropertyApplication']->pa_tracking_id.'/setup')}}" class="btn theme-btn-1 btn-effect-1">Back</a>
                             <button class="btn theme-btn-1 btn-effect-1 text-uppercase" type="submit">Save and Continue</button>
                         </div>
                     </form>

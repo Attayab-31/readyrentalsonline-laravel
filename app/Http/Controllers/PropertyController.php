@@ -1322,32 +1322,27 @@ class PropertyController extends Controller
                 abort(404);
             }
     
-            // Validation rules, messages, and attributes
-            $messages = [
-                'required' => "Field Required",
-                'required_if' => "Field Required",
-                'e_sign.email' => "Please add your Electronic Signature"
-            ];
-    
             $attributes = [
-                'pa_applicant_current_add' => 'Current Address',
-                'pa_applicant_current_city' => 'Current City',
-                'pa_applicant_current_state' => 'Current State',
-                'pa_applicant_current_zip' => 'Current ZIP',
-                'pa_applicant_previous_add' => 'Previous Address',
-                'pa_applicant_previous_city' => 'Previous City',
-                'pa_applicant_previous_state' => 'Previous State',
-                'pa_applicant_previous_zip' => 'Previous ZIP',
-                'pa_applicant_landlord_name' => 'Landlord Name',
-                'pa_applicant_landlord_phone' => 'Landlord Phone',
-                'pa_applicant_reason_for_leaving' => 'Reason for Leaving',
-                'pa_previous_address_applicable' => 'Previous Address Applicable',
+                'pa_applicant_current_add' => 'street address where you live now',
+                'pa_applicant_current_city' => 'city where you live now',
+                'pa_applicant_current_state' => 'state where you live now',
+                'pa_applicant_current_zip' => 'ZIP code where you live now',
+                'pa_applicant_previous_add' => 'previous street address',
+                'pa_applicant_previous_city' => 'previous city',
+                'pa_applicant_previous_state' => 'previous state',
+                'pa_applicant_previous_zip' => 'previous ZIP code',
+                'pa_applicant_landlord_name' => 'previous landlord name',
+                'pa_applicant_landlord_phone' => 'previous landlord phone number',
+                'pa_applicant_reason_for_leaving' => 'reason for leaving the previous address',
+                'pa_previous_address_applicable' => 'previous-address question',
             ];
     
             $rules = [
                 'pa_applicant_current_add' => 'required',
                 'pa_applicant_current_city' => 'required',
                 'pa_applicant_current_state' => 'required',
+                'pa_applicant_current_zip' => 'required',
+                'pa_previous_address_applicable' => 'required|in:Yes,No',
             ];
     
             if ($request->pa_previous_address_applicable == "Yes") {
@@ -1358,11 +1353,10 @@ class PropertyController extends Controller
                 $rules['pa_applicant_landlord_name'] = 'required';
                 $rules['pa_applicant_landlord_phone'] = 'required';
                 $rules['pa_applicant_reason_for_leaving'] = 'required';
-                $rules['pa_previous_address_applicable'] = 'required';
             }
     
             // Validate the request
-            $validatedData = $request->validate($rules, $messages, $attributes);
+            $validatedData = $request->validate($rules, [], $attributes);
     
             // Save the data
             $new_application = $db_data['PropertyApplication'];
@@ -1432,26 +1426,19 @@ class PropertyController extends Controller
                 abort(404);
             }
     
-            // Validation rules, messages, and attributes
-            $messages = [
-                'required' => "Field Required",
-                'required_if' => "Field Required",
-                'e_sign.email' => "Please add your Electronic Signature"
-            ];
-    
             $attributes = [
-                'pa_applicant_have_pets' => 'Have Pets',
-                'pa_applicant_pet_type' => 'Pet Type',
-                'pa_applicant_bankruptcy' => 'Bankruptcy',
-                'pa_applicant_bankruptcy_year' => 'Bankruptcy Year',
-                'pa_applicant_lawsuites' => 'Lawsuits',
-                'pa_applicant_lawsuites_year' => 'Lawsuits Year',
-                'pa_applicant_ever_evicted' => 'Ever Evicted',
-                'pa_applicant_eviction_year' => 'Eviction Year',
-                'pa_applicant_felony_conviction' => 'Felony Conviction',
-                'pa_applicant_felony_conviction_year' => 'Felony Conviction Year',
-                'pa_applicant_judgments_or_fillings' => 'Judgments or Filings',
-                'pa_applicant_judgments_or_fillings_year' => 'Judgments or Filings Year',
+                'pa_applicant_have_pets' => 'pet question',
+                'pa_applicant_pet_type' => 'type of pet',
+                'pa_applicant_bankruptcy' => 'bankruptcy question',
+                'pa_applicant_bankruptcy_year' => 'year of bankruptcy',
+                'pa_applicant_lawsuites' => 'lawsuit question',
+                'pa_applicant_lawsuites_year' => 'year of lawsuit',
+                'pa_applicant_ever_evicted' => 'eviction question',
+                'pa_applicant_eviction_year' => 'year of eviction',
+                'pa_applicant_felony_conviction' => 'felony conviction question',
+                'pa_applicant_felony_conviction_year' => 'year of felony conviction',
+                'pa_applicant_judgments_or_fillings' => 'court judgment or legal filing question',
+                'pa_applicant_judgments_or_fillings_year' => 'year of court judgment or legal filing',
             ];
     
             $rules = [
@@ -1470,7 +1457,7 @@ class PropertyController extends Controller
             ];
     
             // Validate the request
-            $validatedData = $request->validate($rules, $messages, $attributes);
+            $validatedData = $request->validate($rules, [], $attributes);
     
             // Save the data
             $new_application = $db_data['PropertyApplication'];
@@ -1542,18 +1529,30 @@ class PropertyController extends Controller
             }
     
             // Validation rules, messages, and attributes
-            $messages = [
-                'required' => "Field Required",
-                'required_if' => "Field Required",
-                'e_sign.email' => "Please add your Electronic Signature"
-            ];
-    
             $attributes = [
-                'pa_employer_zip' => 'Zip code',
-                'pa_employer_phone' => 'Phone #',
-                'pa_supervisor_phone' => 'Phone #',
+                'pa_current_employment_status' => 'current work status',
+                'pa_employer_name' => 'employer name',
+                'pa_employment_length' => 'months worked there',
+                'pa_employer_phone' => 'employer phone number',
+                'pa_employment_position' => 'job title',
+                'pa_employer_address' => 'employer street address',
+                'pa_employer_city' => 'employer city',
+                'pa_employer_state' => 'employer state',
+                'pa_employer_zip' => 'employer ZIP code',
+                'pa_monthly_income' => 'monthly income',
+                'pa_supervisor_name' => 'supervisor name',
+                'pa_supervisor_phone' => 'supervisor phone number',
+                'pa_other_monthly_income' => 'other monthly income',
+                'pa_other_monthly_income_reason' => 'source of other income',
             ];
-    
+            $otherIncomeReasonRules = [
+                function ($attribute, $value, $fail) use ($request) {
+                    if ((float) $request->pa_other_monthly_income > 0 && empty($value)) {
+                        $fail('Please tell us where this other income comes from.');
+                    }
+                },
+            ];
+
             if ($request->pa_current_employment_status == "Employed") {
                 $Rules = [
                     'pa_current_employment_status' => 'required',
@@ -1571,25 +1570,18 @@ class PropertyController extends Controller
                     'pa_supervisor_fax' => 'nullable',
                     'pa_supervisor_email' => 'nullable',
                     'pa_other_monthly_income' => 'required|numeric',
-                    'pa_other_monthly_income_reason' => [
-                        'required_if:pa_other_monthly_income,!=0',
-                        function ($attribute, $value, $fail) use ($request) {
-                            if ($request->pa_other_monthly_income > 0 && empty($value)) {
-                                $fail('The Field is required when other monthly income is greater than 0.');
-                            }
-                        },
-                    ],
+                    'pa_other_monthly_income_reason' => $otherIncomeReasonRules,
                 ];
             } elseif ($request->pa_current_employment_status == "Retired") {
                 $Rules = [
-                    'pa_monthly_income' => 'required',
-                    'pa_other_monthly_income' => 'required',
-                    'pa_other_monthly_income_reason' => 'required',
+                    'pa_monthly_income' => 'required|numeric',
+                    'pa_other_monthly_income' => 'required|numeric',
+                    'pa_other_monthly_income_reason' => $otherIncomeReasonRules,
                 ];
             } elseif ($request->pa_current_employment_status == "Un-Employed") {
                 $Rules = [
-                    'pa_other_monthly_income' => 'required',
-                    'pa_other_monthly_income_reason' => 'required',
+                    'pa_other_monthly_income' => 'required|numeric',
+                    'pa_other_monthly_income_reason' => $otherIncomeReasonRules,
                 ];
             } else {
                 $Rules = [
@@ -1598,7 +1590,7 @@ class PropertyController extends Controller
             }
     
             // Validate the request
-            $validatedData = $request->validate($Rules, $messages, $attributes);
+            $validatedData = $request->validate($Rules, [], $attributes);
     
             // Save the data
             $new_application = $db_data['PropertyApplication'];
@@ -1673,24 +1665,13 @@ class PropertyController extends Controller
             }
     
             // Validation rules, messages, and attributes
-            $messages = [
-                'required' => "Field Required",
-                'required_if' => "Field Required",
-                'e_sign.email' => "Please add your Electronic Signature"
-            ];
-    
             $attributes = [
-                'pa_applicant_current_add' => 'Applicant name',
-                'pa_applicant_current_city' => 'SS#',
-                'pa_applicant_current_state' => 'Driver Lic #',
-                'pa_applicant_current_zip' => 'Date of birth',
-                'pa_applicant_previous_add' => 'Email',
-                'pa_applicant_previous_city' => 'Own or rent monthly payment',
-                'pa_applicant_previous_state' => 'Phone #',
-                'pa_applicant_previous_zip' => 'Phone #',
-                'pa_applicant_landlord_name' => 'Phone #',
-                'pa_applicant_landlord_phone' => 'Phone #',
-                'pa_applicant_reason_for_leaving' => 'Phone #',
+                'pa_emergency_contact_name' => 'emergency contact full name',
+                'pa_emergency_contact_phone' => 'emergency contact phone number',
+                'pa_emergency_contact_address' => 'emergency contact street address',
+                'pa_emergency_contact_city' => 'emergency contact city',
+                'pa_emergency_contact_state' => 'emergency contact state',
+                'pa_emergency_contact_zip' => 'emergency contact ZIP code',
             ];
     
             $Rules = [
@@ -1703,7 +1684,7 @@ class PropertyController extends Controller
             ];
     
             // Validate the request
-            $validatedData = $request->validate($Rules, $messages, $attributes);
+            $validatedData = $request->validate($Rules, [], $attributes);
     
             // Save the Data
             $new_application = $db_data['PropertyApplication'];
@@ -1767,32 +1748,6 @@ class PropertyController extends Controller
             }
     
             // Validation rules, messages, and attributes
-            $messages = [
-                'required' => "Field Required",
-                'required_if' => "Field Required",
-                'e_sign.email' => "Please add your Electronic Signature"
-            ];
-    
-            $attributes = [
-                'pa_applicant_current_add' => 'Applicant name',
-                'pa_applicant_current_city' => 'SS#',
-                'pa_applicant_current_state' => 'Driver Lic #',
-                'pa_applicant_current_zip' => 'Date of birth',
-                'pa_applicant_previous_add' => 'Email',
-                'pa_applicant_previous_city' => 'Own or rent monthly payment',
-                'pa_applicant_previous_state' => 'Phone #',
-                'pa_applicant_previous_zip' => 'Phone #',
-                'pa_applicant_landlord_name' => 'Phone #',
-                'pa_applicant_landlord_phone' => 'Phone #',
-                'pa_applicant_reason_for_leaving' => 'Phone #',
-            ];
-    
-            $Rules = [
-                'dummyval' => 'required',
-            ];
-    
-            $validatedData = $request->validate($Rules, $messages, $attributes);
-    
             $pa_additional_documents = [];
     
             // Upload additional documents
@@ -1806,6 +1761,17 @@ class PropertyController extends Controller
                 'additional_doc_7',
                 'additional_doc_8',
             ];
+
+            $uploadRules = [];
+            $uploadAttributes = [];
+            foreach ($fields as $index => $field) {
+                $uploadRules[$field] = 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240';
+                $uploadAttributes[$field] = 'document ' . ($index + 1);
+            }
+            $request->validate($uploadRules, [
+                'mimes' => 'Please choose a PDF or image file (JPG or PNG).',
+                'max' => 'Each document must be 10 MB or smaller.',
+            ], $uploadAttributes);
     
             foreach ($fields as $field) {
                 if ($request->hasFile($field)) {
@@ -1887,13 +1853,6 @@ class PropertyController extends Controller
             $e_sing_dummy_val = "data:image/png;base64,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";
 
 
-            $messages = [
-                'required' => "Field Required",
-                'required_if' =>"Field Required", 
-                'e_sign.email' => "Please add your Electronic Signature"
-                ];
-
-
             if($request->e_sign == $e_sing_dummy_val)
             {
                 $Rules= [
@@ -1909,7 +1868,10 @@ class PropertyController extends Controller
                         ];
             }
     
-            $validatedData = $request->validate($Rules , $messages);
+            $validatedData = $request->validate($Rules, [], [
+                'e_sign' => 'signature',
+                'pa_application_terms_agreement' => 'application terms agreement',
+            ]);
     
                 
             $folderPath = public_path("resources/files/e-signs/"); //path location

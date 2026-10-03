@@ -31,7 +31,7 @@
                         @endif
 
                     </h4>
-                    <p class="rr-application-instructions">Please answer each question. If you do not know an answer or a question does not apply, enter “N/A”.</p>
+                    <p class="rr-application-instructions">Provide someone we can contact in an emergency. Please do not list yourself.</p>
 
                     <form id="online-application-form-with-steps" action="{{url('process-online-application/step-6/'.$db_data['PropertyApplication']->pa_tracking_id)}}" class="ltn__form-box contact-form-box" method="post">
                     @csrf
@@ -44,48 +44,48 @@
 
                                  
                                 <div class="col-md-4">
-                                    <label class="label in-label" for="pa_emergency_contact_name" >Emergency Contact Name <span class="required-field">*</span> <span class="field_error" id="pa_emergency_contact_name_error">{{ $errors->first('pa_emergency_contact_name') }}</span></label>
+                                    <label class="label in-label" for="pa_emergency_contact_name" >Emergency contact’s full name <span class="required-field">*</span> <span class="field_error" id="pa_emergency_contact_name_error">{{ $errors->first('pa_emergency_contact_name') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_emergency_contact_name" name="pa_emergency_contact_name" placeholder=" Type..." placeholders="Enter Emergency Contact Name" value="{{ $db_data['PropertyApplication']->pa_emergency_contact_name}}">
+                                        <input type="text" class="input_field" id="pa_emergency_contact_name" name="pa_emergency_contact_name" placeholder="First and last name" value="{{ $db_data['PropertyApplication']->pa_emergency_contact_name}}">
                                     </div>
                                 </div> 
 
 
                                 <div class="col-md-4">
-                                    <label class="label in-label" for="pa_emergency_contact_phone" >Phone <span class="required-field">*</span> <span class="field_error" id="pa_emergency_contact_phone_error">{{ $errors->first('pa_emergency_contact_phone') }}</span></label>
+                                    <label class="label in-label" for="pa_emergency_contact_phone" >Emergency contact’s phone number <span class="required-field">*</span> <span class="field_error" id="pa_emergency_contact_phone_error">{{ $errors->first('pa_emergency_contact_phone') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_emergency_contact_phone" name="pa_emergency_contact_phone" placeholder=" Type..." placeholders="Enter Phone" value="{{ $db_data['PropertyApplication']->pa_emergency_contact_phone}}">
+                                        <input type="tel" inputmode="tel" class="input_field" id="pa_emergency_contact_phone" name="pa_emergency_contact_phone" placeholder="Phone number" value="{{ $db_data['PropertyApplication']->pa_emergency_contact_phone}}">
                                     </div>
                                 </div> 
 
 
                                 <div class="col-md-4">
-                                    <label class="label in-label" for="pa_emergency_contact_address" >Address <span class="required-field">*</span> <span class="field_error" id="pa_emergency_contact_address_error">{{ $errors->first('pa_emergency_contact_address') }}</span></label>
+                                    <label class="label in-label" for="pa_emergency_contact_address" >Emergency contact’s street address <span class="required-field">*</span> <span class="field_error" id="pa_emergency_contact_address_error">{{ $errors->first('pa_emergency_contact_address') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_emergency_contact_address" name="pa_emergency_contact_address" placeholder=" Type..." placeholders="Enter Address" value="{{ $db_data['PropertyApplication']->pa_emergency_contact_address}}">
+                                        <input type="text" class="input_field" id="pa_emergency_contact_address" name="pa_emergency_contact_address" placeholder="Street address" value="{{ $db_data['PropertyApplication']->pa_emergency_contact_address}}">
                                     </div>
                                 </div> 
 
 
                                 <div class="col-md-4">
-                                    <label class="label in-label" for="pa_emergency_contact_city" >City <span class="required-field">*</span> <span class="field_error" id="pa_emergency_contact_city_error">{{ $errors->first('pa_emergency_contact_city') }}</span></label>
+                                    <label class="label in-label" for="pa_emergency_contact_city" >Emergency contact’s city <span class="required-field">*</span> <span class="field_error" id="pa_emergency_contact_city_error">{{ $errors->first('pa_emergency_contact_city') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_emergency_contact_city" name="pa_emergency_contact_city" placeholder=" Type..." placeholders="Enter City" value="{{ $db_data['PropertyApplication']->pa_emergency_contact_city}}">
+                                        <input type="text" class="input_field" id="pa_emergency_contact_city" name="pa_emergency_contact_city" placeholder="City" value="{{ $db_data['PropertyApplication']->pa_emergency_contact_city}}">
                                     </div>
                                 </div>                                                                                                                                 
 
                                 <div class="col-md-4">
-                                    <label class="label in-label" for="pa_emergency_contact_state" >State <span class="required-field">*</span> <span class="field_error" id="pa_emergency_contact_state_error">{{ $errors->first('pa_emergency_contact_state') }}</span></label>
+                                    <label class="label in-label" for="pa_emergency_contact_state" >Emergency contact’s state <span class="required-field">*</span> <span class="field_error" id="pa_emergency_contact_state_error">{{ $errors->first('pa_emergency_contact_state') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_emergency_contact_state" name="pa_emergency_contact_state" placeholder=" Type..." placeholders="Enter State" value="{{ $db_data['PropertyApplication']->pa_emergency_contact_state}}">
+                                        <input type="text" class="input_field" id="pa_emergency_contact_state" name="pa_emergency_contact_state" placeholder="State" value="{{ $db_data['PropertyApplication']->pa_emergency_contact_state}}">
                                     </div>
                                 </div>  
 
 
                                 <div class="col-md-4">
-                                    <label class="label in-label" for="pa_emergency_contact_zip" >Zip <span class="required-field">*</span> <span class="field_error" id="pa_emergency_contact_zip_error">{{ $errors->first('pa_emergency_contact_zip') }}</span></label>
+                                    <label class="label in-label" for="pa_emergency_contact_zip" >Emergency contact’s ZIP code <span class="required-field">*</span> <span class="field_error" id="pa_emergency_contact_zip_error">{{ $errors->first('pa_emergency_contact_zip') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_emergency_contact_zip" name="pa_emergency_contact_zip" placeholder=" Type..." placeholders="Enter Zip" value="{{ $db_data['PropertyApplication']->pa_emergency_contact_zip}}">
+                                        <input type="text" inputmode="numeric" autocomplete="postal-code" class="input_field" id="pa_emergency_contact_zip" name="pa_emergency_contact_zip" placeholder="ZIP code" value="{{ $db_data['PropertyApplication']->pa_emergency_contact_zip}}">
                                     </div>
                                 </div>  
  

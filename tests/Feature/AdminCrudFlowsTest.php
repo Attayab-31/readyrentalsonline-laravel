@@ -151,6 +151,12 @@ class AdminCrudFlowsTest extends TestCase
                 ->assertOk()
                 ->assertSee('Step '.$step.' of 8');
         }
+        $this->postJson('/process-online-application/step-7/'.$application->pa_tracking_id)
+            ->assertOk()
+            ->assertJsonStructure(['redirect_url']);
+        $this->postJson('/process-online-application/step-7/'.$application->pa_tracking_id, [
+            'additional_doc_1' => \Illuminate\Http\UploadedFile::fake()->create('notes.txt', 1, 'text/plain'),
+        ])->assertUnprocessable()->assertJsonValidationErrors(['additional_doc_1']);
         $this->get('/online-application/step-9/'.$application->pa_tracking_id)
             ->assertOk()
             ->assertSee('This Step Is Complete')

@@ -234,6 +234,11 @@ function showValidationErrors($form, $response, errors) {
         var field = document.getElementById(key);
         var fieldError = document.getElementById(key + '_error');
 
+        // The signature is drawn on a canvas; its submitted value is a hidden input.
+        if (key === 'e_sign') {
+            field = document.getElementById('sig-canvas') || field;
+        }
+
         if (field && $form.get(0).contains(field)) {
             $(field)
                 .addClass('input-error')

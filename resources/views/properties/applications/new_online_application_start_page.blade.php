@@ -30,7 +30,7 @@
 
                         <div id="form_res" style="display:none"></div>
 
-                        <p class="text-left">First, choose the home and tell us how many adults will apply. The application has 8 steps. Select “Save and Continue” at the end of each step to save your answers.</p>
+                        <p class="rr-application-instructions">First, choose the rental home and tell us how many adults will apply. The application has 8 steps. Your answers are saved as you continue. The last step lets you sign and submit your application.</p>
 
                         <div class="form-inner-part">
 
@@ -38,11 +38,11 @@
 
                                 <div class="col-md-12">
                                     <label for="pa_property_id"  class="required fs-7 fw-normal ">
-                                        Select the Property <span class="required-field">*</span> <span class="field_error" id="pa_property_id_error" >{{ $errors->first('pa_property_id')}}</span>
+                                        Choose a rental home <span class="required-field">*</span> <span class="field_error" id="pa_property_id_error" >{{ $errors->first('pa_property_id')}}</span>
                                     </label>
                                     <div class="input-item">
                                         <select class="input_field" name="pa_property_id" id="pa_property_id" required>
-                                            <option value="">--Select--</option>
+                                            <option value="">Choose a home</option>
                                             @foreach($db_data['Property'] as $Property)
                                                 <option value="{{$Property->property_id}}"
                                                     @if(old('pa_property_id', $application?->pa_property_id) == $Property->property_id)
@@ -58,7 +58,7 @@
 
                                 <div class="col-md-12">
                                     <label for="pa_number_of_co_applicants"  class="required fs-7 fw-normal ">
-                                        Number of co-applicants <span class="required-field">*</span> <span class="field_error" id="pa_number_of_co_applicants_error" >{{ $errors->first('pa_number_of_co_applicants')}}</span>
+                                        How many adults will apply? <span class="required-field">*</span> <span class="field_error" id="pa_number_of_co_applicants_error" >{{ $errors->first('pa_number_of_co_applicants')}}</span>
                                     </label>
                                     <p>Count every adult who will live in the home. Each adult applying will complete their own details.</p>
                                     <div class="input-item">

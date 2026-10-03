@@ -33,7 +33,7 @@
                             Co-Applicant's Information
                         @endif
                     </h4>
-                    <p class="rr-application-instructions">Please answer each question. If you do not know an answer or a question does not apply, enter “N/A”.</p>
+                    <p class="rr-application-instructions">Fields marked * are required. Your answers are saved when you continue. If you need help, call us at <a href="tel:1-267-549-9625">1-267-549-9625</a>.</p>
 
                     <form id="online-application-form-with-steps" action="{{url('process-online-application/step-2/'.$db_data['PropertyApplication']->pa_tracking_id)}}" class="ltn__form-box contact-form-box" method="post">
                     @csrf
@@ -46,7 +46,7 @@
 
                                 <div class="col-md-4">
                                     <label for="pa_applicant_name"  class="required fs-7 fw-normal ">
-                                        Name <span class="required-field">*</span> <span class="field_error" id="pa_applicant_name_error" >{{ $errors->first('pa_applicant_name')}}</span>
+                                        Full legal name <span class="required-field">*</span> <span class="field_error" id="pa_applicant_name_error" >{{ $errors->first('pa_applicant_name')}}</span>
                                     </label>
                                     <div class="input-item">
                                         <input type="text" class="input_field" id="pa_applicant_name" name="pa_applicant_name" autocomplete="name" placeholder="Enter your full name" value="{{ $db_data['PropertyApplication']->pa_applicant_name}}">
@@ -76,7 +76,7 @@
 
                                 <div class="col-md-4">
                                     <label for="pa_applicant_dob"  class="required fs-7 fw-normal ">
-                                        Date of Birth <span class="required-field">*</span> <span class="field_error" id="pa_applicant_dob_error" >{{ $errors->first('pa_applicant_dob')}}</span>
+                                        Date of birth <span class="required-field">*</span> <span class="field_error" id="pa_applicant_dob_error" >{{ $errors->first('pa_applicant_dob')}}</span>
                                     </label>
                                     <div class="input-item">
                                         <input type="date" autocomplete="bday" class="input_field" id="pa_applicant_dob" name="pa_applicant_dob" value="{{ $db_data['PropertyApplication']->pa_applicant_dob}}">
@@ -96,10 +96,10 @@
 
                                 <div class="col-md-4">
                                     <label for="pa_applicant_own_or_rent_monthly_payment"  class="required fs-7 fw-normal ">
-                                        Own/Rent Monthly Payment $ <span class="required-field">*</span> <span class="field_error" id="pa_applicant_own_or_rent_monthly_payment_error" >{{ $errors->first('pa_applicant_own_or_rent_monthly_payment')}}</span>
+                                        Current monthly rent or mortgage payment <span class="required-field">*</span> <span class="field_error" id="pa_applicant_own_or_rent_monthly_payment_error" >{{ $errors->first('pa_applicant_own_or_rent_monthly_payment')}}</span>
                                     </label>
                                     <div class="input-item">
-                                        <input type="text" class="input_field" id="pa_applicant_own_or_rent_monthly_payment" name="pa_applicant_own_or_rent_monthly_payment" placeholder=" Type..." placeholders="Enter name" value="{{ $db_data['PropertyApplication']->pa_applicant_own_or_rent_monthly_payment}}">
+                                        <input type="text" inputmode="decimal" class="input_field" id="pa_applicant_own_or_rent_monthly_payment" name="pa_applicant_own_or_rent_monthly_payment" placeholder="Enter amount in dollars" value="{{ $db_data['PropertyApplication']->pa_applicant_own_or_rent_monthly_payment}}">
                                     </div>
                                 </div>                                
 

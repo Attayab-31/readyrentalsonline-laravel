@@ -30,7 +30,7 @@
                         @endif
 
                     </h4>
-                    <p class="rr-application-instructions">Please answer each question. If you do not know an answer or a question does not apply, enter “N/A”.</p>
+                    <p class="rr-application-instructions">Choose Yes or No for each question. We will only ask for more details when you answer Yes.</p>
 
                     <form id="online-application-form-with-steps" action="{{url('process-online-application/step-4/'.$db_data['PropertyApplication']->pa_tracking_id)}}" class="ltn__form-box contact-form-box" method="post">
                     @csrf
@@ -43,10 +43,10 @@
 
 
                                 <div class="col-md-3">
-                                    <label class="label in-label" for="pa_applicant_have_pets" >Do you have pets? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_have_pets_error">{{ $errors->first('pa_applicant_have_pets') }}</span></label>
+                                    <label class="label in-label" for="pa_applicant_have_pets" >Do you have any pets? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_have_pets_error">{{ $errors->first('pa_applicant_have_pets') }}</span></label>
                                     <div class="input-item input-item-name">
                                         <select class="input_field" name="pa_applicant_have_pets" id="pa_applicant_have_pets">
-                                            <option value="">--Select--</option>
+                                            <option value="">Choose Yes or No</option>
                                             <option value="Yes" @if($db_data['PropertyApplication']->pa_applicant_have_pets == "Yes") selected @endif >Yes </option>
                                             <option value="No" @if($db_data['PropertyApplication']->pa_applicant_have_pets == "No") selected @endif >No </option>
                                         </select>
@@ -54,17 +54,17 @@
                                 </div>
 
                                 <div class="col-md-3 disabled_by_default">
-                                    <label class="label in-label auto_disabled_label" for="pa_applicant_pet_type" >Pet Type <span class="required-field">*</span> <span class="field_error" id="pa_applicant_pet_type_error">{{ $errors->first('pa_applicant_pet_type') }}</span></label>
+                                    <label class="label in-label auto_disabled_label" for="pa_applicant_pet_type" >What kind of pet do you have? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_pet_type_error">{{ $errors->first('pa_applicant_pet_type') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_applicant_pet_type" class="auto_disabled_field" name="pa_applicant_pet_type" placeholder=" Type..." placeholders="Enter Pet Type" value="{{$db_data['PropertyApplication']->pa_applicant_pet_type}}">
+                                        <input type="text" class="input_field" id="pa_applicant_pet_type" name="pa_applicant_pet_type" placeholder="For example, dog or cat" value="{{$db_data['PropertyApplication']->pa_applicant_pet_type}}">
                                     </div>
                                 </div>
 
                                 <div class="col-md-3 ">
-                                    <label class="label in-label" for="pa_applicant_bankruptcy" >Bankruptcy? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_bankruptcy_error">{{ $errors->first('pa_applicant_bankruptcy') }}</span></label>
+                                    <label class="label in-label" for="pa_applicant_bankruptcy" >Have you ever filed for bankruptcy? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_bankruptcy_error">{{ $errors->first('pa_applicant_bankruptcy') }}</span></label>
                                     <div class="input-item input-item-name">
                                         <select class="input_field" name="pa_applicant_bankruptcy" id="pa_applicant_bankruptcy">
-                                            <option value="">--Select--</option>
+                                            <option value="">Choose Yes or No</option>
                                             <option value="Yes" @if($db_data['PropertyApplication']->pa_applicant_bankruptcy == "Yes") selected @endif >Yes </option>
                                             <option value="No" @if($db_data['PropertyApplication']->pa_applicant_bankruptcy == "No") selected @endif >No </option>
                                         </select>
@@ -72,19 +72,19 @@
                                 </div>
 
                                 <div class="col-md-3 disabled_by_default">
-                                    <label class="label in-label" for="pa_applicant_bankruptcy_year" >Bankruptcy Year <span class="required-field">*</span> <span class="field_error" id="pa_applicant_bankruptcy_year_error">{{ $errors->first('pa_applicant_bankruptcy_year') }}</span></label>
+                                    <label class="label in-label" for="pa_applicant_bankruptcy_year" >What year did this happen? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_bankruptcy_year_error">{{ $errors->first('pa_applicant_bankruptcy_year') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_applicant_bankruptcy_year" class="auto_disabled_field" name="pa_applicant_bankruptcy_year" placeholder=" Type..." placeholders="Enter Bankruptcy Year" value="{{$db_data['PropertyApplication']->pa_applicant_bankruptcy_year}}">
+                                        <input type="text" inputmode="numeric" class="input_field" id="pa_applicant_bankruptcy_year" name="pa_applicant_bankruptcy_year" placeholder="Year" value="{{$db_data['PropertyApplication']->pa_applicant_bankruptcy_year}}">
                                     </div>
                                 </div>  
 
 
 
                                 <div class="col-md-3">
-                                    <label class="label in-label" for="pa_applicant_lawsuites" >Lawsuit? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_lawsuites_error">{{ $errors->first('pa_applicant_lawsuites') }}</span></label>
+                                    <label class="label in-label" for="pa_applicant_lawsuites" >Have you ever been involved in a lawsuit? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_lawsuites_error">{{ $errors->first('pa_applicant_lawsuites') }}</span></label>
                                     <div class="input-item input-item-name">
                                         <select class="input_field" name="pa_applicant_lawsuites" id="pa_applicant_lawsuites">
-                                            <option value="">--Select--</option>
+                                            <option value="">Choose Yes or No</option>
                                             <option value="Yes" @if($db_data['PropertyApplication']->pa_applicant_lawsuites == "Yes") selected @endif >Yes </option>
                                             <option value="No" @if($db_data['PropertyApplication']->pa_applicant_lawsuites == "No") selected @endif >No </option>
                                         </select>
@@ -92,19 +92,19 @@
                                 </div>
 
                                 <div class="col-md-3 disabled_by_default">
-                                    <label class="label in-label" for="pa_applicant_lawsuites_year" >Lawsuit Year <span class="required-field">*</span> <span class="field_error" id="pa_applicant_lawsuites_year_error">{{ $errors->first('pa_applicant_lawsuites_year') }}</span></label>
+                                    <label class="label in-label" for="pa_applicant_lawsuites_year" >What year did this happen? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_lawsuites_year_error">{{ $errors->first('pa_applicant_lawsuites_year') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_applicant_lawsuites_year" class="auto_disabled_field" name="pa_applicant_lawsuites_year" placeholder=" Type..." placeholders="Enter Lawsuit Year" value="{{$db_data['PropertyApplication']->pa_applicant_lawsuites_year}}">
+                                        <input type="text" inputmode="numeric" class="input_field" id="pa_applicant_lawsuites_year" name="pa_applicant_lawsuites_year" placeholder="Year" value="{{$db_data['PropertyApplication']->pa_applicant_lawsuites_year}}">
                                     </div>
                                 </div>  
 
 
 
                                 <div class="col-md-3">
-                                    <label class="label in-label" for="pa_applicant_ever_evicted" >Ever Been Evicted? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_ever_evicted_error">{{ $errors->first('pa_applicant_ever_evicted') }}</span></label>
+                                    <label class="label in-label" for="pa_applicant_ever_evicted" >Have you ever been evicted from a home? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_ever_evicted_error">{{ $errors->first('pa_applicant_ever_evicted') }}</span></label>
                                     <div class="input-item input-item-name">
                                         <select class="input_field" name="pa_applicant_ever_evicted" id="pa_applicant_ever_evicted">
-                                            <option value="">--Select--</option>
+                                            <option value="">Choose Yes or No</option>
                                             <option value="Yes" @if($db_data['PropertyApplication']->pa_applicant_ever_evicted == "Yes") selected @endif >Yes </option>
                                             <option value="No" @if($db_data['PropertyApplication']->pa_applicant_ever_evicted == "No") selected @endif >No </option>
                                         </select>
@@ -112,17 +112,17 @@
                                 </div>
 
                                 <div class="col-md-3 disabled_by_default">
-                                    <label class="label in-label" for="pa_applicant_eviction_year" >Eviction Year <span class="required-field">*</span> <span class="field_error" id="pa_applicant_eviction_year_error">{{ $errors->first('pa_applicant_eviction_year') }}</span></label>
+                                    <label class="label in-label" for="pa_applicant_eviction_year" >What year did this happen? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_eviction_year_error">{{ $errors->first('pa_applicant_eviction_year') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_applicant_eviction_year" class="auto_disabled_field" name="pa_applicant_eviction_year" placeholder=" Type..." placeholders="Enter Eviction Year" value="{{$db_data['PropertyApplication']->pa_applicant_eviction_year}}">
+                                        <input type="text" inputmode="numeric" class="input_field" id="pa_applicant_eviction_year" name="pa_applicant_eviction_year" placeholder="Year" value="{{$db_data['PropertyApplication']->pa_applicant_eviction_year}}">
                                     </div>
                                 </div> 
 
                                 <div class="col-md-3">
-                                    <label class="label in-label" for="pa_applicant_felony_conviction" >Convicted of a felony? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_felony_conviction_error">{{ $errors->first('pa_applicant_felony_conviction') }}</span></label>
+                                    <label class="label in-label" for="pa_applicant_felony_conviction" >Have you ever been convicted of a felony? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_felony_conviction_error">{{ $errors->first('pa_applicant_felony_conviction') }}</span></label>
                                     <div class="input-item input-item-name">
                                         <select class="input_field" name="pa_applicant_felony_conviction" id="pa_applicant_felony_conviction">
-                                            <option value="">--Select--</option>
+                                            <option value="">Choose Yes or No</option>
                                             <option value="Yes" @if($db_data['PropertyApplication']->pa_applicant_felony_conviction == "Yes") selected @endif >Yes </option>
                                             <option value="No" @if($db_data['PropertyApplication']->pa_applicant_felony_conviction == "No") selected @endif >No </option>
                                         </select>
@@ -130,18 +130,18 @@
                                 </div>
 
                                 <div class="col-md-3 disabled_by_default">
-                                    <label class="label in-label" for="pa_applicant_felony_conviction_year" >Felony Conviction Year <span class="required-field">*</span> <span class="field_error" id="pa_applicant_felony_conviction_year_error">{{ $errors->first('pa_applicant_felony_conviction_year') }}</span></label>
+                                    <label class="label in-label" for="pa_applicant_felony_conviction_year" >What year did this happen? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_felony_conviction_year_error">{{ $errors->first('pa_applicant_felony_conviction_year') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_applicant_felony_conviction_year" class="auto_disabled_field" name="pa_applicant_felony_conviction_year" placeholder=" Type..." placeholders="Enter Felony Conviction Year" value="{{$db_data['PropertyApplication']->pa_applicant_felony_conviction_year}}">
+                                        <input type="text" inputmode="numeric" class="input_field" id="pa_applicant_felony_conviction_year" name="pa_applicant_felony_conviction_year" placeholder="Year" value="{{$db_data['PropertyApplication']->pa_applicant_felony_conviction_year}}">
                                     </div>
                                 </div> 
 
 
                                 <div class="col-md-3">
-                                    <label class="label in-label" for="pa_applicant_judgments_or_fillings" >Judgements/filings <span class="required-field">*</span> <span class="field_error" id="pa_applicant_judgments_or_fillings_error">{{ $errors->first('pa_applicant_judgments_or_fillings') }}</span></label>
+                                    <label class="label in-label" for="pa_applicant_judgments_or_fillings" >Do you have any court judgments or legal filings? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_judgments_or_fillings_error">{{ $errors->first('pa_applicant_judgments_or_fillings') }}</span></label>
                                     <div class="input-item input-item-name">
                                         <select class="input_field" name="pa_applicant_judgments_or_fillings" id="pa_applicant_judgments_or_fillings">
-                                            <option value="">--Select--</option>
+                                            <option value="">Choose Yes or No</option>
                                             <option value="Yes" @if($db_data['PropertyApplication']->pa_applicant_judgments_or_fillings == "Yes") selected @endif >Yes </option>
                                             <option value="No" @if($db_data['PropertyApplication']->pa_applicant_judgments_or_fillings == "No") selected @endif >No </option>
                                         </select>
@@ -149,9 +149,9 @@
                                 </div>
 
                                 <div class="col-md-3 disabled_by_default">
-                                    <label class="label in-label" for="pa_applicant_judgments_or_fillings_year" >Judgements/filings Year <span class="required-field">*</span> <span class="field_error" id="pa_applicant_judgments_or_fillings_year_error">{{ $errors->first('pa_applicant_judgments_or_fillings_year') }}</span></label>
+                                    <label class="label in-label" for="pa_applicant_judgments_or_fillings_year" >What year did this happen? <span class="required-field">*</span> <span class="field_error" id="pa_applicant_judgments_or_fillings_year_error">{{ $errors->first('pa_applicant_judgments_or_fillings_year') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_applicant_judgments_or_fillings_year" class="auto_disabled_field" name="pa_applicant_judgments_or_fillings_year" placeholder=" Type..." placeholders="Enter Judgements/filings Year" value="{{$db_data['PropertyApplication']->pa_applicant_judgments_or_fillings_year}}">
+                                        <input type="text" inputmode="numeric" class="input_field" id="pa_applicant_judgments_or_fillings_year" name="pa_applicant_judgments_or_fillings_year" placeholder="Year" value="{{$db_data['PropertyApplication']->pa_applicant_judgments_or_fillings_year}}">
                                     </div>
                                 </div>    
  
@@ -200,11 +200,10 @@ $(document).ready(function() {
     // Function to show or hide a field and its label based on the value of another field
     function toggleField(field, enable) {
         var fieldWrapper = field.closest('.col-md-3');
-        if (enable) {
-            fieldWrapper.show();
-        } else {
-            fieldWrapper.hide();
-        }
+        fieldWrapper
+            .toggle(enable)
+            .attr('aria-hidden', enable ? 'false' : 'true');
+        field.prop('disabled', !enable);
     }
 
     // Event listener to check "Do you have pets?" field value

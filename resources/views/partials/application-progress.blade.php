@@ -21,7 +21,7 @@
         <span class="rr-application-progress__fill" style="width: {{ $progress }}%"></span>
     </div>
     <p class="rr-application-progress__help">
-        Your answers are saved when you continue.
+        Fields marked * are required. Your answers are saved when you continue.
         Need help? Call <a href="tel:1-267-549-9625">1-267-549-9625</a>.
     </p>
 </section>

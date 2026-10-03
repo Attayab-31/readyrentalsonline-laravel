@@ -31,7 +31,7 @@
                         @endif
 
                     </h4>
-                    <p class="rr-application-instructions">Please answer each question. If you do not know an answer or a question does not apply, enter “N/A”.</p>
+                    <p class="rr-application-instructions">Choose your current work status. We will show only the questions that apply. If you have no other monthly income, enter 0.</p>
 
                     <form id="online-application-form-with-steps" action="{{url('process-online-application/step-5/'.$db_data['PropertyApplication']->pa_tracking_id)}}" class="ltn__form-box contact-form-box" method="post">
                     @csrf
@@ -45,14 +45,14 @@
 
                                 <div class="col-md-4" id="pa_current_employment_status_container">
                                     <label for="pa_current_employment_status"  class="required fs-7 fw-normal ">
-                                        Current Employment Status <span class="required-field">*</span> <span class="field_error" id="pa_current_employment_status_error" >{{ $errors->first('pa_current_employment_status')}}</span>
+                                        What is your current work status? <span class="required-field">*</span> <span class="field_error" id="pa_current_employment_status_error" >{{ $errors->first('pa_current_employment_status')}}</span>
                                     </label>
                                     <div class="input-item">
                                         <select class="input_field" name="pa_current_employment_status" id="pa_current_employment_status">
-                                            <option value="">--Select--</option>
-                                            <option value="Employed" @if($db_data['PropertyApplication']->pa_current_employment_status == "Employed") selected @endif >Employed</option>
+                                            <option value="">Choose your work status</option>
+                                            <option value="Employed" @if($db_data['PropertyApplication']->pa_current_employment_status == "Employed") selected @endif >Working now</option>
                                             <option value="Retired" @if($db_data['PropertyApplication']->pa_current_employment_status == "Retired") selected @endif >Retired</option>
-                                            <option value="Un-Employed" @if($db_data['PropertyApplication']->pa_current_employment_status == "Un-Employed") selected @endif >Un-Employed</option>
+                                            <option value="Un-Employed" @if($db_data['PropertyApplication']->pa_current_employment_status == "Un-Employed") selected @endif >Not working now</option>
                                         </select>
                                     </div>
                                 </div>
@@ -68,126 +68,126 @@
                                 <div class="col-md-4" id="pa_employer_name_container">
                                     <label class="label in-label" for="pa_employer_name" >Employer Name <span class="required-field">*</span> <span class="field_error" id="pa_employer_name_error">{{ $errors->first('pa_employer_name') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_employer_name" name="pa_employer_name" placeholder=" Type..." placeholders="Enter Employer Name" value="{{ $db_data['PropertyApplication']->pa_employer_name}}">
+                                        <input type="text" autocomplete="organization" class="input_field" id="pa_employer_name" name="pa_employer_name" placeholder="Employer or company name" value="{{ $db_data['PropertyApplication']->pa_employer_name}}">
                                     </div>
                                 </div> 
 
 
 
                                 <div class="col-md-4" id="pa_employment_length_container">
-                                    <label class="label in-label" for="pa_employment_length" >Employment Length  in months <span class="required-field">*</span> <span class="field_error" id="pa_employment_length_error">{{ $errors->first('pa_employment_length') }}</span></label>
+                                    <label class="label in-label" for="pa_employment_length" >How many months have you worked there? <span class="required-field">*</span> <span class="field_error" id="pa_employment_length_error">{{ $errors->first('pa_employment_length') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_employment_length" name="pa_employment_length" placeholder=" Type..." placeholders="Enter Employment Length in months" value="{{ $db_data['PropertyApplication']->pa_employment_length}}">
+                                        <input type="text" inputmode="numeric" class="input_field" id="pa_employment_length" name="pa_employment_length" placeholder="Number of months" value="{{ $db_data['PropertyApplication']->pa_employment_length}}">
                                     </div>
                                 </div> 
 
 
 
                                 <div class="col-md-4" id="pa_employer_phone_container">
-                                    <label class="label in-label" for="pa_employer_phone" >Employer Phone <span class="required-field">*</span> <span class="field_error" id="pa_employer_phone_error">{{ $errors->first('pa_employer_phone') }}</span></label>
+                                    <label class="label in-label" for="pa_employer_phone" >Employer’s phone number <span class="required-field">*</span> <span class="field_error" id="pa_employer_phone_error">{{ $errors->first('pa_employer_phone') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_employer_phone" name="pa_employer_phone" placeholder=" Type..." placeholders="Enter Employer Phone" value="{{ $db_data['PropertyApplication']->pa_employer_phone}}">
+                                        <input type="tel" inputmode="tel" class="input_field" id="pa_employer_phone" name="pa_employer_phone" placeholder="Phone number" value="{{ $db_data['PropertyApplication']->pa_employer_phone}}">
                                     </div>
                                 </div> 
 
 
 
                                 <div class="col-md-4" id="pa_employment_position_container">
-                                    <label class="label in-label" for="pa_employment_position" >Employment Positions <span class="required-field">*</span> <span class="field_error" id="pa_employment_position_error">{{ $errors->first('pa_employment_position') }}</span></label>
+                                    <label class="label in-label" for="pa_employment_position" >What is your job title? <span class="required-field">*</span> <span class="field_error" id="pa_employment_position_error">{{ $errors->first('pa_employment_position') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_employment_position" name="pa_employment_position" placeholder=" Type..." placeholders="Enter Employment Positions" value="{{ $db_data['PropertyApplication']->pa_employment_position}}">
+                                        <input type="text" class="input_field" id="pa_employment_position" name="pa_employment_position" placeholder="Job title" value="{{ $db_data['PropertyApplication']->pa_employment_position}}">
                                     </div>
                                 </div> 
 
 
 
                                 <div class="col-md-4" id="pa_employer_address_container">
-                                    <label class="label in-label" for="pa_employer_address" >Employer Address <span class="required-field">*</span> <span class="field_error" id="pa_employer_address_error">{{ $errors->first('pa_employer_address') }}</span></label>
+                                    <label class="label in-label" for="pa_employer_address" >Employer’s street address <span class="required-field">*</span> <span class="field_error" id="pa_employer_address_error">{{ $errors->first('pa_employer_address') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_employer_address" name="pa_employer_address" placeholder=" Type..." placeholders="Enter Employer Address" value="{{ $db_data['PropertyApplication']->pa_employer_address}}">
+                                        <input type="text" class="input_field" id="pa_employer_address" name="pa_employer_address" placeholder="Street address" value="{{ $db_data['PropertyApplication']->pa_employer_address}}">
                                     </div>
                                 </div> 
 
 
 
                                 <div class="col-md-4" id="pa_employer_city_container">
-                                    <label class="label in-label" for="pa_employer_city" >Employer City <span class="required-field">*</span> <span class="field_error" id="pa_employer_city_error">{{ $errors->first('pa_employer_city') }}</span></label>
+                                    <label class="label in-label" for="pa_employer_city" >Employer’s city <span class="required-field">*</span> <span class="field_error" id="pa_employer_city_error">{{ $errors->first('pa_employer_city') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_employer_city" name="pa_employer_city" placeholder=" Type..." placeholders="Enter Employer City" value="{{ $db_data['PropertyApplication']->pa_employer_city}}">
+                                        <input type="text" class="input_field" id="pa_employer_city" name="pa_employer_city" placeholder="City" value="{{ $db_data['PropertyApplication']->pa_employer_city}}">
                                     </div>
                                 </div>                                                                                                                                 
 
 
 
                                 <div class="col-md-4" id="pa_employer_state_container">
-                                    <label class="label in-label" for="pa_employer_state" >Employer state <span class="required-field">*</span> <span class="field_error" id="pa_employer_state_error">{{ $errors->first('pa_employer_state') }}</span></label>
+                                    <label class="label in-label" for="pa_employer_state" >Employer’s state <span class="required-field">*</span> <span class="field_error" id="pa_employer_state_error">{{ $errors->first('pa_employer_state') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_employer_state" name="pa_employer_state" placeholder=" Type..." placeholders="Enter Employer state" value="{{ $db_data['PropertyApplication']->pa_employer_state}}">
+                                        <input type="text" class="input_field" id="pa_employer_state" name="pa_employer_state" placeholder="State" value="{{ $db_data['PropertyApplication']->pa_employer_state}}">
                                     </div>
                                 </div> 
 
                                 <div class="col-md-4" id="pa_employer_zip_container">
-                                    <label class="label in-label" for="pa_employer_zip" >Employer Zip <span class="required-field">*</span> <span class="field_error" id="pa_employer_zip_error">{{ $errors->first('pa_employer_zip') }}</span></label>
+                                    <label class="label in-label" for="pa_employer_zip" >Employer’s ZIP code <span class="required-field">*</span> <span class="field_error" id="pa_employer_zip_error">{{ $errors->first('pa_employer_zip') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_employer_zip" name="pa_employer_zip" placeholder=" Type..." placeholders="Enter Employer Zip" value="{{ $db_data['PropertyApplication']->pa_employer_zip}}">
+                                        <input type="text" inputmode="numeric" autocomplete="postal-code" class="input_field" id="pa_employer_zip" name="pa_employer_zip" placeholder="ZIP code" value="{{ $db_data['PropertyApplication']->pa_employer_zip}}">
                                     </div>
                                 </div> 
 
                                 <div class="col-md-4" id="pa_monthly_income_container">
-                                    <label class="label in-label" for="pa_monthly_income" >Monthly income <span class="required-field">*</span> <span class="field_error" id="pa_monthly_income_error">{{ $errors->first('pa_monthly_income') }}</span></label>
+                                    <label class="label in-label" for="pa_monthly_income" >Your monthly income from work or retirement benefits <span class="required-field">*</span> <span class="field_error" id="pa_monthly_income_error">{{ $errors->first('pa_monthly_income') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_monthly_income" name="pa_monthly_income" placeholder=" Type..." placeholders="Enter Monthly income" value="{{ $db_data['PropertyApplication']->pa_monthly_income}}">
+                                        <input type="text" inputmode="decimal" class="input_field" id="pa_monthly_income" name="pa_monthly_income" placeholder="Amount in dollars per month" value="{{ $db_data['PropertyApplication']->pa_monthly_income}}">
                                     </div>
                                 </div> 
 
                                 <div class="col-md-4" id="pa_supervisor_name_container">
-                                    <label class="label in-label" for="pa_supervisor_name" >Supervisor Name <span class="required-field">*</span> <span class="field_error" id="pa_supervisor_name_error">{{ $errors->first('pa_supervisor_name') }}</span></label>
+                                    <label class="label in-label" for="pa_supervisor_name" >Supervisor’s name <span class="required-field">*</span> <span class="field_error" id="pa_supervisor_name_error">{{ $errors->first('pa_supervisor_name') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_supervisor_name" name="pa_supervisor_name" placeholder=" Type..." placeholders="Enter Supervisor Name" value="{{ $db_data['PropertyApplication']->pa_supervisor_name}}">
+                                        <input type="text" class="input_field" id="pa_supervisor_name" name="pa_supervisor_name" placeholder="Supervisor’s name" value="{{ $db_data['PropertyApplication']->pa_supervisor_name}}">
                                     </div>
                                 </div> 
 
 
 
                                 <div class="col-md-4" id="pa_supervisor_phone_container">
-                                    <label class="label in-label" for="pa_supervisor_phone" >Supervisor Phone <span class="required-field">*</span> <span class="field_error" id="pa_supervisor_phone_error">{{ $errors->first('pa_supervisor_phone') }}</span></label>
+                                    <label class="label in-label" for="pa_supervisor_phone" >Supervisor’s phone number <span class="required-field">*</span> <span class="field_error" id="pa_supervisor_phone_error">{{ $errors->first('pa_supervisor_phone') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_supervisor_phone" name="pa_supervisor_phone" placeholder=" Type..." placeholders="Enter Supervisor Phone" value="{{ $db_data['PropertyApplication']->pa_supervisor_phone}}">
+                                        <input type="tel" inputmode="tel" class="input_field" id="pa_supervisor_phone" name="pa_supervisor_phone" placeholder="Phone number" value="{{ $db_data['PropertyApplication']->pa_supervisor_phone}}">
                                     </div>
                                 </div> 
 
 
 
                                 <div class="col-md-4" id="pa_supervisor_fax_container">
-                                    <label class="label in-label" for="pa_supervisor_fax" >Supervisor Fax <span class="required-field"> </span> <span class="field_error" id="pa_supervisor_fax_error">{{ $errors->first('pa_supervisor_fax') }}</span></label>
+                                    <label class="label in-label" for="pa_supervisor_fax" >Supervisor’s fax number (optional) <span class="field_error" id="pa_supervisor_fax_error">{{ $errors->first('pa_supervisor_fax') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_supervisor_fax" name="pa_supervisor_fax" placeholder=" Type..." placeholders="Enter Supervisor Fax" value="{{ $db_data['PropertyApplication']->pa_supervisor_fax}}">
+                                        <input type="text" class="input_field" id="pa_supervisor_fax" name="pa_supervisor_fax" placeholder="Fax number (if available)" value="{{ $db_data['PropertyApplication']->pa_supervisor_fax}}">
                                     </div>
                                 </div> 
 
 
 
                                 <div class="col-md-4" id="pa_supervisor_email_container">
-                                    <label class="label in-label" for="pa_supervisor_email" >Supervisor Email <span class="required-field"> </span> <span class="field_error" id="pa_supervisor_email_error">{{ $errors->first('pa_supervisor_email') }}</span></label>
+                                    <label class="label in-label" for="pa_supervisor_email" >Supervisor’s email address (optional) <span class="field_error" id="pa_supervisor_email_error">{{ $errors->first('pa_supervisor_email') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="email" class="input_field" id="pa_supervisor_email" name="pa_supervisor_email" placeholder=" Type..." placeholders="Enter Supervisor Email" value="{{ $db_data['PropertyApplication']->pa_supervisor_email}}">
+                                        <input type="email" class="input_field" id="pa_supervisor_email" name="pa_supervisor_email" placeholder="name@example.com" value="{{ $db_data['PropertyApplication']->pa_supervisor_email}}">
                                     </div>
                                 </div>                                                                                                                                                                                                 
 
 
                                 <div class="col-md-4" id="pa_other_monthly_income_container">
-                                    <label class="label in-label" for="pa_other_monthly_income" >Other Mothly Income <span class="required-field">*</span> <span class="field_error" id="pa_other_monthly_income_error">{{ $errors->first('pa_other_monthly_income') }}</span></label>
+                                    <label class="label in-label" for="pa_other_monthly_income" >Other monthly income (enter 0 if none) <span class="required-field">*</span> <span class="field_error" id="pa_other_monthly_income_error">{{ $errors->first('pa_other_monthly_income') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_other_monthly_income" name="pa_other_monthly_income" placeholder=" Type..." placeholders="Enter Other Mothly Income" value="{{ $db_data['PropertyApplication']->pa_other_monthly_income}}">
+                                        <input type="text" inputmode="decimal" class="input_field" id="pa_other_monthly_income" name="pa_other_monthly_income" placeholder="Amount in dollars per month" value="{{ $db_data['PropertyApplication']->pa_other_monthly_income}}">
                                     </div>
                                 </div> 
 
 
 
                                 <div class="col-md-4" id="pa_other_monthly_income_reason_container">
-                                    <label class="label in-label" for="pa_other_monthly_income_reason" >Other Monthly Income Reason <span class="required-field">*</span> <span class="field_error" id="pa_other_monthly_income_reason_error">{{ $errors->first('pa_other_monthly_income_reason') }}</span></label>
+                                    <label class="label in-label" for="pa_other_monthly_income_reason" >Where does this other income come from? <span class="field_error" id="pa_other_monthly_income_reason_error">{{ $errors->first('pa_other_monthly_income_reason') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="text" class="input_field" id="pa_other_monthly_income_reason" name="pa_other_monthly_income_reason" placeholder=" Type..." placeholders="Enter Other Monthly Income Reason" value="{{ $db_data['PropertyApplication']->pa_other_monthly_income_reason}}">
+                                        <input type="text" class="input_field" id="pa_other_monthly_income_reason" name="pa_other_monthly_income_reason" placeholder="For example, pension or Social Security" value="{{ $db_data['PropertyApplication']->pa_other_monthly_income_reason}}">
                                     </div>
                                 </div>
  
@@ -237,62 +237,50 @@
         
                 // If "Employed" is selected, show the relevant fields
                 if (employmentStatus === "Employed") {
-                    $("#pa_employer_name_container").show();
-                    $("#pa_employment_length_container").show();
-                    $("#pa_employer_phone_container").show();
-                    $("#pa_employment_position_container").show();
-                    $("#pa_employer_address_container").show();
-                    $("#pa_employer_city_container").show();
-                    $("#pa_employer_state_container").show();
-                    $("#pa_employer_zip_container").show();
-                    $("#pa_monthly_income_container").show();
-                    $("#pa_supervisor_name_container").show();
-                    $("#pa_supervisor_phone_container").show();
-                    $("#pa_supervisor_fax_container").show();
-                    $("#pa_supervisor_email_container").show();
-                    $("#pa_other_monthly_income_container").show();
-                    $("#pa_other_monthly_income_reason_container").show();
+                    setEmploymentFields([
+                        'pa_employer_name', 'pa_employment_length', 'pa_employer_phone',
+                        'pa_employment_position', 'pa_employer_address', 'pa_employer_city',
+                        'pa_employer_state', 'pa_employer_zip', 'pa_monthly_income',
+                        'pa_supervisor_name', 'pa_supervisor_phone', 'pa_supervisor_fax',
+                        'pa_supervisor_email', 'pa_other_monthly_income',
+                        'pa_other_monthly_income_reason'
+                    ]);
                 }
                 // If "Retired" is selected, show only the relevant fields
                 else if (employmentStatus === "Retired") {
-                    $("#pa_employer_name_container").hide();
-                    $("#pa_employment_length_container").hide();
-                    $("#pa_employer_phone_container").hide();
-                    $("#pa_employment_position_container").hide();
-                    $("#pa_employer_address_container").hide();
-                    $("#pa_employer_city_container").hide();
-                    $("#pa_employer_state_container").hide();
-                    $("#pa_employer_zip_container").hide();
-                    $("#pa_monthly_income_container").show();
-                    $("#pa_supervisor_name_container").hide();
-                    $("#pa_supervisor_phone_container").hide();
-                    $("#pa_supervisor_fax_container").hide();
-                    $("#pa_supervisor_email_container").hide();
-                    $("#pa_other_monthly_income_container").show();
-                    $("#pa_other_monthly_income_reason_container").show();
+                    setEmploymentFields([
+                        'pa_monthly_income', 'pa_other_monthly_income',
+                        'pa_other_monthly_income_reason'
+                    ]);
                 }
                 // If "Un-Employed" is selected, show only the relevant fields
                 else if (employmentStatus === "Un-Employed") {
-                    $("#pa_employer_name_container").hide();
-                    $("#pa_employment_length_container").hide();
-                    $("#pa_employer_phone_container").hide();
-                    $("#pa_employment_position_container").hide();
-                    $("#pa_employer_address_container").hide();
-                    $("#pa_employer_city_container").hide();
-                    $("#pa_employer_state_container").hide();
-                    $("#pa_employer_zip_container").hide();
-                    $("#pa_monthly_income_container").hide();
-                    $("#pa_supervisor_name_container").hide();
-                    $("#pa_supervisor_phone_container").hide();
-                    $("#pa_supervisor_fax_container").hide();
-                    $("#pa_supervisor_email_container").hide();
-                    $("#pa_other_monthly_income_container").show();
-                    $("#pa_other_monthly_income_reason_container").show();
+                    setEmploymentFields([
+                        'pa_other_monthly_income', 'pa_other_monthly_income_reason'
+                    ]);
                 } else {
-                    // If no status selected, hide all the fields
-                    hideAllFields();
+                    setEmploymentFields([]);
                 }
-                
+        }
+
+        function setEmploymentFields(visibleFieldIds)
+        {
+            var fieldIds = [
+                'pa_employer_name', 'pa_employment_length', 'pa_employer_phone',
+                'pa_employment_position', 'pa_employer_address', 'pa_employer_city',
+                'pa_employer_state', 'pa_employer_zip', 'pa_monthly_income',
+                'pa_supervisor_name', 'pa_supervisor_phone', 'pa_supervisor_fax',
+                'pa_supervisor_email', 'pa_other_monthly_income',
+                'pa_other_monthly_income_reason'
+            ];
+
+            fieldIds.forEach(function(fieldId) {
+                var visible = visibleFieldIds.indexOf(fieldId) !== -1;
+                $('#' + fieldId + '_container')
+                    .toggle(visible)
+                    .attr('aria-hidden', visible ? 'false' : 'true');
+                $('#' + fieldId).prop('disabled', !visible);
+            });
         }
     
     </script>

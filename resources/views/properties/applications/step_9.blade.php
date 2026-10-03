@@ -36,14 +36,14 @@
                                     if($db_data['PropertyApplication']->pa_number_of_co_applicants > 0)
                                     {
                                         // The applicant has selected at least one co-applicant
-                                        $page_description = "Your application has been submitted. Please click the button below to start adding your co-applicants.";
-                                        $button_label = "Add Co-Applicant";
+                                        $page_description = "Your part is complete. Each additional adult must fill out their own section before we can review the full application.";
+                                        $button_label = "Add the Next Applicant";
                                     }
                                     else
                                     {
                                         // The applicant has selected 0 co-applicants
-                                        $page_description = "Your application has been received. We are currently reviewing it and will be in touch with you soon.";
-                                        $button_label = "Return to Home Page";
+                                        $page_description = "Your application is complete and has been sent for review. We will be in touch with you soon.";
+                                        $button_label = "Return to Home";
                                     }
                                 }
                                 elseif($db_data['PropertyApplication']->pa_record_type == "co-applicant")
@@ -60,13 +60,13 @@
                                     if($number_of_co_Applicants > $CoApplicantsAdded)
                                     {
                                         // The applicant has selected 0 co-applicants
-                                        $page_description = "Your application for the CoApplicant has been received. We are currently reviewing it and will be in touch with you soon.";
-                                        $button_label = "Add Co-Applicant";
+                                        $page_description = "Your answers have been saved. Please add the next applicant so we can review the full application.";
+                                        $button_label = "Add the Next Applicant";
                                     }
                                     else
                                     {
                                         // The applicant has selected 0 co-applicants
-                                        $page_description = "Your application process is complete. We are currently reviewing it and will be in touch with you soon.";
+                                        $page_description = "All applicants have finished. Your application is complete and will be reviewed. We will be in touch soon.";
                                         $button_label = "Return Home";
                                     }
                                 }

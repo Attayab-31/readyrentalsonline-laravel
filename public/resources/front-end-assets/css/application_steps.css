@@ -8,7 +8,7 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sub
     -webkit-box-shadow: none;
     box-shadow: none;
     padding: 10px 42px 10px 14px;
-    font-size: 16px;
+    font-size: 18px;
     color: var(--ltn__paragraph-color);
     width: 100%;
     margin-bottom: 16px;
@@ -187,6 +187,34 @@ textarea {
     line-height: 1.4;
 }
 
+.contact-form-box label {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.contact-form-box .rr-application-instructions {
+    font-size: 1.125rem;
+}
+
+.contact-form-box .btn {
+    font-size: 1.125rem;
+    line-height: 1.35;
+}
+
+.contact-form-box input[type="file"] {
+    height: auto !important;
+    min-height: 48px;
+    padding: 10px;
+}
+
+.rr-application-instructions a {
+    color: #1d466c;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
 @media (max-width: 575px) {
     .rr-application-progress {
         margin-bottom: 16px;
@@ -219,6 +247,11 @@ textarea {
     .rr-application-actions .btn {
         width: 100%;
         min-height: 50px;
+    }
+
+    .contact-form-box label,
+    .contact-form-box .rr-application-instructions {
+        font-size: 1rem;
     }
 }
 

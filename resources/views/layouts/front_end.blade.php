@@ -522,10 +522,10 @@
     <!-- MODAL AREA START (Share Property Modal) -->
     <div class="ltn__modal-area ltn__quick-view-modal-area">
         <div class="modal fade" id="share_property_modal" tabindex="-1">
-            <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
                 <div class="modal-content" style="border-radius: 16px; overflow: hidden; border: 1px solid var(--rr-line);">
                     <div class="modal-header" style="padding: 18px 30px !important; background-color: var(--rr-navy-700); border-bottom: none;">
-                        <h5 class="modal-title" style="color: white !important; font-weight: 700;"><i class="fas fa-share-alt me-2"></i> Share Property with Friends</h5>
+                        <h5 class="modal-title" style="color: white !important; font-weight: 700;"><i class="fas fa-share-alt me-2"></i> Send a Property to a Friend</h5>
                         <button type="button" class="close text-white" data-bs-dismiss="modal" aria-label="Close" style="top: 18px !important; right: 24px; color: white !important; opacity: 0.9; background: transparent; border: none; font-size: 24px;">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -693,12 +693,18 @@ $(document).ready(function() {
     }
 
     // Handle share button click
+    $('.share-property-btn').each(function() {
+        $(this)
+            .text('Send to a Friend')
+            .attr('aria-label', 'Send this property to a friend');
+    });
+
     $('.share-property-btn').click(function() {
         const propertySlug = $(this).data('property-slug');
         const propertyTitle = $(this).data('property-title');
         
         $('#property_slug').val(propertySlug);
-        $('#share_property_modal .modal-title').text(`Share: ${propertyTitle}`);
+        $('#share_property_modal .modal-title').text(`Send ${propertyTitle} to a friend`);
         $('#share_property_modal').modal('show');
     });
 

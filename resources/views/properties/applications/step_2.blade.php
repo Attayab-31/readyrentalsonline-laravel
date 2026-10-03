@@ -79,7 +79,7 @@
                                         Date of birth <span class="required-field">*</span> <span class="field_error" id="pa_applicant_dob_error" >{{ $errors->first('pa_applicant_dob')}}</span>
                                     </label>
                                     <div class="input-item">
-                                        <input type="date" autocomplete="bday" class="input_field" id="pa_applicant_dob" name="pa_applicant_dob" value="{{ $db_data['PropertyApplication']->pa_applicant_dob}}">
+                                        <input type="date" autocomplete="bday" class="input_field application-date-input" id="pa_applicant_dob" name="pa_applicant_dob" value="{{ $db_data['PropertyApplication']->pa_applicant_dob}}">
                                     </div>
                                 </div>
 
@@ -130,4 +130,3 @@
 <!-- FEATURE AREA END -->
 
 @endsection
- 

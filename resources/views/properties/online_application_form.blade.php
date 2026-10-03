@@ -205,7 +205,7 @@
                                 <div class="col-md-4">
                                     <label class="label in-label" for="pa_applicant_dob" >Date of Birth <span class="required-field">*</span> <span class="form-text text-danger font-weight-bold" id="pa_applicant_dob_error">{{ $errors->first('pa_applicant_dob') }}</span></label>
                                     <div class="input-item input-item-name">
-                                        <input type="date" class="input_field" id="pa_applicant_dob" name="pa_applicant_dob" placeholder=" Type..." placeholders="Enter Date of Birth" value="{{ old('pa_applicant_dob')}}">
+                                        <input type="date" class="input_field application-date-input" id="pa_applicant_dob" name="pa_applicant_dob" autocomplete="bday" value="{{ old('pa_applicant_dob')}}">
                                     </div>
                                 </div>
                                      
@@ -702,7 +702,7 @@
                                     <div class="col-md-4">
                                         <label class="label in-label" for="pa_co_applicant_dob" >Date of Birth <span class="required-field"></span> <span class="form-text text-danger font-weight-bold" id="pa_co_applicant_dob_error">{{ $errors->first('pa_co_applicant_dob') }}</span></label>
                                         <div class="input-item input-item-name">
-                                            <input type="date" id="pa_co_applicant_dob" name="pa_co_applicant_dob" placeholder=" Type..." placeholders="Enter Date of Birth" value="{{ old('pa_co_applicant_dob')}}">
+                                            <input type="date" class="input_field application-date-input" id="pa_co_applicant_dob" name="pa_co_applicant_dob" autocomplete="bday" value="{{ old('pa_co_applicant_dob')}}">
                                         </div>
                                     </div>
                                          
@@ -1491,5 +1491,4 @@
                                 <!--</div>-->
                                 
 @endsection
-
 
